@@ -3,7 +3,7 @@ const User = require('../models/User');
 const AuditLog = require('../models/AuditLog');
 
 // Protect routes
-exports.protect = async (req, res, next) => {
+const protect = async (req, res, next) => {
     let token;
 
     // Check Authorization header
@@ -65,7 +65,7 @@ exports.protect = async (req, res, next) => {
 };
 
 // Grant access to specific roles
-exports.authorize = (...roles) => {
+const authorize = (...roles) => {
     return (req, res, next) => {
         if (!roles.includes(req.user.role)) {
             return res.status(403).json({
@@ -78,7 +78,7 @@ exports.authorize = (...roles) => {
 };
 
 // Rate limit for sensitive routes
-exports.rateLimit = (maxRequests, windowMinutes) => {
+const rateLimit = (maxRequests, windowMinutes) => {
     const requests = {};
 
     return (req, res, next) => {
@@ -103,3 +103,5 @@ exports.rateLimit = (maxRequests, windowMinutes) => {
         next();
     };
 };
+
+module.exports = { protect, authorize, rateLimit };

@@ -1,11 +1,11 @@
-const User = require('../models/User');
-const Resume = require('../models/Resume');
-const AuditLog = require('../models/AuditLog');
+const User = require('../models/User.js');
+const Resume = require('../models/Resume.js');
+const AuditLog = require('../models/AuditLog.js');
 const mongoose = require('mongoose');
 
 // @desc    Get all users with filtering and pagination
 // @route   GET /api/admin/users
-exports.getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
@@ -29,17 +29,6 @@ exports.getAllUsers = async (req, res) => {
 
         const total = await User.countDocuments(filter);
 
-        // Get user stats
-        const userStats = await User.aggregate([
-            { $match: {} },
-            {
-                $group: {
-                    _id: '$role',
-                    count: { $sum: 1 }
-                }
-            }
-        ]);
-
         res.status(200).json({
             success: true,
             data: {
@@ -49,12 +38,6 @@ exports.getAllUsers = async (req, res) => {
                     limit,
                     total,
                     pages: Math.ceil(total / limit)
-                },
-                stats: {
-                    totalUsers: total,
-                    roleDistribution: userStats,
-                    verifiedUsers: await User.countDocuments({ isVerified: true }),
-                    unverifiedUsers: await User.countDocuments({ isVerified: false })
                 }
             }
         });
@@ -70,7 +53,7 @@ exports.getAllUsers = async (req, res) => {
 
 // @desc    Get user by ID with all details
 // @route   GET /api/admin/users/:id
-exports.getUserById = async (req, res) => {
+const getUserById = async (req, res) => {
     try {
         const user = await User.findById(req.params.id)
             .select('-password -refreshTokens');
@@ -98,7 +81,9 @@ exports.getUserById = async (req, res) => {
                 user,
                 stats: {
                     totalResumes: resumes.length,
-                    averageATSScore: resumes.reduce((acc, r) => acc + (r.optimization?.atsScore || 0), 0) / resumes.length || 0,
+                    averageATSScore: resumes.length > 0
+                        ? (resumes.reduce((acc, r) => acc + (r.optimization?.atsScore || 0), 0) / resumes.length).toFixed(2)
+                        : 0,
                     resumes
                 },
                 recentActivity: logs
@@ -116,7 +101,7 @@ exports.getUserById = async (req, res) => {
 
 // @desc    Update user role
 // @route   PUT /api/admin/users/:id/role
-exports.updateUserRole = async (req, res) => {
+const updateUserRole = async (req, res) => {
     try {
         const { role } = req.body;
 
@@ -152,7 +137,8 @@ exports.updateUserRole = async (req, res) => {
                 targetUser: user.email
             },
             ipAddress: req.ip,
-            userAgent: req.headers['user-agent']
+            userAgent: req.headers['user-agent'],
+            status: 'success'
         });
 
         res.status(200).json({
@@ -170,141 +156,19 @@ exports.updateUserRole = async (req, res) => {
     }
 };
 
-// @desc    Toggle user verification status
-// @route   PUT /api/admin/users/:id/verify
-exports.toggleUserVerification = async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found'
-            });
-        }
-
-        user.isVerified = !user.isVerified;
-        await user.save();
-
-        await AuditLog.create({
-            userId: req.user._id,
-            action: 'admin_action',
-            resource: 'User',
-            resourceId: user._id,
-            details: {
-                action: 'toggle_verification',
-                newStatus: user.isVerified,
-                targetUser: user.email
-            },
-            ipAddress: req.ip,
-            userAgent: req.headers['user-agent']
-        });
-
-        res.status(200).json({
-            success: true,
-            message: `User verification status updated to ${user.isVerified}`,
-            data: {
-                userId: user._id,
-                isVerified: user.isVerified
-            }
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error',
-            error: error.message
-        });
-    }
-};
-
-// @desc    Get all resumes with filtering
-// @route   GET /api/admin/resumes
-exports.getAllResumes = async (req, res) => {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 20;
-        const skip = (page - 1) * limit;
-
-        const filter = {};
-        if (req.query.userId) filter.userId = mongoose.Types.ObjectId(req.query.userId);
-        if (req.query.minScore) filter['optimization.atsScore'] = { $gte: parseInt(req.query.minScore) };
-        if (req.query.search) {
-            filter.$or = [
-                { title: { $regex: req.query.search, $options: 'i' } },
-                { 'content.personalInfo.name': { $regex: req.query.search, $options: 'i' } }
-            ];
-        }
-
-        const resumes = await Resume.find(filter)
-            .populate('userId', 'name email')
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit);
-
-        const total = await Resume.countDocuments(filter);
-
-        // Get resume stats
-        const stats = await Resume.aggregate([
-            { $match: {} },
-            {
-                $group: {
-                    _id: null,
-                    totalResumes: { $sum: 1 },
-                    averageATSScore: { $avg: '$optimization.atsScore' },
-                    totalOptimizations: { $sum: '$optimization.optimizations' },
-                    resumesWithLowScore: {
-                        $sum: { $cond: [{ $lt: ['$optimization.atsScore', 60] }, 1, 0] }
-                    }
-                }
-            }
-        ]);
-
-        res.status(200).json({
-            success: true,
-            data: {
-                resumes,
-                pagination: {
-                    page,
-                    limit,
-                    total,
-                    pages: Math.ceil(total / limit)
-                },
-                stats: stats[0] || {
-                    totalResumes: 0,
-                    averageATSScore: 0,
-                    totalOptimizations: 0,
-                    resumesWithLowScore: 0
-                }
-            }
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error',
-            error: error.message
-        });
-    }
-};
-
 // @desc    Get admin dashboard stats
 // @route   GET /api/admin/dashboard
-exports.getDashboardStats = async (req, res) => {
+const getDashboardStats = async (req, res) => {
     try {
         const [
             totalUsers,
             totalResumes,
-            totalOptimizations,
             recentUsers,
             recentResumes,
             activityLogs
         ] = await Promise.all([
             User.countDocuments(),
             Resume.countDocuments(),
-            Resume.aggregate([
-                { $group: { _id: null, total: { $sum: '$optimization.optimizations' } } }
-            ]),
             User.find().sort({ createdAt: -1 }).limit(10).select('name email role createdAt'),
             Resume.find().sort({ createdAt: -1 }).limit(10).populate('userId', 'name email'),
             AuditLog.find()
@@ -328,25 +192,12 @@ exports.getDashboardStats = async (req, res) => {
             { $sort: { '_id': 1 } }
         ]);
 
-        // Get resume score distribution
-        const scoreDistribution = await Resume.aggregate([
-            {
-                $bucket: {
-                    groupBy: '$optimization.atsScore',
-                    boundaries: [0, 20, 40, 60, 80, 100],
-                    default: 'Other',
-                    output: { count: { $sum: 1 } }
-                }
-            }
-        ]);
-
         res.status(200).json({
             success: true,
             data: {
                 overview: {
                     totalUsers,
                     totalResumes,
-                    totalOptimizations: totalOptimizations[0]?.total || 0,
                     conversionRate: totalUsers > 0 ? (totalResumes / totalUsers * 100).toFixed(2) : 0
                 },
                 recent: {
@@ -355,8 +206,7 @@ exports.getDashboardStats = async (req, res) => {
                     activity: activityLogs
                 },
                 analytics: {
-                    dailyActivity,
-                    scoreDistribution
+                    dailyActivity
                 }
             }
         });
@@ -369,3 +219,6 @@ exports.getDashboardStats = async (req, res) => {
         });
     }
 };
+
+
+module.exports = { getAllUsers, getUserById, updateUserRole, getDashboardStats };

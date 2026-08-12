@@ -2,7 +2,7 @@ const User = require('../models/User');
 const AuditLog = require('../models/AuditLog');
 
 // Check if user is admin
-exports.isAdmin = async (req, res, next) => {
+const isAdmin = async (req, res, next) => {
     try {
         if (!req.user) {
             return res.status(401).json({
@@ -30,7 +30,7 @@ exports.isAdmin = async (req, res, next) => {
 };
 
 // Check if user is super admin
-exports.isSuperAdmin = async (req, res, next) => {
+const isSuperAdmin = async (req, res, next) => {
     try {
         if (!req.user) {
             return res.status(401).json({
@@ -58,7 +58,7 @@ exports.isSuperAdmin = async (req, res, next) => {
 };
 
 // Log admin actions
-exports.logAdminAction = (action) => {
+const logAdminAction = (action) => {
     return async (req, res, next) => {
         try {
             const result = await AuditLog.create({
@@ -85,3 +85,5 @@ exports.logAdminAction = (action) => {
         }
     };
 };
+
+module.exports = { isAdmin, isSuperAdmin, logAdminAction };
