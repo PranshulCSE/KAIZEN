@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "AI-Powered Resume & Job Application Optimizer",
   "main": "server.js",
-  "type": "module",
+  "type": "common",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",

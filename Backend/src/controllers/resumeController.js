@@ -1,6 +1,6 @@
-import Resume from '../models/Resume.js';
-import AuditLog from '../models/AuditLog.js';
-import resumeParser from '../services/resumeParser.js';
+const Resume = require ('../models/Resume.js');
+const AuditLog = require ('../models/AuditLog.js');
+const resumeParser = require ('../services/resumeParser.js');
 
 // @desc    Create resume
 // @route   POST /api/resumes
