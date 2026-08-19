@@ -36,6 +36,15 @@ const transporter = nodemailer.createTransport({
         <p>This OTP will expire in 5 minutes.</p>
         <p>If you did not request this, please ignore this email.</p>
       `;
+    } else if (purpose === 'login') {
+      subject = 'Login OTP - Resume Optimizer';
+      htmlContent = `
+    <h2>Login Verification</h2>
+    <p>Hi ${userName},</p>
+    <p>Your OTP to log in is:</p>
+    <h3 style="color: #007bff;">${otp}</h3>
+    <p>This OTP will expire in 5 minutes.</p>
+  `;
     }
 
     const mailOptions = {

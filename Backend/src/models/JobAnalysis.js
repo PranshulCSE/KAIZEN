@@ -57,6 +57,4 @@ const jobAnalysisSchema = new mongoose.Schema({
 jobAnalysisSchema.index({ userId: 1, createdAt: -1 });
 jobAnalysisSchema.index({ resumeId: 1 });
 
-const JobAnalysisModel= mongoose.model('JobAnalysis', jobAnalysisSchema);
-
-module.exports={JobAnalysisModel};
+module.exports = mongoose.model('JobAnalysis', jobAnalysisSchema);

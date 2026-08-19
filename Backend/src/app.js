@@ -3,7 +3,7 @@ const app = express();
 const cors = require ('cors');
 const helmet = require ('helmet');
 const rateLimit = require ('express-rate-limit');
-require ('dotenv').config({ path: '../.env' });
+require ('dotenv').config();
 
 
 // Routes
@@ -22,8 +22,8 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Rate limiting
 const limiter = rateLimit({
-    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW) * 60 * 1000,
-    max: parseInt(process.env.RATE_LIMIT_MAX)
+    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW || 15) * 60 * 1000,
+    max: parseInt(process.env.RATE_LIMIT_MAX ||100)
 });
 
 app.use(limiter);
@@ -54,4 +54,4 @@ app.use((err, req, res, next) => {
     });
 });
 
-export default app;
+module.exports = app;

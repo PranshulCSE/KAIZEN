@@ -15,6 +15,7 @@ const auditLogSchema = new mongoose.Schema({
             'resume_upload',
             'resume_optimize',
             'resume_download',
+            'resume_delete',   
             'job_analyze',
             'admin_action',
             'password_change',

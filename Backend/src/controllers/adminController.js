@@ -220,5 +220,27 @@ const getDashboardStats = async (req, res) => {
     }
 };
 
+const toggleUserVerification = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+        user.isVerified = !user.isVerified;
+        await user.save();
+        res.status(200).json({ success: true, data: user });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
+    }
+};
 
-module.exports = { getAllUsers, getUserById, updateUserRole, getDashboardStats };
+const getAllResumes = async (req, res) => {
+    try {
+        const resumes = await Resume.find().populate('userId', 'name email').sort({ createdAt: -1 });
+        res.status(200).json({ success: true, data: resumes });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
+    }
+};
+
+
+
+module.exports = { getAllUsers, getUserById, updateUserRole, getDashboardStats , toggleUserVerification, getAllResumes };

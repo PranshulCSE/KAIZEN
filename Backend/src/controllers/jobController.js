@@ -1,5 +1,6 @@
-import JobAnalysis from '../models/JobAnalysis.js';
-import AuditLog from '../models/AuditLog.js';
+// CORRECT
+const { JobAnalysisModel: JobAnalysis } = require('../models/JobAnalysis.js');
+const AuditLog = require('../models/AuditLog.js');
 
 // @desc    Get job analyses
 // @route   GET /api/jobs
