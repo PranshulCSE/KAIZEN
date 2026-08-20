@@ -101,4 +101,14 @@ userSchema.methods.getRefreshToken = function() {
   );
 };
 
+// Add a refresh token while keeping only the most recent MAX_REFRESH_TOKENS
+// (prevents the array from growing forever as a user logs in repeatedly)
+const MAX_REFRESH_TOKENS = 5;
+userSchema.methods.addRefreshToken = function (token) {
+  this.refreshTokens.push(token);
+  if (this.refreshTokens.length > MAX_REFRESH_TOKENS) {
+    this.refreshTokens = this.refreshTokens.slice(-MAX_REFRESH_TOKENS);
+  }
+};
+
 module.exports = mongoose.model('User', userSchema);

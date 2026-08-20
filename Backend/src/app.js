@@ -1,17 +1,18 @@
-const express = require ('express');
+const express = require('express');
 const app = express();
-const cors = require ('cors');
-const helmet = require ('helmet');
-const rateLimit = require ('express-rate-limit');
-require ('dotenv').config();
+const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+require('dotenv').config();
 
+const logger = require('./utils/logger.js');
 
 // Routes
-const authRoutes = require ('./routes/authRoutes.js');
-const adminRoutes = require ('./routes/adminRoutes.js');
-const resumeRoutes = require ('./routes/resumeRoutes.js');
-const jobRoutes = require ('./routes/jobRoutes.js');
-const aiRoutes = require ('./routes/aiRoutes.js');
+const authRoutes = require('./routes/authRoutes.js');
+const adminRoutes = require('./routes/adminRoutes.js');
+const resumeRoutes = require('./routes/resumeRoutes.js');
+const jobRoutes = require('./routes/jobRoutes.js');
+const aiRoutes = require('./routes/aiRoutes.js');
 
 
 // Middleware
@@ -20,10 +21,16 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-// Rate limiting
+// Request logging
+app.use((req, res, next) => {
+    logger.info(`${req.method} ${req.originalUrl}`);
+    next();
+});
+
+// Rate limiting (falls back to sane defaults if env vars are missing)
 const limiter = rateLimit({
-    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW || 15) * 60 * 1000,
-    max: parseInt(process.env.RATE_LIMIT_MAX ||100)
+    windowMs: (parseInt(process.env.RATE_LIMIT_WINDOW) || 15) * 60 * 1000,
+    max: parseInt(process.env.RATE_LIMIT_MAX) || 100
 });
 
 app.use(limiter);
@@ -47,7 +54,7 @@ app.use((req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-    console.error(err);
+    logger.error(err.message, { stack: err.stack });
     res.status(err.status || 500).json({
         success: false,
         message: err.message || 'Internal Server Error'

@@ -1,5 +1,5 @@
 // CORRECT
-const { JobAnalysisModel: JobAnalysis } = require('../models/JobAnalysis.js');
+const JobAnalysis = require('../models/JobAnalysis.js');
 const AuditLog = require('../models/AuditLog.js');
 
 // @desc    Get job analyses
@@ -79,7 +79,7 @@ const getJobAnalysisById = async (req, res) => {
 
 // @desc    Delete job analysis
 // @route   DELETE /api/jobs/:id
- const deleteJobAnalysis = async (req, res) => {
+const deleteJobAnalysis = async (req, res) => {
     try {
         const analysis = await JobAnalysis.findById(req.params.id);
 

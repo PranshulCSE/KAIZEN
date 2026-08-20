@@ -1,15 +1,30 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
- require('dotenv').config();
+const logger = require('../utils/logger.js');
+require('dotenv').config();
 
 
 class AIService {
   constructor() {
-    this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    this.model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    if (!process.env.GEMINI_API_KEY) {
+      // Don't crash the whole server just because AI isn't configured yet —
+      // log a clear warning instead, and fail loudly only when an AI method is actually called.
+      logger.warn('GEMINI_API_KEY is not set — AI features will not work until it is configured.');
+    }
+    this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+    this.model = this.genAI.getGenerativeModel({
+      model: process.env.GEMINI_MODEL || 'gemini-3.6-flash'
+    });
+  }
+
+  _ensureConfigured() {
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error('AI features are not available: GEMINI_API_KEY is not configured on the server.');
+    }
   }
 
   // Analyze Job Description
   async analyzeJobDescription(jobDescription) {
+    this._ensureConfigured();
     const prompt = `
       You are an expert HR and recruitment specialist. Analyze this job description and provide ONLY valid JSON format:
       
@@ -35,7 +50,7 @@ class AIService {
       const result = await this.model.generateContent(prompt);
       const response = result.response;
       const text = response.text();
-      
+
       // Extract JSON from response
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -50,6 +65,7 @@ class AIService {
 
   // Optimize Resume for Job
   async optimizeResumeForJob(resumeContent, jobAnalysis) {
+    this._ensureConfigured();
     const prompt = `
       You are an expert resume writer. Optimize this resume for the job requirements. Return ONLY valid JSON:
       
@@ -77,7 +93,7 @@ class AIService {
       const result = await this.model.generateContent(prompt);
       const response = result.response;
       const text = response.text();
-      
+
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
@@ -91,6 +107,7 @@ class AIService {
 
   // Calculate ATS Score
   async calculateATSScore(resume, jobDescription) {
+    this._ensureConfigured();
     const prompt = `
       You are an ATS scoring expert. Calculate a comprehensive ATS compatibility score. Return ONLY valid JSON:
       
@@ -115,7 +132,7 @@ class AIService {
       const result = await this.model.generateContent(prompt);
       const response = result.response;
       const text = response.text();
-      
+
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
@@ -129,6 +146,7 @@ class AIService {
 
   // Generate Interview Questions
   async generateInterviewQuestions(resume, jobDescription) {
+    this._ensureConfigured();
     const prompt = `
       Generate interview questions based on this resume and job. Return ONLY valid JSON:
       
@@ -148,7 +166,7 @@ class AIService {
       const result = await this.model.generateContent(prompt);
       const response = result.response;
       const text = response.text();
-      
+
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
@@ -161,5 +179,5 @@ class AIService {
   }
 }
 
-const AI= new AIService();
+const AI = new AIService();
 module.exports = AI;

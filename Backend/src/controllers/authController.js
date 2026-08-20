@@ -124,7 +124,7 @@ const verifyOTP = async (req, res) => {
     const refreshToken = user.getRefreshToken();
 
     // Save refresh token
-    user.refreshTokens.push(refreshToken);
+    user.addRefreshToken(refreshToken);
     await user.save();
 
     res.status(200).json({
@@ -261,7 +261,7 @@ const login = async (req, res) => {
     const refreshToken = user.getRefreshToken();
 
     // Save refresh token
-    user.refreshTokens.push(refreshToken);
+    user.addRefreshToken(refreshToken);
     await user.save();
 
     // Log audit
@@ -344,7 +344,7 @@ const refreshToken = async (req, res) => {
     user.refreshTokens = user.refreshTokens.filter(
       token => token !== refreshToken
     );
-    user.refreshTokens.push(newRefreshToken);
+    user.addRefreshToken(refreshToken);
     await user.save();
 
     res.status(200).json({

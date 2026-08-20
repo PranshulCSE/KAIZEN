@@ -1,7 +1,9 @@
 const express = require ( 'express');
 const { protect } = require ('../middleware/auth.js');
+const { uploadResumeMiddleware } = require('../middleware/upload.js');
 const {  
     createResume,
+    uploadResume,
     getUserResumes,
     getResumeById,
     updateResume,
@@ -12,6 +14,7 @@ const router = express.Router();
 
 router.use(protect);
 
+router.post('/upload', uploadResumeMiddleware, uploadResume);
 router.post('/', createResume);
 router.get('/', getUserResumes);
 router.get('/:id', getResumeById);
