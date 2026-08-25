@@ -7,7 +7,8 @@ const {
     getUserResumes,
     getResumeById,
     updateResume,
-    deleteResume
+    deleteResume,
+    downloadResume
 } = require ('../controllers/resumeController.js');
 
 const router = express.Router();
@@ -20,5 +21,6 @@ router.get('/', getUserResumes);
 router.get('/:id', getResumeById);
 router.put('/:id', updateResume);
 router.delete('/:id', deleteResume);
+router.post('/:id/download', downloadResume);
 
 module.exports= router;

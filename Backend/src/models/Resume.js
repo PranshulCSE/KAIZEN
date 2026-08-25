@@ -106,17 +106,7 @@ const resumeSchema = new mongoose.Schema({
         keywordMatch: Number,
         readability: Number,
         formatScore: Number,
-        suggestions: [{
-            type: String,
-            priority: {
-                type: String,
-                enum: ['high', 'medium', 'low']
-            },
-            category: String,
-            originalText: String,
-            suggestedText: String,
-            reason: String
-        }],
+        suggestions: [String],
         lastOptimized: Date
     },
     isActive: {
