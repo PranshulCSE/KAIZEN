@@ -1,3 +1,4 @@
+import React from 'react';
 import { Routes, Route } from 'react-router';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext.jsx';
@@ -20,7 +21,7 @@ import JobAnalysisDetail from './pages/JobAnalysisDetail.jsx';
 import Optimize from './pages/Optimize.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
 import AdminUsers from './pages/AdminUsers.jsx';
-import AdminResumes from './pages/AdminResumes.jsx';
+// import AdminResumes from './pages/AdminResumes.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 export default function App() {
@@ -61,7 +62,7 @@ export default function App() {
                     <Route element={<AdminRoute />}>
                         <Route path={ROUTES.ADMIN} element={<AdminDashboard />} />
                         <Route path={ROUTES.ADMIN_USERS} element={<AdminUsers />} />
-                        <Route path={ROUTES.ADMIN_RESUMES} element={<AdminResumes />} />
+                        {/* <Route path={ROUTES.ADMIN_RESUMES} element={<AdminResumes />} /> */}
                     </Route>
                 </Route>
 

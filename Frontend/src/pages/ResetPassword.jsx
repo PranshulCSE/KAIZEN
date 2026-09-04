@@ -1,7 +1,7 @@
 import { Lock, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import toast from 'react-hot-toast';
 import Button from '../components/ui/Button.jsx';
 import Card from '../components/ui/Card.jsx';

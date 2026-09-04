@@ -1,4 +1,4 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router';
 import { useResume } from '../hooks/useResumes.js';
 import Card from '../components/ui/Card.jsx';
 import Badge from '../components/ui/Badge.jsx';
