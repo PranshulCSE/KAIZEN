@@ -1,160 +1,233 @@
 const React = require('react');
-const { Document, Page, Text, View, StyleSheet, renderToBuffer } = require('@react-pdf/renderer');
-
-const e = React.createElement;
+const { Document, Page, Text, View, StyleSheet, pdf } = require('@react-pdf/renderer');
 
 const styles = StyleSheet.create({
-  page: { padding: 40, fontSize: 10, fontFamily: 'Helvetica', color: '#14161A' },
-  name: { fontSize: 20, fontFamily: 'Helvetica-Bold', marginBottom: 2 },
-  contactLine: { fontSize: 9, color: '#444444', marginBottom: 12 },
-  sectionTitle: {
+  page: {
+    padding: 40,
+    fontFamily: 'Helvetica',
     fontSize: 11,
-    fontFamily: 'Helvetica-Bold',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginTop: 14,
-    marginBottom: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: '#14161A',
-    paddingBottom: 3
+    lineHeight: 1.4,
+    color: '#000',
   },
-  summary: { fontSize: 10, lineHeight: 1.5, marginBottom: 4 },
-  skillsRow: { fontSize: 10, lineHeight: 1.5 },
-  entryHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },
-  entryTitle: { fontSize: 10.5, fontFamily: 'Helvetica-Bold' },
-  entryDates: { fontSize: 9, color: '#444444' },
-  entrySubtitle: { fontSize: 9.5, color: '#333333', marginBottom: 3 },
-  bullet: { flexDirection: 'row', marginBottom: 2 },
-  bulletDot: { width: 10, fontSize: 10 },
-  bulletText: { flex: 1, fontSize: 9.5, lineHeight: 1.4 }
+  header: {
+    marginBottom: 20,
+    borderBottomWidth: 2,
+    borderBottomColor: '#000',
+    paddingBottom: 10,
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: '#000',
+  },
+  contact: {
+    fontSize: 10,
+    color: '#333',
+    marginBottom: 2,
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    marginTop: 12,
+    marginBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#000',
+    paddingBottom: 4,
+    textTransform: 'uppercase',
+  },
+  summaryText: {
+    fontSize: 11,
+    lineHeight: 1.5,
+    marginBottom: 10,
+    color: '#222',
+  },
+  entryContainer: {
+    marginBottom: 10,
+  },
+  entryHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 3,
+  },
+  entryTitle: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  entrySubtitle: {
+    fontSize: 10,
+    color: '#444',
+    fontStyle: 'italic',
+  },
+  entryDate: {
+    fontSize: 10,
+    color: '#555',
+  },
+  bulletPoint: {
+    flexDirection: 'row',
+    marginBottom: 4,
+    marginLeft: 10,
+  },
+  bullet: {
+    width: 15,
+    fontSize: 11,
+    color: '#000',
+  },
+  bulletText: {
+    flex: 1,
+    fontSize: 10,
+    color: '#222',
+    lineHeight: 1.4,
+  },
+  skillBadge: {
+    display: 'inline-block',
+    padding: '2px 6px',
+    marginRight: 6,
+    marginBottom: 6,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 3,
+    fontSize: 9,
+  },
+  skillsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 10,
+  },
 });
 
-/**
- * Builds a lookup of "before" -> "after" bullet text from the AI's
- * beforeAfter pairs so the PDF can render the optimized wording without
- * requiring the caller to have already persisted it onto the resume.
- */
-const buildReplacementMap = (beforeAfter = []) => {
-  const map = new Map();
-  beforeAfter.forEach((pair) => {
-    if (pair?.before) map.set(pair.before.trim().toLowerCase(), pair.after);
-  });
-  return map;
-};
+const generateResumePDFBuffer = async (resume, optimization) => {
+  const { content } = resume;
 
-const resolveBullet = (text, replacementMap) => {
-  const match = replacementMap.get((text || '').trim().toLowerCase());
-  return match || text;
-};
+  // Apply optimization if provided
+  let displaySummary = content.personalSummary || '';
+  const beforeAfterMap = {};
 
-const formatDate = (date) => {
-  if (!date) return '';
-  const d = new Date(date);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-};
+  if (optimization?.beforeAfter) {
+    optimization.beforeAfter.forEach(({ before, after }) => {
+      beforeAfterMap[before] = after;
+    });
+  }
 
-const ResumeDocument = ({ resume, optimization }) => {
-  const content = resume.content || {};
-  const personal = content.personalInfo || {};
-  const replacementMap = buildReplacementMap(optimization?.beforeAfter);
-  const summary = optimization?.summaryRewrite || personal.summary;
+  if (optimization?.summaryRewrite) {
+    displaySummary = optimization.summaryRewrite;
+  }
 
-  const contactParts = [personal.email, personal.phone, personal.location, personal.linkedin, personal.portfolio].filter(
-    Boolean
-  );
-
-  return e(
+  const h = React.createElement;
+  const doc = h(
     Document,
-    {},
-    e(
+    null,
+    h(
       Page,
       { size: 'A4', style: styles.page },
-      // Header
-      e(Text, { style: styles.name }, personal.name || resume.title),
-      contactParts.length > 0 && e(Text, { style: styles.contactLine }, contactParts.join('  ·  ')),
-
-      // Summary
-      summary && e(Text, { style: styles.sectionTitle }, 'Summary'),
-      summary && e(Text, { style: styles.summary }, summary),
-
-      // Skills
-      content.skills?.length > 0 && e(Text, { style: styles.sectionTitle }, 'Skills'),
-      content.skills?.length > 0 && e(Text, { style: styles.skillsRow }, content.skills.join('  ·  ')),
-
-      // Experience
-      content.experience?.length > 0 && e(Text, { style: styles.sectionTitle }, 'Experience'),
-      ...(content.experience || []).map((exp, i) =>
-        e(
+      h(
+        View,
+        { style: styles.header },
+        h(Text, { style: styles.name }, content.personalInfo?.fullName || 'Unknown'),
+        h(
           View,
-          { key: `exp-${i}`, wrap: false },
-          e(
+          { style: { flexDirection: 'row', justifyContent: 'space-between' } },
+          h(
             View,
-            { style: styles.entryHeaderRow },
-            e(Text, { style: styles.entryTitle }, exp.role || ''),
-            e(
-              Text,
-              { style: styles.entryDates },
-              `${formatDate(exp.startDate)} — ${exp.isCurrent ? 'Present' : formatDate(exp.endDate)}`
-            )
+            null,
+            content.personalInfo?.email && h(Text, { style: styles.contact }, content.personalInfo.email),
+            content.personalInfo?.phone && h(Text, { style: styles.contact }, content.personalInfo.phone)
           ),
-          e(Text, { style: styles.entrySubtitle }, [exp.company, exp.location].filter(Boolean).join(' · ')),
-          ...(exp.bulletPoints || []).map((bp, j) =>
-            e(
+          content.personalInfo?.location && h(Text, { style: styles.contact }, content.personalInfo.location)
+        )
+      ),
+      displaySummary && h(
+        View,
+        null,
+        h(Text, { style: styles.sectionTitle }, 'Summary'),
+        h(Text, { style: styles.summaryText }, displaySummary)
+      ),
+      content.experience?.length > 0 && h(
+        View,
+        null,
+        h(Text, { style: styles.sectionTitle }, 'Experience'),
+        content.experience.map((job, idx) => h(
+          View,
+          { key: idx, style: styles.entryContainer },
+          h(
+            View,
+            { style: styles.entryHeader },
+            h(Text, { style: styles.entryTitle }, job.position),
+            h(Text, { style: styles.entryDate }, `${job.startDate} - ${job.isCurrentlyWorking ? 'Present' : job.endDate}`)
+          ),
+          h(Text, { style: styles.entrySubtitle }, job.companyName),
+          job.description && h(Text, { style: styles.summaryText }, job.description),
+          job.achievements?.length > 0 && h(
+            View,
+            null,
+            job.achievements.map((achievement, aidx) => h(
               View,
-              { key: `exp-${i}-bp-${j}`, style: styles.bullet },
-              e(Text, { style: styles.bulletDot }, '•'),
-              e(Text, { style: styles.bulletText }, resolveBullet(bp, replacementMap))
-            )
+              { key: aidx, style: styles.bulletPoint },
+              h(Text, { style: styles.bullet }, '*'),
+              h(Text, { style: styles.bulletText }, beforeAfterMap[achievement] || achievement)
+            ))
           )
-        )
+        ))
       ),
-
-      // Education
-      content.education?.length > 0 && e(Text, { style: styles.sectionTitle }, 'Education'),
-      ...(content.education || []).map((edu, i) =>
-        e(
+      content.education?.length > 0 && h(
+        View,
+        null,
+        h(Text, { style: styles.sectionTitle }, 'Education'),
+        content.education.map((edu, idx) => h(
           View,
-          { key: `edu-${i}`, wrap: false },
-          e(
+          { key: idx, style: styles.entryContainer },
+          h(
             View,
-            { style: styles.entryHeaderRow },
-            e(Text, { style: styles.entryTitle }, [edu.degree, edu.field].filter(Boolean).join(', ')),
-            e(Text, { style: styles.entryDates }, edu.endYear || '')
+            { style: styles.entryHeader },
+            h(Text, { style: styles.entryTitle }, edu.degree),
+            h(Text, { style: styles.entryDate }, edu.graduationYear || 'N/A')
           ),
-          e(Text, { style: styles.entrySubtitle }, edu.institution || '')
+          h(Text, { style: styles.entrySubtitle }, edu.university),
+          edu.field && h(Text, { style: styles.summaryText }, `Field: ${edu.field}`),
+          edu.description && h(Text, { style: styles.summaryText }, edu.description)
+        ))
+      ),
+      content.skills?.length > 0 && h(
+        View,
+        null,
+        h(Text, { style: styles.sectionTitle }, 'Skills'),
+        h(
+          View,
+          { style: styles.skillsContainer },
+          content.skills.map((skill, idx) => h(Text, { key: idx, style: styles.skillBadge }, skill))
         )
       ),
-
-      // Certifications
-      content.certifications?.length > 0 && e(Text, { style: styles.sectionTitle }, 'Certifications'),
-      content.certifications?.length > 0 &&
-        e(
-          Text,
-          { style: styles.summary },
-          content.certifications.map((c) => c.name).filter(Boolean).join('  ·  ')
-        ),
-
-      // Projects
-      content.projects?.length > 0 && e(Text, { style: styles.sectionTitle }, 'Projects'),
-      ...(content.projects || []).map((proj, i) =>
-        e(
+      content.certifications?.length > 0 && h(
+        View,
+        null,
+        h(Text, { style: styles.sectionTitle }, 'Certifications'),
+        content.certifications.map((cert, idx) => h(
           View,
-          { key: `proj-${i}`, wrap: false },
-          e(Text, { style: styles.entryTitle }, proj.name || ''),
-          proj.description && e(Text, { style: styles.bulletText }, proj.description)
-        )
+          { key: idx, style: styles.entryContainer },
+          h(Text, { style: styles.entryTitle }, cert.name),
+          cert.issuer && h(Text, { style: styles.entrySubtitle }, `Issued by: ${cert.issuer}`),
+          cert.issueDate && h(Text, { style: styles.entryDate }, `Issued: ${cert.issueDate}`)
+        ))
+      ),
+      content.projects?.length > 0 && h(
+        View,
+        null,
+        h(Text, { style: styles.sectionTitle }, 'Projects'),
+        content.projects.map((proj, idx) => h(
+          View,
+          { key: idx, style: styles.entryContainer },
+          h(Text, { style: styles.entryTitle }, proj.title),
+          proj.description && h(Text, { style: styles.summaryText }, proj.description),
+          proj.technologies?.length > 0 && h(Text, { style: styles.entrySubtitle }, `Tech: ${proj.technologies.join(', ')}`),
+          proj.link && h(Text, { style: styles.entryDate }, proj.link)
+        ))
       )
     )
   );
-};
 
-/**
- * Renders a resume (optionally with AI-optimized wording swapped in) to a
- * PDF Buffer, ready to stream back as a file download.
- */
-const generateResumePDFBuffer = async (resume, optimization) => {
-  return renderToBuffer(e(ResumeDocument, { resume, optimization }));
+  // Render to buffer
+  const buffer = await pdf(doc).toBuffer();
+  return buffer;
 };
 
 module.exports = { generateResumePDFBuffer };

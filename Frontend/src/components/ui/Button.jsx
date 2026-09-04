@@ -1,45 +1,47 @@
-export default function Button({
-  children,
-  as: Component = 'button',
-  variant = 'primary',
+import { Loader2 } from 'lucide-react';
+
+const Button = ({
+  variant = 'secondary',
   size = 'md',
   isLoading = false,
   disabled = false,
   className = '',
+  children,
   ...props
-}) {
-  const sizeClasses = {
-    sm: 'px-4 py-2 text-sm',
-    md: 'px-6 py-3 text-base',
-    lg: 'px-8 py-4 text-lg'
+}) => {
+  const baseStyles = 'font-semibold transition-all duration-200 border-2 font-body focus:outline-none cursor-pointer';
+
+  const sizeStyles = {
+    sm: 'px-3 py-1.5 text-sm rounded-pill',
+    md: 'px-4 py-2.5 text-sm rounded-pill',
+    lg: 'px-6 py-3 text-base rounded-pill',
   };
 
-  const variantClasses = {
-    primary: 'btn-primary',
-    secondary: 'btn-secondary',
-    accent: 'btn-accent',
-    danger: 'btn-danger',
-    ghost: 'btn-ghost'
+  const variantStyles = {
+    lime: 'bg-lime text-ink border-lime hover:shadow-brutal-lime active:shadow-none',
+    secondary: 'bg-paper text-ink border-ink hover:bg-surface active:shadow-brutal-sm',
+    ghost: 'bg-transparent text-ink border-ink hover:bg-surface',
+    danger: 'bg-danger text-paper border-danger hover:shadow-brutal active:shadow-none',
   };
+
+  const disabledStyles = disabled || isLoading ? 'opacity-60 cursor-not-allowed' : '';
 
   return (
-    <Component
-      className={`${variantClasses[variant]} ${sizeClasses[size]} ${isLoading ? 'opacity-70 cursor-not-allowed' : ''} ${className}`}
-      disabled={Component === 'button' ? disabled || isLoading : undefined}
-      aria-disabled={isLoading || undefined}
+    <button
+      className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]} ${disabledStyles} ${className}`}
+      disabled={disabled || isLoading}
       {...props}
     >
       {isLoading ? (
-        <span className="inline-flex items-center gap-2">
-          <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          Loading...
+        <span className="flex items-center gap-2">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          {children}
         </span>
       ) : (
         children
       )}
-    </Component>
+    </button>
   );
-}
+};
+
+export default Button;

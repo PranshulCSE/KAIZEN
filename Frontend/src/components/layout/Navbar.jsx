@@ -1,19 +1,50 @@
 import { Link } from 'react-router';
-import Logo from '../../assets/Logo.jsx';
-import Button from '../ui/Button.jsx';
+import Button from './ui/Button.jsx';
+import Logo from '../assets/Logo.jsx';
+import { useAuth } from '../hooks/useAuth.js';
+import { ROUTES } from '../constants/routes.js';
 
-export default function Navbar() {
+const Navbar = () => {
+  const { isAuthenticated, logout } = useAuth();
+
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-dark-100 py-4">
-      <div className="container-lg flex items-center justify-between">
-        <Link to="/">
+    <nav className="border-b-2 border-ink bg-paper">
+      <div className="max-w-7xl mx-auto px-lg py-md flex items-center justify-between">
+        <Link to={ROUTES.HOME} className="flex-shrink-0">
           <Logo />
         </Link>
-        <div className="flex gap-3">
-          <Button as={Link} to="/login" variant="ghost">Login</Button>
-          <Button as={Link} to="/register" variant="primary">Get Started</Button>
+
+        <div className="flex items-center gap-lg">
+          {isAuthenticated ? (
+            <>
+              <Button as={Link} to={ROUTES.DASHBOARD} variant="ghost" size="sm">
+                Dashboard
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  logout();
+                  window.location.href = ROUTES.HOME;
+                }}
+              >
+                Log out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button as={Link} to={ROUTES.LOGIN} variant="ghost" size="sm">
+                Log in
+              </Button>
+              <Button as={Link} to={ROUTES.REGISTER} variant="lime" size="sm">
+                Get started
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </nav>
   );
-}
+};
+
+export default Navbar;
