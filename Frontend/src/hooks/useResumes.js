@@ -35,7 +35,34 @@ export function useResumes() {
     setResumes((prev) => prev.filter((r) => r._id !== id));
   }, []);
 
-  return { resumes, isLoading, error, refetch: fetchResumes, uploadResume, removeResume };
+  const downloadResume = useCallback(async (id, title, optimization) => {
+    try {
+      const response = await resumesApi.downloadPdf(id, optimization);
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const cleanTitle = (title || 'resume').replace(/[^\w\- ]+/g, '').trim() || 'resume';
+      link.download = `${cleanTitle}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      return true;
+    } catch (err) {
+      throw new Error(apiErrorMessage(err, 'Failed to download resume PDF.'));
+    }
+  }, []);
+
+  return {
+    resumes,
+    isLoading,
+    error,
+    refetch: fetchResumes,
+    uploadResume,
+    removeResume,
+    downloadResume
+  };
 }
 
 export function useResume(id) {
@@ -65,5 +92,25 @@ export function useResume(id) {
     fetchResume();
   }, [fetchResume]);
 
-  return { resume, isLoading, error, refetch: fetchResume, setResume };
+  const downloadPdf = useCallback(async (optimization) => {
+    if (!id) return;
+    try {
+      const response = await resumesApi.downloadPdf(id, optimization || resume?.optimization);
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const cleanTitle = (resume?.title || 'resume').replace(/[^\w\- ]+/g, '').trim() || 'resume';
+      link.download = `${cleanTitle}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      return true;
+    } catch (err) {
+      throw new Error(apiErrorMessage(err, 'Failed to download resume PDF.'));
+    }
+  }, [id, resume]);
+
+  return { resume, isLoading, error, refetch: fetchResume, setResume, downloadPdf };
 }

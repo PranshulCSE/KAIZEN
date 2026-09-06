@@ -3,6 +3,7 @@ export default {
     theme: {
         extend: {
             colors: {
+                /* ── Original neobrutalist palette ── */
                 ink: '#14161A',
                 paper: '#FFFFFF',
                 surface: '#F6F7F2',
@@ -17,7 +18,63 @@ export default {
                 danger: {
                     DEFAULT: '#FF5A52',
                     light: '#FFE3E1',
+                    50: '#FFF5F5',
+                    100: '#FFE3E1',
+                    200: '#FFCBC7',
+                    500: '#FF5A52',
+                    600: '#E53E3E',
+                    700: '#C53030',
                 },
+                improve: '#0F6B42',
+
+                /* ── Extended color scales used by pages/components ── */
+                dark: {
+                    50: '#F9FAFB',
+                    100: '#F3F4F6',
+                    200: '#E5E7EB',
+                    300: '#D1D5DB',
+                    400: '#9CA3AF',
+                    500: '#6B7280',
+                    600: '#4B5563',
+                    700: '#374151',
+                    800: '#1F2937',
+                    900: '#111827',
+                },
+                primary: {
+                    50: '#EEF2FF',
+                    100: '#E0E7FF',
+                    200: '#C7D2FE',
+                    300: '#A5B4FC',
+                    400: '#818CF8',
+                    500: '#6366F1',
+                    600: '#4F46E5',
+                    700: '#4338CA',
+                    800: '#3730A3',
+                    900: '#312E81',
+                },
+                accent: {
+                    50: '#FFFBEB',
+                    100: '#FEF3C7',
+                    200: '#FDE68A',
+                    300: '#FCD34D',
+                    400: '#FBBF24',
+                    500: '#F59E0B',
+                    600: '#D97706',
+                    700: '#B45309',
+                    800: '#92400E',
+                    900: '#78350F',
+                },
+                success: {
+                    50: '#ECFDF5',
+                    100: '#D1FAE5',
+                    200: '#A7F3D0',
+                    500: '#10B981',
+                    600: '#059669',
+                    700: '#047857',
+                },
+
+                /* Semantic alias used in text-ink-muted */
+                'ink-muted': '#63666C',
             },
             fontFamily: {
                 display: ['Space Grotesk', 'sans-serif'],
@@ -38,6 +95,8 @@ export default {
                 'brutal-sm': '3px 3px 0 0 #14161A',
                 'brutal-lime': '5px 5px 0 0 #D7FA3B',
                 'brutal-lg': '8px 8px 0 0 #14161A',
+                card: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)',
+                lift: '0 10px 25px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.06)',
                 none: 'none',
             },
             borderRadius: {
@@ -64,12 +123,39 @@ export default {
             },
             animation: {
                 'fade-up': 'fadeUp 0.5s ease-out',
+                'fade-in': 'fadeIn 0.5s ease-out both',
+                'fade-in-right': 'fadeInRight 0.6s ease-out both',
+                'bounce-in': 'bounceIn 0.5s ease-out both',
+                'scale-in': 'scaleIn 0.25s ease-out both',
+                'pulse-ring': 'pulseRing 1.5s ease-out infinite',
                 strike: 'strike 0.3s ease-out',
             },
             keyframes: {
                 fadeUp: {
                     from: { opacity: '0', transform: 'translateY(10px)' },
                     to: { opacity: '1', transform: 'translateY(0)' },
+                },
+                fadeIn: {
+                    from: { opacity: '0' },
+                    to: { opacity: '1' },
+                },
+                fadeInRight: {
+                    from: { opacity: '0', transform: 'translateX(20px)' },
+                    to: { opacity: '1', transform: 'translateX(0)' },
+                },
+                bounceIn: {
+                    '0%': { opacity: '0', transform: 'scale(0.95)' },
+                    '60%': { opacity: '1', transform: 'scale(1.02)' },
+                    '100%': { transform: 'scale(1)' },
+                },
+                scaleIn: {
+                    from: { opacity: '0', transform: 'scale(0.95)' },
+                    to: { opacity: '1', transform: 'scale(1)' },
+                },
+                pulseRing: {
+                    '0%': { boxShadow: '0 0 0 0 rgba(15, 107, 66, 0.4)' },
+                    '70%': { boxShadow: '0 0 0 10px rgba(15, 107, 66, 0)' },
+                    '100%': { boxShadow: '0 0 0 0 rgba(15, 107, 66, 0)' },
                 },
                 strike: {
                     '0%': { textDecoration: 'none' },

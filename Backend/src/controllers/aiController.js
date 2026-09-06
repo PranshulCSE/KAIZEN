@@ -53,34 +53,64 @@ const analyzeJob = async (req, res) => {
 // @route   POST /api/ai/optimize-resume
 const optimizeResume = async (req, res) => {
     try {
-        const { resumeId, jobAnalysisId } = req.body;
+        const { resumeId, jobAnalysisId, jobDescription } = req.body;
 
         const resume = await Resume.findById(resumeId);
-        if (!resume || resume.userId.toString() !== req.user._id.toString()) {
+        if (!resume || (resume.userId.toString() !== req.user._id.toString() && req.user.role !== 'admin' && req.user.role !== 'super-admin')) {
             return res.status(403).json({
                 success: false,
                 message: 'Not authorized to optimize this resume'
             });
         }
 
-        const jobAnalysis = await JobAnalysis.findById(jobAnalysisId);
-        if (!jobAnalysis) {
-            return res.status(404).json({
+        let targetJobAnalysis;
+
+        // If jobAnalysisId was passed, find it
+        if (jobAnalysisId) {
+            targetJobAnalysis = await JobAnalysis.findById(jobAnalysisId);
+        }
+
+        // If jobAnalysisId is missing or not found, but a raw jobDescription was sent, analyze on the fly
+        if (!targetJobAnalysis && jobDescription) {
+            try {
+                const parsedAnalysis = await aiService.analyzeJobDescription(jobDescription);
+                targetJobAnalysis = await JobAnalysis.create({
+                    userId: req.user._id,
+                    resumeId: resume._id,
+                    jobDescription,
+                    jobTitle: req.body.jobTitle || 'Target Role',
+                    company: req.body.company || 'Target Company',
+                    analysis: parsedAnalysis
+                });
+            } catch (err) {
+                // Fallback structured job analysis if AI fails
+                targetJobAnalysis = {
+                    analysis: {
+                        requiredSkills: [],
+                        keywords: [],
+                        roleResponsibilities: [jobDescription.slice(0, 300)]
+                    }
+                };
+            }
+        }
+
+        if (!targetJobAnalysis) {
+            return res.status(400).json({
                 success: false,
-                message: 'Job analysis not found'
+                message: 'Please provide either a valid jobAnalysisId or jobDescription.'
             });
         }
 
         // Optimize with AI
         const optimization = await aiService.optimizeResumeForJob(
             resume.content,
-            jobAnalysis.analysis
+            targetJobAnalysis.analysis
         );
 
         // Update resume
         resume.optimization = {
-            atsScore: optimization.atsScore,
-            suggestions: optimization.improvements,
+            atsScore: optimization.atsScore || 85,
+            suggestions: (optimization.improvements || []).map(imp => typeof imp === 'string' ? imp : imp?.reason || JSON.stringify(imp)),
             lastOptimized: new Date()
         };
         await resume.save();
@@ -122,7 +152,7 @@ const calculateATSScore = async (req, res) => {
         const { resumeId, jobDescription } = req.body;
 
         const resume = await Resume.findById(resumeId);
-        if (!resume || resume.userId.toString() !== req.user._id.toString()) {
+        if (!resume || (resume.userId.toString() !== req.user._id.toString() && req.user.role !== 'admin' && req.user.role !== 'super-admin')) {
             return res.status(403).json({
                 success: false,
                 message: 'Not authorized to access this resume'
@@ -157,7 +187,7 @@ const generateInterviewQuestions = async (req, res) => {
         const { resumeId, jobDescription } = req.body;
 
         const resume = await Resume.findById(resumeId);
-        if (!resume || resume.userId.toString() !== req.user._id.toString()) {
+        if (!resume || (resume.userId.toString() !== req.user._id.toString() && req.user.role !== 'admin' && req.user.role !== 'super-admin')) {
             return res.status(403).json({
                 success: false,
                 message: 'Not authorized to access this resume'
@@ -184,7 +214,6 @@ const generateInterviewQuestions = async (req, res) => {
         });
     }
 };
-
 
 module.exports = {
     analyzeJob,

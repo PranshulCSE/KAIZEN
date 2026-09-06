@@ -71,6 +71,85 @@ select {
   font-family: 'Inter', sans-serif;
 }
 
+/* ── Layout containers ── */
+@layer components {
+  .container-lg {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .container-md {
+    @apply mx-auto w-full max-w-3xl px-4 sm:px-6;
+  }
+
+  .section {
+    @apply py-16 md:py-24;
+  }
+
+  /* ── Gradient backgrounds ── */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #4F46E5, #6366F1, #818CF8);
+  }
+
+  .bg-gradient-accent {
+    background: linear-gradient(90deg, #F59E0B, #FBBF24);
+  }
+
+  /* ── Gradient text ── */
+  .text-gradient {
+    background: linear-gradient(135deg, #4F46E5 0%, #6366F1 50%, #818CF8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-primary {
+    background: linear-gradient(135deg, #4F46E5, #6366F1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Card variants ── */
+  .card-filled {
+    @apply rounded-xl border border-dark-100 bg-white p-6 shadow-card;
+  }
+
+  /* ── Manuscript / subtle tinted background ── */
+  .bg-manuscript {
+    background-color: #FDFCF8;
+  }
+
+  /* ── Transition utility ── */
+  .transition-smooth {
+    transition: all 0.2s ease;
+  }
+
+  /* ── Input field ── */
+  .input-field {
+    @apply w-full rounded-lg border border-dark-200 bg-white px-4 py-3 text-sm text-dark-900
+           placeholder-dark-400
+           focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none
+           transition-all duration-200;
+  }
+
+  /* ── Badge variants ── */
+  .badge-primary {
+    @apply inline-flex items-center rounded-full bg-primary-100 px-2.5 py-0.5 text-xs font-semibold text-primary-700;
+  }
+  .badge-accent {
+    @apply inline-flex items-center rounded-full bg-accent-100 px-2.5 py-0.5 text-xs font-semibold text-accent-700;
+  }
+  .badge-success {
+    @apply inline-flex items-center rounded-full bg-success-100 px-2.5 py-0.5 text-xs font-semibold text-success-700;
+  }
+  .badge-danger {
+    @apply inline-flex items-center rounded-full bg-danger-100 px-2.5 py-0.5 text-xs font-semibold text-danger-700;
+  }
+  .badge-neutral {
+    @apply inline-flex items-center rounded-full bg-dark-100 px-2.5 py-0.5 text-xs font-semibold text-dark-700;
+  }
+}
+
 /* Utility classes */
 .eyebrow {
   font-family: 'IBM Plex Mono', monospace;

@@ -14,5 +14,7 @@ export const resumesApi = {
     list: (params) => client.get('/resumes', { params }),
     getById: (id) => client.get(`/resumes/${id}`),
     update: (id, payload) => client.put(`/resumes/${id}`, payload),
-    remove: (id) => client.delete(`/resumes/${id}`)
+    remove: (id) => client.delete(`/resumes/${id}`),
+    downloadPdf: (id, optimization) =>
+        client.post(`/resumes/${id}/download`, { optimization }, { responseType: 'blob' })
 };
