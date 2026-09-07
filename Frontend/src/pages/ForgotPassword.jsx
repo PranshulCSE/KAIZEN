@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import Button from '../components/ui/Button.jsx';
 import Card from '../components/ui/Card.jsx';
 import Input from '../components/ui/Input.jsx';
-import Logo from '../assets/Logo.jsx';
+import Logo from '../assets/Logo_Wide.jsx';
 import { authApi } from '../api/auth.api.js';
 import { apiErrorMessage } from '../api/axiosClient.js';
 import { ROUTES } from '../constants/routes.js';
