@@ -46,7 +46,22 @@ class ResumeParser {
   }
 
   extractName(text) {
-    const lines = text.split('\n');
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+    const ignorePatterns = [
+      /^(resume|curriculum vitae|cv|page \d|contact|profile|summary|personal info)/i,
+      /@/,
+      /^\+?\d/,
+      /^(https?:\/\/|www\.)/i,
+      /^(experience|education|skills|projects|objective)/i
+    ];
+
+    for (const line of lines.slice(0, 8)) {
+      if (line.length >= 2 && line.length <= 50 && !ignorePatterns.some(p => p.test(line))) {
+        // Strip common prefixes
+        const cleaned = line.replace(/^(name\s*[:\-]|candidate\s*[:\-])/i, '').trim();
+        if (cleaned.length >= 2) return cleaned;
+      }
+    }
     return lines[0]?.trim() || 'Unknown';
   }
 

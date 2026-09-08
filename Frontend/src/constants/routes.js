@@ -16,6 +16,7 @@ export const ROUTES = {
 
   ADMIN: '/app/admin',
   ADMIN_USERS: '/app/admin/users',
+  ADMIN_LOGS: '/app/admin/logs',
 
   NOT_FOUND: '*'
 };

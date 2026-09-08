@@ -107,7 +107,7 @@ export default function ResumeDetail() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <InfoItem icon={User} label="Full Name" value={personal.name || personal.fullName} />
+                        <InfoItem icon={User} label="Full Name" value={personal.name || personal.fullName || user?.name || 'Candidate'} />
                         <InfoItem icon={Mail} label="Email Address" value={personal.email} isLink={personal.email ? `mailto:${personal.email}` : null} />
                         <InfoItem icon={Phone} label="Phone Number" value={personal.phone} />
                         <InfoItem icon={MapPin} label="Location" value={personal.location} />

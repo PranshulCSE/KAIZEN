@@ -114,6 +114,8 @@ const generateResumePDFBuffer = async (resume, optimization) => {
   }
 
   const h = React.createElement;
+  const personal = content.personalInfo || {};
+
   const doc = h(
     Document,
     null,
@@ -123,111 +125,170 @@ const generateResumePDFBuffer = async (resume, optimization) => {
       h(
         View,
         { style: styles.header },
-        h(Text, { style: styles.name }, content.personalInfo?.fullName || 'Unknown'),
+        h(Text, { style: styles.name }, personal.fullName || personal.name || 'Candidate'),
         h(
           View,
           { style: { flexDirection: 'row', justifyContent: 'space-between' } },
           h(
             View,
             null,
-            content.personalInfo?.email && h(Text, { style: styles.contact }, content.personalInfo.email),
-            content.personalInfo?.phone && h(Text, { style: styles.contact }, content.personalInfo.phone)
+            Boolean(personal.email) ? h(Text, { style: styles.contact }, personal.email) : null,
+            Boolean(personal.phone) ? h(Text, { style: styles.contact }, personal.phone) : null
           ),
-          content.personalInfo?.location && h(Text, { style: styles.contact }, content.personalInfo.location)
+          Boolean(personal.location) ? h(Text, { style: styles.contact }, personal.location) : null
         )
       ),
-      displaySummary && h(
-        View,
-        null,
-        h(Text, { style: styles.sectionTitle }, 'Summary'),
-        h(Text, { style: styles.summaryText }, displaySummary)
-      ),
-      content.experience?.length > 0 && h(
-        View,
-        null,
-        h(Text, { style: styles.sectionTitle }, 'Experience'),
-        content.experience.map((job, idx) => h(
-          View,
-          { key: idx, style: styles.entryContainer },
-          h(
-            View,
-            { style: styles.entryHeader },
-            h(Text, { style: styles.entryTitle }, job.position),
-            h(Text, { style: styles.entryDate }, `${job.startDate} - ${job.isCurrentlyWorking ? 'Present' : job.endDate}`)
-          ),
-          h(Text, { style: styles.entrySubtitle }, job.companyName),
-          job.description && h(Text, { style: styles.summaryText }, job.description),
-          job.achievements?.length > 0 && h(
+      Boolean(displaySummary)
+        ? h(
             View,
             null,
-            job.achievements.map((achievement, aidx) => h(
-              View,
-              { key: aidx, style: styles.bulletPoint },
-              h(Text, { style: styles.bullet }, '*'),
-              h(Text, { style: styles.bulletText }, beforeAfterMap[achievement] || achievement)
-            ))
+            h(Text, { style: styles.sectionTitle }, 'Summary'),
+            h(Text, { style: styles.summaryText }, displaySummary)
           )
-        ))
-      ),
-      content.education?.length > 0 && h(
-        View,
-        null,
-        h(Text, { style: styles.sectionTitle }, 'Education'),
-        content.education.map((edu, idx) => h(
-          View,
-          { key: idx, style: styles.entryContainer },
-          h(
+        : null,
+      content.experience?.length > 0
+        ? h(
             View,
-            { style: styles.entryHeader },
-            h(Text, { style: styles.entryTitle }, edu.degree),
-            h(Text, { style: styles.entryDate }, edu.graduationYear || 'N/A')
-          ),
-          h(Text, { style: styles.entrySubtitle }, edu.university),
-          edu.field && h(Text, { style: styles.summaryText }, `Field: ${edu.field}`),
-          edu.description && h(Text, { style: styles.summaryText }, edu.description)
-        ))
-      ),
-      content.skills?.length > 0 && h(
-        View,
-        null,
-        h(Text, { style: styles.sectionTitle }, 'Skills'),
-        h(
-          View,
-          { style: styles.skillsContainer },
-          content.skills.map((skill, idx) => h(Text, { key: idx, style: styles.skillBadge }, skill))
-        )
-      ),
-      content.certifications?.length > 0 && h(
-        View,
-        null,
-        h(Text, { style: styles.sectionTitle }, 'Certifications'),
-        content.certifications.map((cert, idx) => h(
-          View,
-          { key: idx, style: styles.entryContainer },
-          h(Text, { style: styles.entryTitle }, cert.name),
-          cert.issuer && h(Text, { style: styles.entrySubtitle }, `Issued by: ${cert.issuer}`),
-          cert.issueDate && h(Text, { style: styles.entryDate }, `Issued: ${cert.issueDate}`)
-        ))
-      ),
-      content.projects?.length > 0 && h(
-        View,
-        null,
-        h(Text, { style: styles.sectionTitle }, 'Projects'),
-        content.projects.map((proj, idx) => h(
-          View,
-          { key: idx, style: styles.entryContainer },
-          h(Text, { style: styles.entryTitle }, proj.title),
-          proj.description && h(Text, { style: styles.summaryText }, proj.description),
-          proj.technologies?.length > 0 && h(Text, { style: styles.entrySubtitle }, `Tech: ${proj.technologies.join(', ')}`),
-          proj.link && h(Text, { style: styles.entryDate }, proj.link)
-        ))
-      )
+            null,
+            h(Text, { style: styles.sectionTitle }, 'Experience'),
+            content.experience.map((job, idx) =>
+              h(
+                View,
+                { key: idx, style: styles.entryContainer },
+                h(
+                  View,
+                  { style: styles.entryHeader },
+                  h(Text, { style: styles.entryTitle }, job.position || job.role || 'Role'),
+                  h(
+                    Text,
+                    { style: styles.entryDate },
+                    `${job.startDate || ''} - ${job.isCurrentlyWorking || job.isCurrent ? 'Present' : job.endDate || ''}`
+                  )
+                ),
+                job.companyName || job.company
+                  ? h(Text, { style: styles.entrySubtitle }, job.companyName || job.company)
+                  : null,
+                job.description ? h(Text, { style: styles.summaryText }, job.description) : null,
+                job.achievements?.length > 0
+                  ? h(
+                      View,
+                      null,
+                      job.achievements.map((achievement, aidx) => {
+                        const achText = typeof achievement === 'string' ? achievement : achievement.description || '';
+                        return h(
+                          View,
+                          { key: aidx, style: styles.bulletPoint },
+                          h(Text, { style: styles.bullet }, '*'),
+                          h(Text, { style: styles.bulletText }, beforeAfterMap[achText] || achText)
+                        );
+                      })
+                    )
+                  : null,
+                job.bulletPoints?.length > 0
+                  ? h(
+                      View,
+                      null,
+                      job.bulletPoints.map((bullet, bidx) =>
+                        h(
+                          View,
+                          { key: bidx, style: styles.bulletPoint },
+                          h(Text, { style: styles.bullet }, '*'),
+                          h(Text, { style: styles.bulletText }, beforeAfterMap[bullet] || bullet)
+                        )
+                      )
+                    )
+                  : null
+              )
+            )
+          )
+        : null,
+      content.education?.length > 0
+        ? h(
+            View,
+            null,
+            h(Text, { style: styles.sectionTitle }, 'Education'),
+            content.education.map((edu, idx) =>
+              h(
+                View,
+                { key: idx, style: styles.entryContainer },
+                h(
+                  View,
+                  { style: styles.entryHeader },
+                  h(Text, { style: styles.entryTitle }, edu.degree || 'Degree'),
+                  h(Text, { style: styles.entryDate }, edu.graduationYear || edu.endYear || 'N/A')
+                ),
+                edu.university || edu.institution
+                  ? h(Text, { style: styles.entrySubtitle }, edu.university || edu.institution)
+                  : null,
+                edu.field ? h(Text, { style: styles.summaryText }, `Field: ${edu.field}`) : null,
+                edu.description ? h(Text, { style: styles.summaryText }, edu.description) : null
+              )
+            )
+          )
+        : null,
+      content.skills?.length > 0
+        ? h(
+            View,
+            null,
+            h(Text, { style: styles.sectionTitle }, 'Skills'),
+            h(
+              View,
+              { style: styles.skillsContainer },
+              content.skills.map((skill, idx) => h(Text, { key: idx, style: styles.skillBadge }, skill))
+            )
+          )
+        : null,
+      content.certifications?.length > 0
+        ? h(
+            View,
+            null,
+            h(Text, { style: styles.sectionTitle }, 'Certifications'),
+            content.certifications.map((cert, idx) =>
+              h(
+                View,
+                { key: idx, style: styles.entryContainer },
+                h(Text, { style: styles.entryTitle }, cert.name || 'Certification'),
+                cert.issuer ? h(Text, { style: styles.entrySubtitle }, `Issued by: ${cert.issuer}`) : null,
+                cert.issueDate || cert.date
+                  ? h(Text, { style: styles.entryDate }, `Issued: ${cert.issueDate || cert.date}`)
+                  : null
+              )
+            )
+          )
+        : null,
+      content.projects?.length > 0
+        ? h(
+            View,
+            null,
+            h(Text, { style: styles.sectionTitle }, 'Projects'),
+            content.projects.map((proj, idx) =>
+              h(
+                View,
+                { key: idx, style: styles.entryContainer },
+                h(Text, { style: styles.entryTitle }, proj.title || proj.name || 'Project'),
+                proj.description ? h(Text, { style: styles.summaryText }, proj.description) : null,
+                proj.technologies?.length > 0
+                  ? h(Text, { style: styles.entrySubtitle }, `Tech: ${proj.technologies.join(', ')}`)
+                  : null,
+                proj.link ? h(Text, { style: styles.entryDate }, proj.link) : null
+              )
+            )
+          )
+        : null
     )
   );
 
-  // Render to buffer
-  const buffer = await pdf(doc).toBuffer();
-  return buffer;
+  // Render to buffer stream and collect chunks into a Node.js Buffer
+  const stream = await pdf(doc).toBuffer();
+  if (Buffer.isBuffer(stream)) {
+    return stream;
+  }
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    stream.on('data', (chunk) => chunks.push(chunk));
+    stream.on('end', () => resolve(Buffer.concat(chunks)));
+    stream.on('error', reject);
+  });
 };
 
 module.exports = { generateResumePDFBuffer };

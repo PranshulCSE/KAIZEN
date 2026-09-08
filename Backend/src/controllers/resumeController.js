@@ -50,7 +50,18 @@ const uploadResume = async (req, res) => {
             console.error('Cloudinary upload skipped/failed:', cloudErr.message);
         }
 
-        // 3. Save the parsed resume
+        // 3. Ensure candidate name defaults to user's registered name if unparsed
+        if (!parsedContent.personalInfo) {
+            parsedContent.personalInfo = {};
+        }
+        if (!parsedContent.personalInfo.name || parsedContent.personalInfo.name === 'Unknown') {
+            parsedContent.personalInfo.name = req.user.name || 'Candidate';
+        }
+        if (!parsedContent.personalInfo.fullName) {
+            parsedContent.personalInfo.fullName = parsedContent.personalInfo.name;
+        }
+
+        // 4. Save the parsed resume
         const resume = await Resume.create({
             userId: req.user._id,
             title: req.body.title || originalname.replace(/\.[^/.]+$/, ''),

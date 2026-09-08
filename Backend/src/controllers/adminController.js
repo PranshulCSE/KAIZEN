@@ -241,6 +241,77 @@ const getAllResumes = async (req, res) => {
     }
 };
 
+const getSystemLogs = async (req, res) =>{
+   try {
+    const { level, search, limit = 100 } = req.query;
+ 
+    // Query AuditLog from MongoDB
+    let query = {};
+ 
+    if (level && level !== 'all') {
+      query.level = level.toLowerCase();
+    }
+ 
+    if (search) {
+      query.$or = [
+        { action: { $regex: search, $options: 'i' } },
+        { details: { $regex: search, $options: 'i' } },
+        { ipAddress: { $regex: search, $options: 'i' } },
+      ];
+    }
+ 
+    const auditLogs = await AuditLog.find(query)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .lean();
+ 
+    // Try to read Winston logs (optional, graceful fallback)
+    let fileLogs = [];
+    try {
+      const logsDir = join(process.cwd(), 'logs');
+      let fileContent = '';
+ 
+      try {
+        const combinedLog = readFileSync(join(logsDir, 'combined.log'), 'utf8');
+        fileContent = combinedLog;
+      } catch {
+        // File doesn't exist yet, skip
+      }
+ 
+      // Parse simple log format
+      if (fileContent) {
+        fileLogs = fileContent
+          .split('\n')
+          .filter((line) => line.trim())
+          .reverse()
+          .slice(0, parseInt(limit) - auditLogs.length)
+          .map((line, idx) => ({
+            _id: `file-${idx}`,
+            message: line,
+            level: 'info',
+            service: 'winston',
+            timestamp: new Date(),
+          }));
+      }
+    } catch (err) {
+      console.warn('Could not read log files:', err.message);
+      // Continue with just AuditLog data
+    }
+ 
+    // Combine and sort by timestamp
+    const allLogs = [...auditLogs, ...fileLogs].sort(
+      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+    );
+ 
+    res.json({
+      success: true,
+      logs: allLogs,
+      total: allLogs.length,
+    });
+  } catch (error) {
+    console.error('Get System Logs Error:', error);
+    res.status(500).json({ error: 'Failed to fetch logs' });
+  }
+}
 
-
-module.exports = { getAllUsers, getUserById, updateUserRole, getDashboardStats , toggleUserVerification, getAllResumes };
+module.exports = { getAllUsers, getUserById, updateUserRole, getDashboardStats , toggleUserVerification, getAllResumes, getSystemLogs };

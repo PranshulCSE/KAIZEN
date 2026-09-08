@@ -6,5 +6,6 @@ export const adminApi = {
   getUser: (id) => client.get(`/admin/users/${id}`),
   updateRole: (id, role) => client.put(`/admin/users/${id}/role`, { role }),
   toggleVerification: (id) => client.put(`/admin/users/${id}/verify`),
-  listResumes: (params) => client.get('/admin/resumes', { params })
+  listResumes: (params) => client.get('/admin/resumes', { params }),
+  getLogs: (params) => client.get('/admin/logs', { params }),
 };

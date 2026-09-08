@@ -93,6 +93,24 @@ export default function Sidebar() {
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 opacity-60" />
               </Link>
+              <Link
+                to={ROUTES.ADMIN_LOGS}
+                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  location.pathname.startsWith(ROUTES.ADMIN_LOGS)
+                    ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-md shadow-primary-500/20 font-semibold translate-x-1'
+                    : 'text-dark-600 hover:bg-dark-50 hover:text-dark-900 hover:translate-x-0.5'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <ShieldCheck
+                    className={`w-4 h-4 ${
+                      location.pathname.startsWith(ROUTES.ADMIN_LOGS) ? 'text-white' : 'text-dark-400 group-hover:text-primary-600'
+                    }`}
+                  />
+                  <span>System Logs</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 opacity-60" />
+              </Link>
             </>
           )}
         </nav>

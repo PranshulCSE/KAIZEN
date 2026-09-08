@@ -8,7 +8,8 @@ const {
   updateUserRole,
   toggleUserVerification,
   getAllResumes,
-  getDashboardStats
+  getDashboardStats,
+  getSystemLogs
 } = require('../controllers/adminController');
 
 // All admin routes require authentication and admin role
@@ -29,6 +30,6 @@ router.get('/resumes', logAdminAction('view_resumes'), getAllResumes);
 // Super admin only routes
 router.use(isSuperAdmin);
 router.put('/users/:id/role', logAdminAction('update_user_role'), updateUserRole);
-
+router.get('/logs',  getSystemLogs);
 
 module.exports = router;
