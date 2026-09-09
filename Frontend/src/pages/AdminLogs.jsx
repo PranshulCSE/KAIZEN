@@ -6,6 +6,8 @@ import Input from '../components/ui/Input.jsx';
 import { adminApi } from '../api/admin.api.js';
 import { RefreshCw, Search, Filter } from 'lucide-react';
 
+// ✅ NO useToast import - using console fallback instead
+
 const AdminLogs = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,10 +34,9 @@ const AdminLogs = () => {
     500: 'danger',
   };
 
-  // Simple toast fallback (useToast hook available nahi hai)
+  // Simple console fallback (no toast hook)
   const showToast = (message, type = 'info') => {
     console.log(`[${type.toUpperCase()}] ${message}`);
-    // Can add browser notification here if needed
   };
 
   // Fetch logs
@@ -67,7 +68,7 @@ const AdminLogs = () => {
 
     const interval = setInterval(() => {
       fetchLogs();
-    }, 10000); // 10 seconds
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [autoRefresh, levelFilter, searchQuery]);
