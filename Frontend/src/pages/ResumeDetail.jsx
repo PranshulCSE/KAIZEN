@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import { Download, Sparkles, ArrowLeft, Mail, Phone, MapPin, User, FileText, CheckCircle2, AlertCircle, Briefcase, GraduationCap, Award, ExternalLink } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAuthContext } from '../context/AuthContext.jsx';
 import { useResume } from '../hooks/useResumes.js';
 import Card from '../components/ui/Card.jsx';
 import Badge from '../components/ui/Badge.jsx';
@@ -15,6 +16,7 @@ import { ROUTES } from '../constants/routes.js';
 export default function ResumeDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { user } = useAuthContext();
     const { resume, isLoading, error, downloadPdf } = useResume(id);
     const [isDownloading, setIsDownloading] = useState(false);
 
@@ -107,7 +109,7 @@ export default function ResumeDetail() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <InfoItem icon={User} label="Full Name" value={personal.name || personal.fullName || user?.name || 'Candidate'} />
+                                                <InfoItem icon={User} label="Full Name" value={[personal.name, personal.fullName].find(v => v && v !== 'Unknown') || user?.name || 'Candidate'} />
                         <InfoItem icon={Mail} label="Email Address" value={personal.email} isLink={personal.email ? `mailto:${personal.email}` : null} />
                         <InfoItem icon={Phone} label="Phone Number" value={personal.phone} />
                         <InfoItem icon={MapPin} label="Location" value={personal.location} />
@@ -161,17 +163,23 @@ export default function ResumeDetail() {
                         <Badge tone="accent">Actionable Advice</Badge>
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
-                        {optimization.suggestions.map((s, i) => (
-                            <div key={i} className="p-4 rounded-xl border border-dark-100 bg-white shadow-sm flex flex-col justify-between gap-2 hover:border-accent-200 transition-all">
-                                <div className="flex items-center justify-between gap-2">
-                                    <Badge tone={s.priority === 'high' ? 'high' : s.priority === 'medium' ? 'medium' : 'low'}>
-                                        {s.priority?.toUpperCase()} PRIORITY
-                                    </Badge>
-                                    {s.category && <span className="text-xs font-mono font-medium text-dark-500">{s.category}</span>}
+                                                               {optimization.suggestions.map((s, i) => {
+                            const isObj = s && typeof s === 'object';
+                            const priority = isObj ? s.priority : null;
+                            const category = isObj ? s.category : null;
+                            const text = isObj ? (s.reason || s.suggestion || s.text) : s;
+                            return (
+                                <div key={i} className="p-4 rounded-xl border border-dark-100 bg-white shadow-sm flex flex-col justify-between gap-2 hover:border-accent-200 transition-all">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <Badge tone={priority === 'high' ? 'high' : priority === 'medium' ? 'medium' : 'low'}>
+                                            {priority ? `${priority.toUpperCase()} PRIORITY` : `SUGGESTION ${i + 1}`}
+                                        </Badge>
+                                        {category && <span className="text-xs font-mono font-medium text-dark-500">{category}</span>}
+                                    </div>
+                                    <p className="text-sm text-dark-700 leading-relaxed">{text}</p>
                                 </div>
-                                <p className="text-sm text-dark-700 leading-relaxed">{s.reason || s.suggestion || s.text}</p>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </Card>
             ) : null}

@@ -35,8 +35,8 @@ const jobAnalysisSchema = new mongoose.Schema({
     experienceMatch: { type: Number, default: 0 },
     educationMatch: { type: Number, default: 0 }
   },
-  recommendations: [{
-    type: String,
+ recommendations: [{
+    text: String,
     priority: {
       type: String,
       enum: ['high', 'medium', 'low']

@@ -2,6 +2,8 @@ const User = require('../models/User.js');
 const Resume = require('../models/Resume.js');
 const AuditLog = require('../models/AuditLog.js');
 const mongoose = require('mongoose');
+const { join } = require('path');
+const { readFileSync } = require('fs');
 
 // @desc    Get all users with filtering and pagination
 // @route   GET /api/admin/users

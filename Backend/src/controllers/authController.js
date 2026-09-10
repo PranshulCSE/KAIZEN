@@ -344,7 +344,7 @@ const refreshToken = async (req, res) => {
     user.refreshTokens = user.refreshTokens.filter(
       token => token !== refreshToken
     );
-    user.addRefreshToken(refreshToken);
+       user.addRefreshToken(newRefreshToken);
     await user.save();
 
     res.status(200).json({
