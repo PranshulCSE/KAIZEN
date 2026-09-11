@@ -1,56 +1,52 @@
-import { useState, useEffect } from 'react';
-import Card from '../components/ui/Card.jsx';
-import Button from '../components/ui/Button.jsx';
-import Badge from '../components/ui/Badge.jsx';
-import Input from '../components/ui/Input.jsx';
-import { adminApi } from '../api/admin.api.js';
-import { RefreshCw, Search, Filter } from 'lucide-react';
-
-// ✅ NO useToast import - using console fallback instead
+import { useState, useEffect } from "react";
+import Card from "../components/ui/Card.jsx";
+import Button from "../components/ui/Button.jsx";
+import Badge from "../components/ui/Badge.jsx";
+import Input from "../components/ui/Input.jsx";
+import { adminApi } from "../api/admin.api.js";
+import { RefreshCw, Search, Filter } from "lucide-react";
+import { useToast } from "../hooks/useToast.js";
+import { apiErrorMessage } from "../api/axiosClient.js";
 
 const AdminLogs = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtering, setFiltering] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(false);
+  const [levelFilter, setLevelFilter] = useState("ALL");
+  const [searchQuery, setSearchQuery] = useState("");
+  const { showToast, toasts } = useToast(); // FIXED: real toast state instead of console.log
 
-  const [levelFilter, setLevelFilter] = useState('ALL');
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const logLevels = ['ALL', 'INFO', 'WARN', 'ERROR'];
-  const logColors = {
-    info: 'secondary',
-    warn: 'warning',
-    error: 'danger',
-  };
-
+  const logLevels = ["ALL", "INFO", "WARN", "ERROR"];
+  const logColors = { info: "secondary", warn: "warning", error: "danger" };
   const statusColors = {
-    200: 'secondary',
-    201: 'secondary',
-    400: 'warning',
-    401: 'danger',
-    403: 'danger',
-    404: 'warning',
-    500: 'danger',
+    200: "secondary",
+    201: "secondary",
+    400: "warning",
+    401: "danger",
+    403: "danger",
+    404: "warning",
+    500: "danger",
   };
-
-  // Simple console fallback (no toast hook)
-  const showToast = (message, type = 'info') => {
-    console.log(`[${type.toUpperCase()}] ${message}`);
-  };
+  // (delete the old `const showToast = (message, type = 'info') => { console.log(...) }` block)
 
   // Fetch logs
+  // lines 43-57 — fetchLogs:
   const fetchLogs = async () => {
     try {
       setFiltering(true);
-      const response = await adminApi.getLogs({
-        level: levelFilter !== 'ALL' ? levelFilter.toLowerCase() : undefined,
+      // FIXED: client.get() returns the raw Axios response — the JSON body is
+      // at response.data, not the response itself. This was always reading
+      // response.logs (undefined) and silently falling back to [], which is
+      // why the page showed "No logs found" even with real audit logs in Mongo.
+      const { data } = await adminApi.getLogs({
+        level: levelFilter !== "ALL" ? levelFilter.toLowerCase() : undefined,
         search: searchQuery || undefined,
       });
-      setLogs(response.logs || []);
+      setLogs(data.logs || []);
     } catch (error) {
-      console.error('Failed to fetch logs:', error);
-      showToast('Failed to fetch logs', 'error');
+      console.error("Failed to fetch logs:", error);
+      showToast(apiErrorMessage(error, "Failed to fetch logs"), "error");
     } finally {
       setFiltering(false);
     }
@@ -84,19 +80,23 @@ const AdminLogs = () => {
 
   // Format timestamp
   const formatTime = (timestamp) => {
-    if (!timestamp) return 'N/A';
+    if (!timestamp) return "N/A";
     const date = new Date(timestamp);
-    return date.toLocaleString('en-IN', {
-      dateStyle: 'short',
-      timeStyle: 'medium',
+    return date.toLocaleString("en-IN", {
+      dateStyle: "short",
+      timeStyle: "medium",
     });
   };
 
   // Get status badge
   const getStatusBadge = (status) => {
     if (!status) return null;
-    const color = statusColors[status] || 'secondary';
-    return <Badge variant={color} size="sm">{status}</Badge>;
+    const color = statusColors[status] || "secondary";
+    return (
+      <Badge variant={color} size="sm">
+        {status}
+      </Badge>
+    );
   };
 
   if (loading) {
@@ -113,13 +113,15 @@ const AdminLogs = () => {
         <h1 className="text-3xl font-bold font-display">System Logs</h1>
         <div className="flex gap-sm">
           <Button
-            variant={autoRefresh ? 'lime' : 'secondary'}
+            variant={autoRefresh ? "lime" : "secondary"}
             size="sm"
             onClick={() => setAutoRefresh(!autoRefresh)}
             className="flex items-center gap-xs"
           >
-            <RefreshCw className={`h-4 w-4 ${autoRefresh ? 'animate-spin' : ''}`} />
-            {autoRefresh ? 'Live' : 'Off'}
+            <RefreshCw
+              className={`h-4 w-4 ${autoRefresh ? "animate-spin" : ""}`}
+            />
+            {autoRefresh ? "Live" : "Off"}
           </Button>
           <Button
             variant="secondary"
@@ -144,7 +146,7 @@ const AdminLogs = () => {
               {logLevels.map((level) => (
                 <Button
                   key={level}
-                  variant={levelFilter === level ? 'lime' : 'secondary'}
+                  variant={levelFilter === level ? "lime" : "secondary"}
                   size="sm"
                   onClick={() => handleFilterChange(level)}
                 >
@@ -189,11 +191,15 @@ const AdminLogs = () => {
               </thead>
               <tbody className="divide-y divide-hairline">
                 {logs.map((log, idx) => {
-                  const level = log.level || log.type || 'info';
-                  const levelColor = logColors[level.toLowerCase()] || 'secondary';
+                  const level = log.level || log.type || "info";
+                  const levelColor =
+                    logColors[level.toLowerCase()] || "secondary";
 
                   return (
-                    <tr key={idx} className="hover:bg-surface transition-colors">
+                    <tr
+                      key={idx}
+                      className="hover:bg-surface transition-colors"
+                    >
                       <td className="py-md px-sm text-xs text-muted whitespace-nowrap">
                         {formatTime(log.timestamp)}
                       </td>
@@ -203,17 +209,21 @@ const AdminLogs = () => {
                         </Badge>
                       </td>
                       <td className="py-md px-sm font-mono text-xs">
-                        {log.service || log.action || 'System'}
+                        {log.service || log.action || "System"}
                       </td>
                       <td className="py-md px-sm max-w-xs truncate">
-                        {log.message || log.details || log.endpoint || 'N/A'}
+                        {typeof log.message === "string"
+                          ? log.message
+                          : log.action || "N/A"}
                       </td>
                       <td className="py-md px-sm">
                         {getStatusBadge(log.statusCode)}
                       </td>
                       <td className="py-md px-sm text-xs text-muted">
                         {log.ipAddress && <span>{log.ipAddress}</span>}
-                        {log.userId && <span className="ml-sm">({log.userId})</span>}
+                        {log.userId && (
+                          <span className="ml-sm">({log.userId})</span>
+                        )}
                       </td>
                     </tr>
                   );
@@ -229,6 +239,18 @@ const AdminLogs = () => {
         <p>Showing {logs.length} log entries</p>
         {autoRefresh && <p>Auto-refreshing every 10 seconds</p>}
       </div>
+      {toasts.length > 0 && (
+        <div className="fixed bottom-md right-md z-50 space-y-xs">
+          {toasts.map((t) => (
+            <div
+              key={t.id}
+              className={`px-md py-sm rounded shadow-lg text-sm text-white ${t.type === "error" ? "bg-red-600" : "bg-ink"}`}
+            >
+              {t.message}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -243,77 +243,99 @@ const getAllResumes = async (req, res) => {
     }
 };
 
-const getSystemLogs = async (req, res) =>{
-   try {
+const getSystemLogs = async (req, res) => {
+  try {
     const { level, search, limit = 100 } = req.query;
- 
-    // Query AuditLog from MongoDB
-    let query = {};
- 
-    if (level && level !== 'all') {
-      query.level = level.toLowerCase();
-    }
- 
-    if (search) {
-      query.$or = [
-        { action: { $regex: search, $options: 'i' } },
-        { details: { $regex: search, $options: 'i' } },
-        { ipAddress: { $regex: search, $options: 'i' } },
-      ];
-    }
- 
-    const auditLogs = await AuditLog.find(query)
+    const numericLimit = parseInt(limit, 10) || 100;
+
+    // FIXED: AuditLog has no `level`/`timestamp`/`message` field, and `details`
+    // is Schema.Types.Mixed (an object) — running $regex on it throws
+    // "$regex has to be a string" and 500s the request the moment anyone
+    // searches. Fetch on real fields only, derive/filter the rest in JS.
+    const auditLogs = await AuditLog.find({})
       .sort({ createdAt: -1 })
-      .limit(parseInt(limit))
+      .limit(numericLimit * 5)
+      .populate('userId', 'name email') // NEW: readable user instead of raw ObjectId
       .lean();
- 
-    // Try to read Winston logs (optional, graceful fallback)
+
+    const levelFromStatus = (status) =>
+      status === 'failed' ? 'error' : status === 'pending' ? 'warn' : 'info';
+
+    let normalized = auditLogs.map((log) => ({
+      _id: String(log._id),
+      timestamp: log.createdAt, // FIXED: was `log.timestamp`, which never existed
+      level: levelFromStatus(log.status), // FIXED: was querying a nonexistent `level` field (always 0 matches)
+      service: log.action,
+      message: `${log.action} on ${log.resource}${log.resourceId ? ` #${log.resourceId}` : ''}`,
+      statusCode: log.status === 'failed' ? 500 : 200,
+      ipAddress: log.ipAddress,
+      userId: log.userId?.email || log.userId?.name || log.userId,
+      detailsText: typeof log.details === 'string' ? log.details : JSON.stringify(log.details || {}),
+    }));
+
+    if (level && level !== 'all') {
+      normalized = normalized.filter((log) => log.level === level.toLowerCase());
+    }
+
+    if (search) {
+      const s = search.toLowerCase();
+      normalized = normalized.filter(
+        (log) =>
+          log.message?.toLowerCase().includes(s) ||
+          log.ipAddress?.toLowerCase().includes(s) ||
+          log.detailsText?.toLowerCase().includes(s)
+      );
+    }
+
+    normalized = normalized.slice(0, numericLimit);
+
+    // Winston file logs — optional supplementary source
     let fileLogs = [];
     try {
       const logsDir = join(process.cwd(), 'logs');
       let fileContent = '';
- 
       try {
-        const combinedLog = readFileSync(join(logsDir, 'combined.log'), 'utf8');
-        fileContent = combinedLog;
+        fileContent = readFileSync(join(logsDir, 'combined.log'), 'utf8');
       } catch {
         // File doesn't exist yet, skip
       }
- 
-      // Parse simple log format
+
       if (fileContent) {
         fileLogs = fileContent
           .split('\n')
           .filter((line) => line.trim())
           .reverse()
-          .slice(0, parseInt(limit) - auditLogs.length)
-          .map((line, idx) => ({
-            _id: `file-${idx}`,
-            message: line,
-            level: 'info',
-            service: 'winston',
-            timestamp: new Date(),
-          }));
+          .slice(0, Math.max(numericLimit - normalized.length, 0))
+          .map((line, idx) => {
+            // FIXED: winston writes JSON lines (format.json()) — was dumping
+            // the raw JSON string into Message instead of parsing it.
+            try {
+              const parsed = JSON.parse(line);
+              return {
+                _id: `file-${idx}`,
+                message: parsed.message || line,
+                level: (parsed.level || 'info').toLowerCase(),
+                service: parsed.service || 'winston',
+                timestamp: parsed.timestamp || new Date(),
+              };
+            } catch {
+              return { _id: `file-${idx}`, message: line, level: 'info', service: 'winston', timestamp: new Date() };
+            }
+          });
       }
     } catch (err) {
       console.warn('Could not read log files:', err.message);
-      // Continue with just AuditLog data
     }
- 
-    // Combine and sort by timestamp
-    const allLogs = [...auditLogs, ...fileLogs].sort(
+
+    const allLogs = [...normalized, ...fileLogs].sort(
       (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
     );
- 
-    res.json({
-      success: true,
-      logs: allLogs,
-      total: allLogs.length,
-    });
+
+    res.json({ success: true, logs: allLogs, total: allLogs.length });
   } catch (error) {
     console.error('Get System Logs Error:', error);
     res.status(500).json({ error: 'Failed to fetch logs' });
   }
-}
+};
 
 module.exports = { getAllUsers, getUserById, updateUserRole, getDashboardStats , toggleUserVerification, getAllResumes, getSystemLogs };
