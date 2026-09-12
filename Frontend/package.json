@@ -1,7 +1,8 @@
 {
-  "name": "kaizen Frontend",
+  "name": "KAIZEN Frontned",
   "private": true,
   "version": "1.0.0",
+  "description": "AI-Powered Resume & Job Application Optimizer",
   "type": "module",
   "scripts": {
     "dev": "vite",
