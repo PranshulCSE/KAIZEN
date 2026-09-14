@@ -149,43 +149,156 @@ class ResumeParser {
       .filter((skill) => skill.length > 0 && skill.length < 60);
   }
 
-  extractExperience(text) {
-    const block = this._extractSection(text, 'experience'); // FIXED
-    if (!block) return [];
-    const experiences = [];
-    const entries = block.split(/\n(?=[A-Z])/);
-    for (const entry of entries) {
-      const lines = entry.split('\n').filter((line) => line.trim());
-      if (lines.length > 0) {
-        experiences.push({
-          company: lines[0]?.trim() || '',
-          role: lines[1]?.trim() || '',
-          location: lines[2]?.trim() || '',
-          bulletPoints: lines.slice(3).map((line) => line.trim()),
-          achievements: [],
-        });
+  // FIXED: pdf-parse occasionally drops the space between two adjacent text
+  // runs that sit next to each other in the layout (e.g. a right-aligned
+  // date glued onto a title: "Engineer02/05/2024"). These four patterns are
+  // safe to repair — digit/letter boundaries and punctuation glued to the
+  // next word — and deliberately do NOT touch lowercase→uppercase
+  // transitions, because that would shred real compound tech terms like
+  // "JavaScript", "GraphQL", "PostgreSQL", "DevOps", "GitHub".
+  _repairSpacing(text) {
+    return text
+      .replace(/([a-zA-Z])(\d)/g, '$1 $2')
+      .replace(/(\d)([a-zA-Z]{2,})/g, '$1 $2')
+      .replace(/([a-z]{2,})\.([A-Z])/g, '$1. $2')
+      .replace(/,([A-Za-z])/g, ', $1');
+  }
+
+  // FIXED: the old code started a new "entry" on every line beginning with
+  // a capital letter — but nearly every resume line (titles, companies,
+  // bullets) starts with a capital, so it was producing one broken entry
+  // per line instead of one per job/degree/project. Bullets (•, -, *) are
+  // always a continuation of the entry above; a new entry only starts when
+  // a non-bullet "header" line shows up again after bullets have begun.
+  // `isBoundarySignal(line)` lets callers say "a date range (or year range)
+  // on this line always means a new entry is starting" — needed because
+  // some jobs/degrees have zero bullet points, so "after bullets" alone
+  // isn't enough to detect the next entry beginning.
+  _groupEntries(block, isBoundarySignal = () => false) {
+    const bulletRe = /^[•\-*▪●‣]\s*/;
+    const lines = block
+      .split('\n')
+      .map((l) => this._repairSpacing(l.trim()))
+      .filter(Boolean);
+
+    const entries = [];
+    let current = null;
+    let pastBullets = false;
+
+    for (const line of lines) {
+      if (bulletRe.test(line)) {
+        if (!current) {
+          current = { headerLines: [], bulletLines: [] };
+          entries.push(current);
+        }
+        current.bulletLines.push(line.replace(bulletRe, '').trim());
+        pastBullets = true;
+        continue;
       }
+
+      const startsNewEntry =
+        !current || pastBullets || (current.headerLines.length > 0 && isBoundarySignal(line));
+
+      if (startsNewEntry) {
+        current = { headerLines: [], bulletLines: [] };
+        entries.push(current);
+        pastBullets = false;
+      }
+      current.headerLines.push(line);
     }
-    return experiences;
+    return entries;
+  }
+
+  // NEW: pulls a date range like "05/03/2023 - 01/26/2024", "Mar 2023 - Present",
+  // or "2020 - 2021" out of a header line and returns the parsed dates plus
+  // the line with the date text removed.
+  _extractDateRange(line) {
+    // Only real month abbreviations are allowed as the "letters" part of a
+    // date token — an unrestricted [A-Za-z]{3,9} would happily match the
+    // tail end of an unrelated word (e.g. "EngineerFeb" -> fake token
+    // "gineerFeb"), eating into the job title.
+    const month = '(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\\.?';
+    const tokenRe = `(?:\\d{1,2}/\\d{1,2}/\\d{4}|${month}\\s+\\d{4}|\\d{4})`;
+    const re = new RegExp(`(${tokenRe})\\s*[-–—]\\s*(present|current|${tokenRe})`, 'i');
+    const match = line.match(re);
+    if (!match) return null;
+
+    const isCurrent = /present|current/i.test(match[2]);
+    const startDate = new Date(match[1]);
+    const endDate = isCurrent ? null : new Date(match[2]);
+
+    return {
+      startDate: isNaN(startDate) ? null : startDate,
+      endDate: endDate && !isNaN(endDate) ? endDate : null,
+      isCurrent,
+      remainder: line.replace(match[0], '').trim().replace(/^[-–—,]\s*|[-–—,]\s*$/g, '').trim(),
+    };
+  }
+
+  extractExperience(text) {
+    const block = this._extractSection(text, 'experience');
+    if (!block) return [];
+
+    const isDateBoundary = (line) => this._extractDateRange(line) !== null;
+
+    return this._groupEntries(block, isDateBoundary).map(({ headerLines, bulletLines }) => {
+      let dateInfo = null;
+      const remainingHeader = [];
+
+      for (const line of headerLines) {
+        const found = !dateInfo && this._extractDateRange(line);
+        if (found) {
+          dateInfo = found;
+          if (found.remainder) remainingHeader.push(found.remainder);
+        } else {
+          remainingHeader.push(line);
+        }
+      }
+
+      return {
+        role: remainingHeader[0] || '',
+        company: remainingHeader[1] || '',
+        location: remainingHeader[2] || '',
+        startDate: dateInfo?.startDate || null,
+        endDate: dateInfo?.endDate || null,
+        isCurrent: dateInfo?.isCurrent || false,
+        bulletPoints: bulletLines,
+        achievements: [],
+      };
+    });
   }
 
   extractEducation(text) {
-    const block = this._extractSection(text, 'education'); // FIXED
+    const block = this._extractSection(text, 'education');
     if (!block) return [];
-    const education = [];
-    const entries = block.split(/\n(?=[A-Z])/);
-    for (const entry of entries) {
-      const lines = entry.split('\n').filter((line) => line.trim());
-      if (lines.length > 0) {
-        education.push({
-          institution: lines[0]?.trim() || '',
-          degree: lines[1]?.trim() || '',
-          field: lines[2]?.trim() || '',
-          achievements: lines.slice(3).map((line) => line.trim()),
-        });
+
+    const yearRe = /(\d{4})\s*[-–—]\s*(\d{4}|present)/i;
+    const isYearBoundary = (line) => yearRe.test(line);
+
+    return this._groupEntries(block, isYearBoundary).map(({ headerLines, bulletLines }) => {
+      let years = null;
+      const remainingHeader = [];
+
+      for (const line of headerLines) {
+        const m = !years && line.match(yearRe);
+        if (m) {
+          years = { startYear: m[1], endYear: /present/i.test(m[2]) ? 'Present' : m[2] };
+          const rest = line.replace(m[0], '').trim().replace(/^[-–—,]\s*|[-–—,]\s*$/g, '').trim();
+          if (rest) remainingHeader.push(rest);
+        } else {
+          remainingHeader.push(line);
+        }
       }
-    }
-    return education;
+
+      return {
+        degree: remainingHeader[0] || '',
+        institution: remainingHeader[1] || '',
+        field: remainingHeader[2] || '',
+        startYear: years?.startYear || '',
+        endYear: years?.endYear || '',
+        achievements: bulletLines,
+      };
+    });
   }
 
   extractCertifications(text) {
@@ -198,21 +311,21 @@ class ResumeParser {
   }
 
   extractProjects(text) {
-    const block = this._extractSection(text, 'projects'); // FIXED
+    const block = this._extractSection(text, 'projects');
     if (!block) return [];
-    const projects = [];
-    const entries = block.split(/\n(?=[A-Z])/);
-    for (const entry of entries) {
-      const lines = entry.split('\n').filter((line) => line.trim());
-      if (lines.length > 0) {
-        projects.push({
-          name: lines[0]?.trim() || '',
-          description: lines[1]?.trim() || '',
-          technologies: lines[2]?.split(',').map((t) => t.trim()) || [],
-        });
-      }
-    }
-    return projects;
+
+    return this._groupEntries(block).map(({ headerLines, bulletLines }) => {
+      const techLine = headerLines.find((l) => /^tech(nologies)?\s*:/i.test(l));
+      const nonTechHeader = headerLines.filter((l) => l !== techLine);
+
+      return {
+        name: nonTechHeader[0] || '',
+        description: [nonTechHeader[1], ...bulletLines].filter(Boolean).join(' '),
+        technologies: techLine
+          ? techLine.replace(/^tech(nologies)?\s*:/i, '').split(',').map((t) => t.trim()).filter(Boolean)
+          : [],
+      };
+    });
   }
 
   extractLanguages(text) {
