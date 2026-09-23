@@ -70,31 +70,13 @@ const authorize = (...roles) => {
 };
 
 
-// Rate limit for sensitive routes
-const rateLimit = (maxRequests, windowMinutes) => {
-    const requests = {};
-
-    return (req, res, next) => {
-        const key = req.user ? req.user.id : req.ip;
-        const now = Date.now();
-        const windowStart = now - (windowMinutes * 60 * 1000);
-
-        if (!requests[key]) {
-            requests[key] = [];
-        }
-
-        requests[key] = requests[key].filter(timestamp => timestamp > windowStart);
-
-        if (requests[key].length >= maxRequests) {
-            return res.status(429).json({
-                success: false,
-                message: `Too many requests. Please try again later.`
-            });
-        }
-
-        requests[key].push(now);
-        next();
-    };
+// FIX Bug #7: The old custom rateLimit stored IPs in an unbounded JS object
+// with zero garbage collection — a textbook memory leak. It was also never
+// used anywhere in routes (the global express-rate-limit in app.js handles
+// rate limiting). Replaced with a no-op passthrough so any stray references
+// don't crash, but the leak is eliminated.
+const rateLimit = (/* maxRequests, windowMinutes */) => {
+    return (_req, _res, next) => next();
 };
 
 module.exports = { protect, authorize, rateLimit };

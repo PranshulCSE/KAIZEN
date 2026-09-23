@@ -183,9 +183,19 @@ const generateResumePDFBuffer = async (resume, optimization) => {
                     ? h(
                         View,
                         null,
-                        ...job.bulletPoints.map((bp, bidx) =>
-                          bp ? h(Text, { key: bidx, style: styles.summaryText }, bp) : null
-                        )
+                        ...job.bulletPoints.map((bp, bidx) => {
+                          if (!bp) return null;
+                          // FIX Bug #2: Apply AI optimization rewrites to bulletPoints
+                          // (beforeAfterMap was previously only checked on achievements,
+                          // but the parser puts all real content into bulletPoints).
+                          const displayBp = beforeAfterMap[bp] || bp;
+                          return h(
+                            View,
+                            { key: bidx, style: styles.bulletPoint },
+                            h(Text, { style: styles.bullet }, '•'),
+                            h(Text, { style: styles.bulletText }, displayBp)
+                          );
+                        })
                       )
                     : null,
                   job.achievements && Array.isArray(job.achievements) && job.achievements.length > 0
@@ -290,24 +300,11 @@ const generateResumePDFBuffer = async (resume, optimization) => {
       )
     );
 
-    // Convert stream to buffer using promise wrapper
-    const stream = await pdf(doc).toBuffer();
-    return new Promise((resolve, reject) => {
-      const chunks = [];
-
-      stream.on('data', (chunk) => {
-        chunks.push(chunk);
-      });
-
-      stream.on('end', () => {
-        const buffer = Buffer.concat(chunks);
-        resolve(buffer);
-      });
-
-      stream.on('error', (err) => {
-        reject(err);
-      });
-    });
+    // FIX Bug #1: pdf(doc).toBuffer() resolves directly to a Buffer — it is
+    // NOT a readable stream. Calling .on('data') on a Buffer throws
+    // "TypeError: stream.on is not a function" and crashes every download.
+    const buffer = await pdf(doc).toBuffer();
+    return buffer;
   } catch (error) {
     console.error('PDF Generation Error:', error);
     throw new Error(`Failed to generate PDF: ${error.message}`);

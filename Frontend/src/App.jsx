@@ -19,6 +19,8 @@ import JobAnalyses from './pages/JobAnalyses.jsx';
 import AnalyzeJob from './pages/AnalyzeJob.jsx';
 import JobAnalysisDetail from './pages/JobAnalysisDetail.jsx';
 import Optimize from './pages/Optimize.jsx';
+import CoverLetter from './pages/CoverLetter.jsx';
+import GitHubImport from './pages/GitHubImport.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
 import AdminUsers from './pages/AdminUsers.jsx';
 import AdminLogs from './pages/AdminLogs.jsx';
@@ -58,6 +60,8 @@ export default function App() {
                     <Route path={ROUTES.ANALYZE_JOB} element={<AnalyzeJob />} />
                     <Route path={ROUTES.JOB_ANALYSIS_DETAIL} element={<JobAnalysisDetail />} />
                     <Route path={ROUTES.OPTIMIZE} element={<Optimize />} />
+                    <Route path={ROUTES.COVER_LETTER} element={<CoverLetter />} />
+                    <Route path={ROUTES.GITHUB_IMPORT} element={<GitHubImport />} />
 
                     <Route element={<AdminRoute />}>
                         <Route path={ROUTES.ADMIN} element={<AdminDashboard />} />

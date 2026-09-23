@@ -1,4 +1,4 @@
-import { BarChart3, UploadCloud, TrendingUp, Clock, ShieldCheck, Sparkles, ArrowRight, FileText, CheckCircle2, Download } from 'lucide-react';
+import { BarChart3, UploadCloud, TrendingUp, Clock, ShieldCheck, Sparkles, ArrowRight, FileText, CheckCircle2, Download, Mail, Github, Zap } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -128,6 +128,51 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* AI Career Toolkit Section */}
+            <div className="grid md:grid-cols-2 gap-5">
+                <Link
+                    to={ROUTES.COVER_LETTER}
+                    className="group rounded-2xl bg-gradient-to-br from-primary-50/80 via-white to-white border border-primary-100 p-6 shadow-sm hover:shadow-md hover:border-primary-300 transition-all"
+                >
+                    <div className="flex items-start justify-between">
+                        <div className="p-3 rounded-xl bg-primary-100 text-primary-700 group-hover:scale-105 transition-transform">
+                            <Mail className="w-6 h-6" />
+                        </div>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary-600 text-white font-mono">
+                            AI GENERATOR
+                        </span>
+                    </div>
+                    <h3 className="text-base font-bold font-display text-dark-900 mt-4 group-hover:text-primary-600 transition-colors flex items-center gap-1.5">
+                        <span>Cover Letter & Cold Outreach</span>
+                        <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                    </h3>
+                    <p className="text-xs text-dark-500 mt-1.5 leading-relaxed">
+                        Generate tailored cover letters and under-300-char LinkedIn networking notes matched to any job.
+                    </p>
+                </Link>
+
+                <Link
+                    to={ROUTES.GITHUB_IMPORT}
+                    className="group rounded-2xl bg-gradient-to-br from-dark-50/80 via-white to-white border border-dark-100 p-6 shadow-sm hover:shadow-md hover:border-dark-300 transition-all"
+                >
+                    <div className="flex items-start justify-between">
+                        <div className="p-3 rounded-xl bg-dark-100 text-dark-900 group-hover:scale-105 transition-transform">
+                            <Github className="w-6 h-6" />
+                        </div>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-dark-900 text-white font-mono">
+                            PORTFOLIO SYNC
+                        </span>
+                    </div>
+                    <h3 className="text-base font-display font-bold text-dark-900 mt-4 group-hover:text-primary-600 transition-colors flex items-center gap-1.5">
+                        <span>GitHub Portfolio Importer</span>
+                        <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                    </h3>
+                    <p className="text-xs text-dark-500 mt-1.5 leading-relaxed">
+                        Connect any GitHub account to automatically generate quantified, ATS-ready resume project bullet points.
+                    </p>
+                </Link>
             </div>
 
             {/* Recent Resumes Table / Grid */}

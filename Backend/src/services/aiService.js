@@ -304,7 +304,177 @@ ${OUTPUT_RULES}
 
     return this._generateJSON(prompt, 'Generate interview questions');
   }
+
+  // Generate Tailored Cover Letter
+  async generateCoverLetter(resumeContent, jobAnalysis, options = {}) {
+    this._ensureConfigured();
+    if (!resumeContent || typeof resumeContent !== 'object') {
+      throw new Error('A parsed resume object is required to generate a cover letter.');
+    }
+
+    const {
+      tone = 'confident',
+      target = 'hiring_manager',
+      company = jobAnalysis?.company || 'the hiring team',
+      jobTitle = jobAnalysis?.jobTitle || 'the open role',
+      extraNotes = ''
+    } = options;
+
+    const prompt = `
+You are an elite career strategist and executive copywriter. You write compelling, persuasive, and authentic cover letters that immediately capture hiring managers' attention. You NEVER use generic clichés like "I am writing to express my enthusiasm for..." or "I believe I am the ideal candidate because...".
+
+${NO_FABRICATION_RULE}
+
+Tone Style: ${tone.toUpperCase()} (e.g. confident = authoritative & outcome-driven, enthusiastic = passionate & energetic, professional = polished & structured, direct = concise & punchy).
+Target Recipient: ${target.replace('_', ' ').toUpperCase()} at ${company} for the role of ${jobTitle}.
+Additional User Instructions: ${extraNotes || 'None'}
+
+TASK: Write a customized, compelling cover letter grounded STRICTLY in the candidate's actual resume experience and tailored to the job analysis.
+
+Guidance:
+- subject: High-impact email/application subject line.
+- salutation: Appropriate greeting for ${target}.
+- openingParagraph: A magnetic hook highlighting 1 standout achievement or aligned passion.
+- bodyParagraph1: Deep dive into the candidate's top 1-2 relevant technical projects or work experiences from the resume that solve the job's core challenges.
+- bodyParagraph2: Emphasize ownership, problem-solving, and cross-functional impact directly relevant to the role responsibilities.
+- closingParagraph: Confident call-to-action inviting a conversation, stating availability without being pushy.
+- fullLetter: The complete assembled letter ready for copy/pasting.
+- keyHighlights: 3 quick bulleted proof points why this candidate matches.
+- matchingScore: 0-100 estimate of narrative fit.
+
+Candidate Resume:
+"""
+${JSON.stringify(resumeContent)}
+"""
+
+Target Job Analysis / Description:
+"""
+${JSON.stringify(jobAnalysis)}
+"""
+
+Return exactly this JSON structure:
+{
+  "subject": "Application for Role - Name",
+  "salutation": "Dear Hiring Manager,",
+  "openingParagraph": "...",
+  "bodyParagraph1": "...",
+  "bodyParagraph2": "...",
+  "closingParagraph": "...",
+  "signoff": "Sincerely,\\n[Candidate Name]",
+  "fullLetter": "Complete letter text...",
+  "keyHighlights": ["Highlight 1", "Highlight 2", "Highlight 3"],
+  "matchingScore": 90
+}
+${OUTPUT_RULES}
+    `;
+
+    return this._generateJSON(prompt, 'Generate cover letter');
+  }
+
+  // Generate Cold Outreach & Networking Messages
+  async generateColdOutreach(resumeContent, jobAnalysis, options = {}) {
+    this._ensureConfigured();
+
+    const {
+      platform = 'linkedin_inmail',
+      recipientRole = 'Hiring Manager',
+      company = jobAnalysis?.company || 'Target Company',
+      jobTitle = jobAnalysis?.jobTitle || 'Target Role'
+    } = options;
+
+    const prompt = `
+You are a world-class tech recruiter and networking coach. You write ultra-high-converting cold outreach messages that get responses from busy hiring managers, founders, and recruiters.
+
+${NO_FABRICATION_RULE}
+
+Outreach Context:
+- Platform: ${platform}
+- Target Recipient Role: ${recipientRole}
+- Target Company: ${company}
+- Target Job: ${jobTitle}
+
+TASK: Generate a multi-format outreach kit tailored to this candidate and company.
+
+Guidance per field:
+- subject: Catchy, non-spammy subject line (under 50 chars).
+- message: The full cold email / InMail body (under 150 words — concise, value-first, mentions 1 specific metric or project from the resume, with a low-friction ask like "Open to a 10-min chat next week?").
+- connectionNote: LinkedIn connection request note (STRICTLY UNDER 280 CHARACTERS including spaces — friendly, punchy, contextual).
+- followUpTemplate: A polite follow-up message to send 4-5 days later if no reply.
+- strategyTips: 2-3 tactical tips for reaching this person (e.g. best time to send, personalization hook).
+
+Candidate Resume:
+"""
+${JSON.stringify(resumeContent)}
+"""
+
+Target Job Analysis:
+"""
+${JSON.stringify(jobAnalysis)}
+"""
+
+Return exactly this JSON structure:
+{
+  "subject": "...",
+  "message": "...",
+  "connectionNote": "...",
+  "followUpTemplate": "...",
+  "strategyTips": ["Tip 1", "Tip 2"]
+}
+${OUTPUT_RULES}
+    `;
+
+    return this._generateJSON(prompt, 'Generate cold outreach');
+  }
+
+  // Generate Quantified Resume Project Bullets from GitHub Repos
+  async generateGitHubProjectBullets(repositories, targetRole = 'Software Engineer') {
+    this._ensureConfigured();
+    if (!Array.isArray(repositories) || repositories.length === 0) {
+      throw new Error('At least one repository object is required.');
+    }
+
+    const prompt = `
+You are an expert technical resume writer. You convert raw GitHub repository metadata (repo name, description, primary language, topics, stars) into polished, high-impact resume project entries.
+
+${ATS_RESUME_STANDARD}
+
+Target Role Context: ${targetRole}
+
+TASK: For each repository provided below, produce an ATS-optimized Project section entry for a tech resume.
+
+Guidance per project:
+- name: Clean display name of the project.
+- technologies: Array of technologies derived from languages, topics, and description.
+- description: Concise 1-line summary of what the project does.
+- bulletPoints: 2-3 quantified, action-verb driven bullets following the ATS standard (e.g., "Architected a full-stack web application with...", "Engineered responsive UI using...", "Integrated RESTful APIs handling..."). Do not invent fake business revenue, but emphasize architectural scale, design patterns, and technical execution.
+- link: URL to the repository.
+
+Repositories:
+"""
+${JSON.stringify(repositories)}
+"""
+
+Return exactly this JSON structure:
+{
+  "projects": [
+    {
+      "name": "Project Name",
+      "technologies": ["React", "Node.js"],
+      "description": "Short project description",
+      "bulletPoints": [
+        "Bullet 1 with strong action verb",
+        "Bullet 2 highlighting technical implementation"
+      ],
+      "link": "https://github.com/..."
+    }
+  ]
+}
+${OUTPUT_RULES}
+    `;
+
+    return this._generateJSON(prompt, 'Generate GitHub project bullets');
+  }
 }
 
 const AI = new AIService();
-module.exports = AI;
+module.exports = AI;

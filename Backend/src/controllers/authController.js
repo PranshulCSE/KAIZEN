@@ -466,6 +466,14 @@ const resetPassword = async (req, res) => {
 
     // Update password
     const user = await User.findOne({ email });
+    // FIX Bug #5: if the user record was deleted between OTP issue and reset,
+    // user is null and `user.password = ...` throws an unhandled TypeError.
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
     user.password = newPassword;
     user.refreshTokens = []; // Clear all refresh tokens
     await user.save();

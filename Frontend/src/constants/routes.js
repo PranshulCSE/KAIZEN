@@ -13,6 +13,8 @@ export const ROUTES = {
   JOB_ANALYSIS_DETAIL: '/app/jobs/:id',
   ANALYZE_JOB: '/app/jobs/new',
   OPTIMIZE: '/app/optimize',
+  COVER_LETTER: '/app/cover-letter',
+  GITHUB_IMPORT: '/app/github-import',
 
   ADMIN: '/app/admin',
   ADMIN_USERS: '/app/admin/users',

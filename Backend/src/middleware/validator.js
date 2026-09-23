@@ -13,7 +13,7 @@ const { validationResult } = require( 'express-validator');
     res.status(400).json({
       success: false,
       errors: errors.array().map(err => ({
-        field: err.param,
+        field: err.path, // FIX Bug #3: express-validator v7 uses `path` not `param`
         message: err.msg
       }))
     });

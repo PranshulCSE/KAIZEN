@@ -14,12 +14,35 @@ export default function AnalyzeJob() {
     const navigate = useNavigate();
     const { resumes } = useResumes();
     const { analyzeJob, status } = useAI();
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [jobUrl, setJobUrl] = useState('');
+    const [isScraping, setIsScraping] = useState(false);
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors }
     } = useForm();
+
+    const handleScrape = async () => {
+        if (!jobUrl.trim()) {
+            toast.error('Please enter a job URL');
+            return;
+        }
+        setIsScraping(true);
+        try {
+            const { data } = await aiApi.scrapeJobUrl({ url: jobUrl.trim() });
+            if (data?.data?.text) {
+                setValue('jobDescription', data.data.text);
+                if (data.data.title) setValue('jobTitle', data.data.title);
+                if (data.data.company) setValue('company', data.data.company);
+                toast.success('Job details extracted from URL!');
+            }
+        } catch (err) {
+            toast.error(err.response?.data?.message || err.message || 'Failed to extract job from URL');
+        } finally {
+            setIsScraping(false);
+        }
+    };
 
     const onSubmit = async (values) => {
         setIsSubmitting(true);
@@ -35,17 +58,42 @@ export default function AnalyzeJob() {
     };
 
     return (
-        <div className="mx-auto flex max-w-2xl flex-col gap-8">
+        <div className="mx-auto flex max-w-2xl flex-col gap-8 pb-12 animate-fade-in">
             <div>
                 <span className="eyebrow">New analysis</span>
                 <h1 className="mt-2 font-display text-3xl text-ink">Break down a job description</h1>
                 <p className="mt-2 text-sm text-ink-muted">
-                    Paste the full listing. Kaizen pulls out the required skills, keywords, and what the role
-                    actually expects.
+                    Paste the full listing or auto-fetch directly from a job URL. Kaizen pulls out the required skills, keywords, and ATS weights.
                 </p>
             </div>
 
-            <Card className="p-6">
+            <Card className="p-6 space-y-4">
+                {/* 1-Click URL Importer */}
+                <div className="p-3.5 rounded-xl bg-primary-50/60 border border-primary-100 space-y-2">
+                    <label className="text-xs font-bold text-primary-900 block">
+                        ✦ 1-Click Auto-Fetch from URL (LinkedIn, Indeed, Lever, etc.)
+                    </label>
+                    <div className="flex gap-2">
+                        <input
+                            type="url"
+                            placeholder="https://www.linkedin.com/jobs/view/..."
+                            value={jobUrl}
+                            onChange={(e) => setJobUrl(e.target.value)}
+                            className="flex-1 px-3 py-2 text-xs rounded-lg border border-primary-200 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono"
+                        />
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={handleScrape}
+                            isLoading={isScraping}
+                            className="text-xs whitespace-nowrap"
+                        >
+                            <span>Fetch Text</span>
+                        </Button>
+                    </div>
+                </div>
+
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
                     <div className="grid gap-4 sm:grid-cols-2">
                         <Input label="Job title" placeholder="Senior Product Manager" {...register('jobTitle')} />

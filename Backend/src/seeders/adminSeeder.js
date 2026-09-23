@@ -28,7 +28,7 @@ const createAdmin = async () => {
 
         console.log('✓ Admin user created successfully!');
         console.log('Email: admin@kaizen.com');
-        console.log('Password: Admin@2026!');
+        console.log('Password: Admin@2026'); // FIX Bug #4: was 'Admin@2026!' (extra ! caused login failure)
         console.log('\n⚠️  IMPORTANT: Change the password immediately after first login!');
 
         process.exit(0);

@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router';
-import { LogOut, LayoutDashboard, FileText, Sparkles, ShieldCheck, Briefcase, ChevronRight } from 'lucide-react';
+import { LogOut, LayoutDashboard, FileText, Sparkles, ShieldCheck, Briefcase, ChevronRight, Mail, Github } from 'lucide-react';
 import Logo from '../../assets/Logo.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
 import { ROUTES } from '../../constants/routes.js';
@@ -13,6 +13,8 @@ export default function Sidebar() {
     { to: ROUTES.RESUMES, label: 'My Resumes', icon: FileText },
     { to: ROUTES.OPTIMIZE, label: 'AI Optimizer', icon: Sparkles, badge: 'AI' },
     { to: ROUTES.JOB_ANALYSES, label: 'Job Targets', icon: Briefcase },
+    { to: ROUTES.COVER_LETTER, label: 'Cover Letter & Outreach', icon: Mail, badge: 'NEW' },
+    { to: ROUTES.GITHUB_IMPORT, label: 'GitHub Importer', icon: Github, badge: 'NEW' },
   ];
 
   const isCurrentActive = (item) => {

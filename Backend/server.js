@@ -12,9 +12,14 @@ const startServer = async () => {
     await connectDB();
     console.log('✓ MongoDB connected');
 
-    // Connect to Redis
-    await connectRedis();
-    console.log('✓ Redis connected');
+    // FIX Bug #6: Redis has zero consumers in the codebase. If it's
+    // unreachable, warn and continue — don't crash the whole API server.
+    try {
+      await connectRedis();
+      console.log('✓ Redis connected');
+    } catch (redisErr) {
+      console.warn('⚠ Redis connection failed — server will run without caching:', redisErr.message);
+    }
 
     // Start server
     app.listen(PORT, () => {
