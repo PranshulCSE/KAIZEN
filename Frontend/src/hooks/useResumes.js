@@ -35,9 +35,10 @@ export function useResumes() {
     setResumes((prev) => prev.filter((r) => r._id !== id));
   }, []);
 
-  const downloadResume = useCallback(async (id, title, optimization) => {
+  const downloadResume = useCallback(async (id, title, options) => {
     try {
-      const response = await resumesApi.downloadPdf(id, optimization);
+      const payload = typeof options === 'string' ? { template: options } : (options || {});
+      const response = await resumesApi.downloadPdf(id, payload);
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -92,10 +93,13 @@ export function useResume(id) {
     fetchResume();
   }, [fetchResume]);
 
-  const downloadPdf = useCallback(async (optimization) => {
+  const downloadPdf = useCallback(async (options) => {
     if (!id) return;
     try {
-      const response = await resumesApi.downloadPdf(id, optimization || resume?.optimization);
+      const payload = typeof options === 'string' 
+        ? { template: options, optimization: resume?.optimization }
+        : { optimization: resume?.optimization, ...(options || {}) };
+      const response = await resumesApi.downloadPdf(id, payload);
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');

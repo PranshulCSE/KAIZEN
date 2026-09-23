@@ -144,35 +144,106 @@ ${OUTPUT_RULES}
     return this._generateJSON(prompt, 'Analyze job description');
   }
 
-  // Optimize Resume for Job
+  // Parse raw PDF / DOCX extracted text into 100% accurate structured resume JSON
+  async parseResumeTextWithAI(rawText) {
+    this._ensureConfigured();
+    if (!rawText || typeof rawText !== 'string' || rawText.trim().length < 20) {
+      throw new Error('Raw text of at least 20 characters is required for parsing.');
+    }
+
+    const prompt = `
+You are an expert ATS parser and resume structure extractor. Extract every piece of candidate data from the raw extracted resume text below into a clean, normalized, structured JSON format.
+
+${NO_FABRICATION_RULE}
+
+TASK: Extract all information strictly from the provided raw text. If any field is missing from the text, use an empty string or empty array — NEVER invent fake info.
+
+Raw Resume Text:
+"""
+${rawText.slice(0, 10000)}
+"""
+
+Return exactly this JSON structure:
+{
+  "personalInfo": {
+    "name": "Full Name",
+    "email": "email@example.com",
+    "phone": "+1 234 567 8900",
+    "location": "City, State / Country",
+    "linkedin": "linkedin.com/in/...",
+    "portfolio": "github.com/... or website",
+    "summary": "Full professional summary text (or empty string)"
+  },
+  "skills": ["Skill 1", "Skill 2"],
+  "experience": [
+    {
+      "role": "Job Title",
+      "company": "Company Name",
+      "location": "Location",
+      "startDate": "YYYY-MM-DD or YYYY or null",
+      "endDate": "YYYY-MM-DD or YYYY or null",
+      "isCurrent": false,
+      "bulletPoints": [
+        "Full achievement bullet point text"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Degree (e.g. Bachelor of Science)",
+      "institution": "University / College Name",
+      "field": "Field of Study",
+      "startYear": "YYYY",
+      "endYear": "YYYY",
+      "gpa": "GPA or empty string"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Project Name",
+      "technologies": ["Tech 1", "Tech 2"],
+      "description": "Short description",
+      "bulletPoints": ["Bullet point 1"],
+      "link": "URL or empty string"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Certification Name",
+      "issuer": "Issuing Org",
+      "date": "YYYY-MM-DD or YYYY or null"
+    }
+  ],
+  "languages": ["Language 1"],
+  "interests": []
+}
+${OUTPUT_RULES}
+    `;
+
+    return this._generateJSON(prompt, 'Parse resume text with AI');
+  }
+
+  // Optimize Resume for Job (returns both suggestions and full directOptimizedContent)
   async optimizeResumeForJob(resumeContent, jobAnalysis) {
     this._ensureConfigured();
     if (!resumeContent || typeof resumeContent !== 'object') {
       throw new Error('A parsed resume object is required to optimize it.');
     }
     if (!jobAnalysis || typeof jobAnalysis !== 'object') {
-      throw new Error('A job analysis object (from analyzeJobDescription) is required to optimize the resume against.');
+      throw new Error('A job analysis object is required to optimize the resume against.');
     }
 
     const prompt = `
-You are an expert resume writer and ATS optimization specialist with 15+ years of experience helping candidates land interviews at competitive tech companies. You rewrite resume content to be sharper, more quantified, and more aligned to a specific job — without ever inventing facts that aren't in the source resume.
+You are an elite principal resume writer and ATS optimization engine. You rewrite the candidate's entire resume to match the target job with 95+ ATS compatibility, quantified metrics, and authoritative action verbs — without fabricating false employers or unearned degrees.
 
 ${ATS_RESUME_STANDARD}
 ${NO_FABRICATION_RULE}
 
-TASK: Using the candidate's existing resume content and the job analysis below, produce targeted optimization suggestions.
-
-Guidance per field:
-- optimizedBulletPoints: rewrite the candidate's existing bullet points/achievements (only ones that exist in the resume below) following the ATS standard above — stronger verbs, quantified where the original implies a result, aligned to the job's keywords.
-- skillImprovements.add: skills mentioned in the job analysis that are MISSING from the resume's current skills list AND are reasonably supported by the candidate's actual experience/projects described below (don't suggest a skill with zero supporting evidence in the resume).
-- skillImprovements.remove: skills currently listed on the resume that are irrelevant or outdated for this specific job (empty array if nothing should be removed).
-- skillImprovements.emphasize: skills already on the resume that strongly match the job's required/preferred skills and should be made more prominent.
-- summaryRewrite: a 2-4 line professional summary following the ATS standard's summary rule — built entirely from what's in the resume, tailored to this job.
-- keywordOptimization: concrete guidance on where/how to naturally work in missing keywords from the job analysis (not just a list — actual placement advice).
-- achievementMetrics: specific suggestions for which existing bullets could be strengthened with metrics, and what kind of metric would be appropriate (e.g. "quantify the team size you led") — do not supply invented numbers here either.
-- atsScore: your honest 0-100 estimate of how well the CURRENT (unoptimized) resume matches this job, based on keyword overlap, relevant experience, and structure.
-- improvements: 3-6 prioritized, specific action items the candidate should make (most impactful first).
-- beforeAfter: for each bullet you meaningfully rewrote, include the exact original ("before") and your rewrite ("after") — only include bullets that actually changed.
+TASK:
+1. Optimize every bullet point in candidate's experience to directly showcase skills required by the job analysis.
+2. Rewrite the professional summary into a high-converting 2-3 line hook.
+3. Prioritize skills matching the job description.
+4. Produce a complete "directOptimizedContent" JSON object that can be directly exported as a flawless 1-2 page ATS PDF.
 
 Candidate's Resume Content:
 """
@@ -186,18 +257,62 @@ ${JSON.stringify(jobAnalysis)}
 
 Return exactly this JSON structure:
 {
-  "optimizedBulletPoints": ["point1", "point2"],
+  "optimizedBulletPoints": ["rewritten bullet 1", "rewritten bullet 2"],
   "skillImprovements": {
-    "add": ["skill1"],
-    "remove": ["skill2"],
-    "emphasize": ["skill3"]
+    "add": ["relevant missing skill"],
+    "remove": ["outdated skill"],
+    "emphasize": ["core matched skill"]
   },
-  "summaryRewrite": "new summary",
-  "keywordOptimization": "how to add keywords",
-  "achievementMetrics": "suggestions for metrics",
-  "atsScore": 75,
-  "improvements": ["improvement1"],
-  "beforeAfter": [{"before": "old", "after": "new"}]
+  "summaryRewrite": "2-3 line magnetic tailored professional summary",
+  "keywordOptimization": "placement advice for top keywords",
+  "achievementMetrics": "quantification suggestions",
+  "atsScore": 88,
+  "improvements": ["improvement action 1", "improvement action 2"],
+  "beforeAfter": [{"before": "original text", "after": "improved text"}],
+  "directOptimizedContent": {
+    "personalInfo": {
+      "name": "Candidate Name",
+      "email": "email",
+      "phone": "phone",
+      "location": "location",
+      "linkedin": "linkedin",
+      "portfolio": "portfolio",
+      "summary": "new summary"
+    },
+    "experience": [
+      {
+        "role": "Role",
+        "company": "Company",
+        "location": "Location",
+        "startDate": "startDate",
+        "endDate": "endDate",
+        "isCurrent": false,
+        "bulletPoints": [
+          "Strong action verb + quantified metric + target tech bullet"
+        ]
+      }
+    ],
+    "education": [
+      {
+        "degree": "Degree",
+        "institution": "Institution",
+        "field": "Field",
+        "endYear": "Year",
+        "gpa": "GPA"
+      }
+    ],
+    "skills": ["Top matched skill 1", "Skill 2", "Skill 3"],
+    "projects": [
+      {
+        "name": "Project Name",
+        "technologies": ["Tech 1", "Tech 2"],
+        "description": "Overview",
+        "bulletPoints": ["Quantified bullet 1"],
+        "link": "url"
+      }
+    ],
+    "certifications": []
+  }
 }
 ${OUTPUT_RULES}
     `;

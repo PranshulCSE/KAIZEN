@@ -21,7 +21,23 @@ class ResumeParser {
   async parsePDF(fileBuffer) {
     try {
       const data = await pdfParse(fileBuffer);
-      return this.extractStructure(data.text);
+      const rawText = data.text || '';
+
+      // 1. Attempt high-fidelity AI structured extraction first
+      try {
+        const aiService = require('./aiService.js');
+        if (process.env.GEMINI_API_KEY && rawText.trim().length >= 30) {
+          const aiStructured = await aiService.parseResumeTextWithAI(rawText);
+          if (aiStructured && aiStructured.personalInfo) {
+            return aiStructured;
+          }
+        }
+      } catch (aiErr) {
+        console.warn('AI Parsing fallback to regex:', aiErr.message);
+      }
+
+      // 2. Fallback to regex structure extraction
+      return this.extractStructure(rawText);
     } catch (error) {
       console.error('PDF parsing error:', error);
       throw new Error('Failed to parse PDF');
@@ -31,7 +47,23 @@ class ResumeParser {
   async parseDOCX(fileBuffer) {
     try {
       const result = await mammoth.extractRawText({ buffer: fileBuffer });
-      return this.extractStructure(result.value);
+      const rawText = result.value || '';
+
+      // 1. Attempt high-fidelity AI structured extraction first
+      try {
+        const aiService = require('./aiService.js');
+        if (process.env.GEMINI_API_KEY && rawText.trim().length >= 30) {
+          const aiStructured = await aiService.parseResumeTextWithAI(rawText);
+          if (aiStructured && aiStructured.personalInfo) {
+            return aiStructured;
+          }
+        }
+      } catch (aiErr) {
+        console.warn('AI Parsing fallback to regex:', aiErr.message);
+      }
+
+      // 2. Fallback to regex structure extraction
+      return this.extractStructure(rawText);
     } catch (error) {
       console.error('DOCX parsing error:', error);
       throw new Error('Failed to parse DOCX');

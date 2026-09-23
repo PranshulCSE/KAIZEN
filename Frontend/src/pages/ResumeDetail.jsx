@@ -18,13 +18,14 @@ export default function ResumeDetail() {
     const navigate = useNavigate();
     const { user } = useAuthContext();
     const { resume, isLoading, error, downloadPdf } = useResume(id);
+    const [selectedTemplate, setSelectedTemplate] = useState('modern');
     const [isDownloading, setIsDownloading] = useState(false);
 
     const handleDownload = async () => {
         setIsDownloading(true);
         try {
-            await downloadPdf();
-            toast.success('Resume PDF downloaded successfully!');
+            await downloadPdf({ template: selectedTemplate });
+            toast.success(`Resume downloaded (${selectedTemplate === 'modern' ? 'Modern Tech' : 'Harvard Classic'} ATS)!`);
         } catch (err) {
             toast.error(err.message || 'Could not download resume PDF.');
         } finally {
@@ -73,7 +74,32 @@ export default function ResumeDetail() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex items-center bg-dark-100/80 p-1 rounded-xl border border-dark-200/80 text-xs">
+                        <button
+                            type="button"
+                            onClick={() => setSelectedTemplate('modern')}
+                            className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                                selectedTemplate === 'modern'
+                                    ? 'bg-white text-primary-700 shadow-xs'
+                                    : 'text-dark-600 hover:text-dark-900'
+                            }`}
+                        >
+                            Modern Tech ATS
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setSelectedTemplate('classic')}
+                            className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                                selectedTemplate === 'classic'
+                                    ? 'bg-white text-primary-700 shadow-xs'
+                                    : 'text-dark-600 hover:text-dark-900'
+                            }`}
+                        >
+                            Harvard Classic ATS
+                        </button>
+                    </div>
+
                     <Button
                         onClick={handleDownload}
                         variant="secondary"
@@ -81,7 +107,7 @@ export default function ResumeDetail() {
                         className="shadow-sm hover:shadow-md"
                     >
                         <Download className="w-4 h-4 text-dark-700" />
-                        <span>Download PDF</span>
+                        <span>Download ATS PDF</span>
                     </Button>
                     <Button
                         onClick={() => navigate(`${ROUTES.OPTIMIZE}?resumeId=${resume._id}`)}
