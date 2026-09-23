@@ -11,10 +11,11 @@ export const ROUTES = {
   RESUME_DETAIL: '/app/resumes/:id',
   JOB_ANALYSES: '/app/jobs',
   JOB_ANALYSIS_DETAIL: '/app/jobs/:id',
-  ANALYZE_JOB: '/app/jobs/new',
   OPTIMIZE: '/app/optimize',
+  BUILDER: '/app/builder',
   COVER_LETTER: '/app/cover-letter',
   GITHUB_IMPORT: '/app/github-import',
+  MOCK_INTERVIEW: '/app/mock-interview',
 
   ADMIN: '/app/admin',
   ADMIN_USERS: '/app/admin/users',
@@ -24,4 +25,5 @@ export const ROUTES = {
 };
 
 export const resumeDetailPath = (id) => `/app/resumes/${id}`;
+export const resumeBuilderPath = (id) => `/app/builder${id ? `?resumeId=${id}` : ''}`;
 export const jobAnalysisDetailPath = (id) => `/app/jobs/${id}`;

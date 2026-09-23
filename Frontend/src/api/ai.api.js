@@ -9,5 +9,6 @@ export const aiApi = {
   generateColdOutreach: (payload) => client.post('/ai/cold-outreach', payload),
   getGitHubRepos: (payload) => client.post('/ai/github-repos', payload),
   generateGitHubBullets: (payload) => client.post('/ai/github-bullets', payload),
-  scrapeJobUrl: (payload) => client.post('/ai/scrape-job-url', payload)
+  scrapeJobUrl: (payload) => client.post('/ai/scrape-job-url', payload),
+  improveBullet: (payload) => client.post('/ai/improve-bullet', payload)
 };

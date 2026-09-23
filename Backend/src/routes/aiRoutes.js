@@ -9,7 +9,8 @@ const {
   generateColdOutreach,
   getGitHubRepos,
   generateGitHubBullets,
-  scrapeJobUrl
+  scrapeJobUrl,
+  improveBullet
 } = require ('../controllers/aiController.js');
 
 const router = express.Router();
@@ -27,5 +28,8 @@ router.post('/cold-outreach', generateColdOutreach);
 router.post('/github-repos', getGitHubRepos);
 router.post('/github-bullets', generateGitHubBullets);
 router.post('/scrape-job-url', scrapeJobUrl);
+
+// NEW: Phase 3 AI Inline Bullet Copilot
+router.post('/improve-bullet', improveBullet);
 
 module.exports=router;

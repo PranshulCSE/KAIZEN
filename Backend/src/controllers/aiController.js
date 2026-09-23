@@ -405,6 +405,26 @@ const scrapeJobUrl = async (req, res) => {
             error: error.message
         });
     }
+// @desc    AI Inline Bullet Point Copilot
+// @route   POST /api/ai/improve-bullet
+const improveBullet = async (req, res) => {
+    try {
+        const { bulletText, action, targetRole, extraContext } = req.body;
+        const result = await aiService.improveBulletPoint(bulletText, action, { targetRole, extraContext });
+
+        res.status(200).json({
+            success: true,
+            message: 'Bullet point improved successfully',
+            data: result
+        });
+    } catch (error) {
+        console.error('Improve bullet error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to improve bullet point',
+            error: error.message
+        });
+    }
 };
 
 module.exports = {
@@ -416,5 +436,6 @@ module.exports = {
     generateColdOutreach,
     getGitHubRepos,
     generateGitHubBullets,
-    scrapeJobUrl
+    scrapeJobUrl,
+    improveBullet
 };

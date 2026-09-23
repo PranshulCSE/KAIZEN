@@ -1,4 +1,4 @@
-import { BarChart3, UploadCloud, TrendingUp, Clock, ShieldCheck, Sparkles, ArrowRight, FileText, CheckCircle2, Download, Mail, Github, Zap } from 'lucide-react';
+import { BarChart3, UploadCloud, TrendingUp, Clock, ShieldCheck, Sparkles, ArrowRight, FileText, CheckCircle2, Download, Mail, Github, Zap, Bot, LayoutTemplate } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -57,21 +57,21 @@ export default function Dashboard() {
                     <div className="flex flex-wrap items-center gap-3">
                         <Button
                             as={Link}
-                            to={ROUTES.OPTIMIZE}
+                            to={ROUTES.BUILDER}
                             variant="lime"
                             className="shadow-lg shadow-lime/20 font-bold px-5"
                         >
-                            <Sparkles className="w-4 h-4 text-ink" />
-                            <span>Optimize Resume</span>
+                            <LayoutTemplate className="w-4 h-4 text-ink" />
+                            <span>Visual Builder</span>
                         </Button>
                         <Button
                             as={Link}
-                            to={ROUTES.RESUMES}
+                            to={ROUTES.OPTIMIZE}
                             variant="secondary"
                             className="bg-white/10 text-white border-white/20 hover:bg-white/20"
                         >
-                            <UploadCloud className="w-4 h-4" />
-                            <span>Upload Resume</span>
+                            <Sparkles className="w-4 h-4" />
+                            <span>AI Optimizer</span>
                         </Button>
                     </div>
                 </div>
@@ -130,48 +130,106 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* AI Career Toolkit Section */}
-            <div className="grid md:grid-cols-2 gap-5">
+            {/* AI Career Toolkit Section - 4 Feature Cards */}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <Link
+                    to={ROUTES.BUILDER}
+                    className="group rounded-2xl bg-gradient-to-br from-indigo-50/70 via-white to-white border border-indigo-100 p-5 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all flex flex-col justify-between"
+                >
+                    <div>
+                        <div className="flex items-start justify-between">
+                            <div className="p-2.5 rounded-xl bg-indigo-100 text-indigo-700 group-hover:scale-105 transition-transform">
+                                <LayoutTemplate className="w-5 h-5" />
+                            </div>
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-indigo-600 text-white font-mono">
+                                4 TEMPLATES
+                            </span>
+                        </div>
+                        <h3 className="text-sm font-bold font-display text-dark-900 mt-3 group-hover:text-primary-600 transition-colors">
+                            Visual Resume Builder
+                        </h3>
+                        <p className="text-[11px] text-dark-500 mt-1 leading-relaxed">
+                            Live WYSIWYG editor with Harvard, Modern & Minimalist templates + AI bullet copilot.
+                        </p>
+                    </div>
+                    <div className="pt-3 flex items-center text-xs font-bold text-primary-600 group-hover:translate-x-1 transition-transform">
+                        <span>Open Builder &rarr;</span>
+                    </div>
+                </Link>
+
+                <Link
+                    to={ROUTES.MOCK_INTERVIEW}
+                    className="group rounded-2xl bg-gradient-to-br from-emerald-50/70 via-white to-white border border-emerald-100 p-5 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all flex flex-col justify-between"
+                >
+                    <div>
+                        <div className="flex items-start justify-between">
+                            <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-700 group-hover:scale-105 transition-transform">
+                                <Bot className="w-5 h-5" />
+                            </div>
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white font-mono">
+                                REAL-TIME
+                            </span>
+                        </div>
+                        <h3 className="text-sm font-bold font-display text-dark-900 mt-3 group-hover:text-emerald-700 transition-colors">
+                            AI Mock Interview
+                        </h3>
+                        <p className="text-[11px] text-dark-500 mt-1 leading-relaxed">
+                            Live voice/speech interactive simulator with instant STAR scoring & ideal answer coaching.
+                        </p>
+                    </div>
+                    <div className="pt-3 flex items-center text-xs font-bold text-emerald-600 group-hover:translate-x-1 transition-transform">
+                        <span>Start Session &rarr;</span>
+                    </div>
+                </Link>
+
                 <Link
                     to={ROUTES.COVER_LETTER}
-                    className="group rounded-2xl bg-gradient-to-br from-primary-50/80 via-white to-white border border-primary-100 p-6 shadow-sm hover:shadow-md hover:border-primary-300 transition-all"
+                    className="group rounded-2xl bg-gradient-to-br from-primary-50/70 via-white to-white border border-primary-100 p-5 shadow-sm hover:shadow-md hover:border-primary-300 transition-all flex flex-col justify-between"
                 >
-                    <div className="flex items-start justify-between">
-                        <div className="p-3 rounded-xl bg-primary-100 text-primary-700 group-hover:scale-105 transition-transform">
-                            <Mail className="w-6 h-6" />
+                    <div>
+                        <div className="flex items-start justify-between">
+                            <div className="p-2.5 rounded-xl bg-primary-100 text-primary-700 group-hover:scale-105 transition-transform">
+                                <Mail className="w-5 h-5" />
+                            </div>
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-primary-600 text-white font-mono">
+                                COLD OUTREACH
+                            </span>
                         </div>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary-600 text-white font-mono">
-                            AI GENERATOR
-                        </span>
+                        <h3 className="text-sm font-bold font-display text-dark-900 mt-3 group-hover:text-primary-600 transition-colors">
+                            Cover Letter & LinkedIn Notes
+                        </h3>
+                        <p className="text-[11px] text-dark-500 mt-1 leading-relaxed">
+                            Bespoke cover letters and under-300-char LinkedIn networking messages.
+                        </p>
                     </div>
-                    <h3 className="text-base font-bold font-display text-dark-900 mt-4 group-hover:text-primary-600 transition-colors flex items-center gap-1.5">
-                        <span>Cover Letter & Cold Outreach</span>
-                        <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                    </h3>
-                    <p className="text-xs text-dark-500 mt-1.5 leading-relaxed">
-                        Generate tailored cover letters and under-300-char LinkedIn networking notes matched to any job.
-                    </p>
+                    <div className="pt-3 flex items-center text-xs font-bold text-primary-600 group-hover:translate-x-1 transition-transform">
+                        <span>Generate &rarr;</span>
+                    </div>
                 </Link>
 
                 <Link
                     to={ROUTES.GITHUB_IMPORT}
-                    className="group rounded-2xl bg-gradient-to-br from-dark-50/80 via-white to-white border border-dark-100 p-6 shadow-sm hover:shadow-md hover:border-dark-300 transition-all"
+                    className="group rounded-2xl bg-gradient-to-br from-dark-50/70 via-white to-white border border-dark-100 p-5 shadow-sm hover:shadow-md hover:border-dark-300 transition-all flex flex-col justify-between"
                 >
-                    <div className="flex items-start justify-between">
-                        <div className="p-3 rounded-xl bg-dark-100 text-dark-900 group-hover:scale-105 transition-transform">
-                            <Github className="w-6 h-6" />
+                    <div>
+                        <div className="flex items-start justify-between">
+                            <div className="p-2.5 rounded-xl bg-dark-100 text-dark-900 group-hover:scale-105 transition-transform">
+                                <Github className="w-5 h-5" />
+                            </div>
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-dark-900 text-white font-mono">
+                                PORTFOLIO
+                            </span>
                         </div>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-dark-900 text-white font-mono">
-                            PORTFOLIO SYNC
-                        </span>
+                        <h3 className="text-sm font-display font-bold text-dark-900 mt-3 group-hover:text-primary-600 transition-colors">
+                            GitHub Portfolio Importer
+                        </h3>
+                        <p className="text-[11px] text-dark-500 mt-1 leading-relaxed">
+                            Auto-sync public GitHub repos into quantified, ATS-compliant project bullets.
+                        </p>
                     </div>
-                    <h3 className="text-base font-display font-bold text-dark-900 mt-4 group-hover:text-primary-600 transition-colors flex items-center gap-1.5">
-                        <span>GitHub Portfolio Importer</span>
-                        <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                    </h3>
-                    <p className="text-xs text-dark-500 mt-1.5 leading-relaxed">
-                        Connect any GitHub account to automatically generate quantified, ATS-ready resume project bullet points.
-                    </p>
+                    <div className="pt-3 flex items-center text-xs font-bold text-dark-700 group-hover:translate-x-1 transition-transform">
+                        <span>Import Repos &rarr;</span>
+                    </div>
                 </Link>
             </div>
 

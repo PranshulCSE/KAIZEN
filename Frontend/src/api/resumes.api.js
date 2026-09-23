@@ -15,6 +15,11 @@ export const resumesApi = {
     getById: (id) => client.get(`/resumes/${id}`),
     update: (id, payload) => client.put(`/resumes/${id}`, payload),
     remove: (id) => client.delete(`/resumes/${id}`),
-    downloadPdf: (id, optimization) =>
-        client.post(`/resumes/${id}/download`, { optimization }, { responseType: 'blob' })
+    downloadPdf: (id, options = {}) => {
+        // If caller passed raw optimization object (legacy) or options object
+        const payload = options?.optimization !== undefined || options?.template !== undefined || options?.accentColor !== undefined
+            ? options
+            : { optimization: options };
+        return client.post(`/resumes/${id}/download`, payload, { responseType: 'blob' });
+    }
 };

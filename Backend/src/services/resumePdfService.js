@@ -1,108 +1,140 @@
 const React = require('react');
 const { Document, Page, Text, View, StyleSheet, pdf } = require('@react-pdf/renderer');
 
-const styles = StyleSheet.create({
-  page: {
-    padding: 40,
-    fontFamily: 'Helvetica',
-    fontSize: 11,
-    lineHeight: 1.4,
-    color: '#000',
-  },
-  header: {
-    marginBottom: 20,
-    borderBottomWidth: 2,
-    borderBottomColor: '#000',
-    paddingBottom: 10,
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#000',
-  },
-  contact: {
-    fontSize: 10,
-    color: '#333',
-    marginBottom: 2,
-  },
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    marginTop: 12,
-    marginBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#000',
-    paddingBottom: 4,
-    textTransform: 'uppercase',
-  },
-  summaryText: {
-    fontSize: 11,
-    lineHeight: 1.5,
-    marginBottom: 10,
-    color: '#222',
-  },
-  entryContainer: {
-    marginBottom: 10,
-  },
-  entryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 3,
-  },
-  entryTitle: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  entrySubtitle: {
-    fontSize: 10,
-    color: '#444',
-    fontStyle: 'italic',
-  },
-  entryDate: {
-    fontSize: 10,
-    color: '#555',
-  },
-  bulletPoint: {
-    flexDirection: 'row',
-    marginBottom: 4,
-    marginLeft: 10,
-  },
-  bullet: {
-    width: 15,
-    fontSize: 11,
-    color: '#000',
-  },
-  bulletText: {
-    flex: 1,
-    fontSize: 10,
-    color: '#222',
-    lineHeight: 1.4,
-  },
-  skillBadge: {
-    display: 'inline-block',
-    padding: '2px 6px',
-    marginRight: 6,
-    marginBottom: 6,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 3,
-    fontSize: 9,
-  },
-  skillsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 10,
-  },
-});
+// Helper to construct stylesheet based on selected template & accent color
+const createResumeStyles = (template = 'modern', accentColor = '#4F46E5') => {
+  const isClassic = template === 'classic';
+  const isMinimalist = template === 'minimalist';
+  const isExecutive = template === 'executive';
 
-const generateResumePDFBuffer = async (resume, optimization) => {
+  const fontFamily = isClassic ? 'Times-Roman' : 'Helvetica';
+  const fontBold = isClassic ? 'Times-Bold' : 'Helvetica-Bold';
+  const fontItalic = isClassic ? 'Times-Italic' : 'Helvetica-Oblique';
+
+  return StyleSheet.create({
+    page: {
+      padding: isMinimalist ? 35 : 40,
+      fontFamily,
+      fontSize: 10,
+      lineHeight: 1.4,
+      color: '#1A1A1A',
+    },
+    header: {
+      marginBottom: isClassic ? 14 : 16,
+      borderBottomWidth: isMinimalist ? 1 : 2,
+      borderBottomColor: isClassic ? '#1A1A1A' : accentColor || '#1A1A1A',
+      paddingBottom: isClassic ? 8 : 10,
+      textAlign: isClassic ? 'center' : 'left',
+    },
+    name: {
+      fontSize: isExecutive ? 24 : 22,
+      fontFamily: fontBold,
+      marginBottom: 4,
+      color: isExecutive ? accentColor : '#0F172A',
+      letterSpacing: isMinimalist ? 0.5 : 0,
+      textTransform: isClassic ? 'uppercase' : 'none',
+    },
+    contactContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: isClassic ? 'center' : 'flex-start',
+      gap: 10,
+      marginTop: 2,
+    },
+    contact: {
+      fontSize: 9,
+      color: '#475569',
+      marginRight: 10,
+    },
+    sectionTitle: {
+      fontSize: isMinimalist ? 11 : 12,
+      fontFamily: fontBold,
+      marginTop: 10,
+      marginBottom: 6,
+      borderBottomWidth: isMinimalist ? 0.5 : 1,
+      borderBottomColor: isClassic ? '#CBD5E1' : isExecutive ? accentColor : '#E2E8F0',
+      paddingBottom: 3,
+      textTransform: 'uppercase',
+      letterSpacing: 0.8,
+      color: isClassic ? '#1E293B' : accentColor || '#1E293B',
+    },
+    summaryText: {
+      fontSize: 9.5,
+      lineHeight: 1.45,
+      marginBottom: 8,
+      color: '#334155',
+    },
+    entryContainer: {
+      marginBottom: 8,
+    },
+    entryHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: 2,
+    },
+    entryTitle: {
+      fontSize: 10.5,
+      fontFamily: fontBold,
+      color: '#0F172A',
+    },
+    entrySubtitle: {
+      fontSize: 9.5,
+      color: '#475569',
+      fontFamily: fontItalic,
+      marginBottom: 2,
+    },
+    entryDate: {
+      fontSize: 9,
+      color: '#64748B',
+      fontFamily: isClassic ? fontItalic : fontFamily,
+    },
+    bulletPoint: {
+      flexDirection: 'row',
+      marginBottom: 3,
+      paddingLeft: 4,
+    },
+    bullet: {
+      width: 12,
+      fontSize: 10,
+      color: accentColor || '#475569',
+    },
+    bulletText: {
+      flex: 1,
+      fontSize: 9.5,
+      color: '#334155',
+      lineHeight: 1.4,
+    },
+    skillsContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 4,
+      marginBottom: 6,
+    },
+    skillBadge: {
+      paddingHorizontal: 6,
+      paddingVertical: 2,
+      marginRight: 4,
+      marginBottom: 4,
+      backgroundColor: isMinimalist ? 'transparent' : isExecutive ? '#F8FAFC' : '#F1F5F9',
+      borderRadius: 3,
+      borderWidth: isMinimalist ? 0.5 : isExecutive ? 0.5 : 0,
+      borderColor: '#CBD5E1',
+      fontSize: 8.5,
+      color: '#1E293B',
+    },
+  });
+};
+
+const generateResumePDFBuffer = async (resume, optimization, options = {}) => {
   try {
     const { content } = resume;
+    const { template = 'modern', accentColor = '#4F46E5' } = options || {};
+    const styles = createResumeStyles(template, accentColor);
     const h = React.createElement;
 
-    // Apply optimization if provided
-    let displaySummary = content.personalInfo?.summary || ''; // FIX: was content.personalSummary (doesn't exist on schema)
+    // Apply AI optimization if provided
+    let displaySummary = content.personalInfo?.summary || '';
     const beforeAfterMap = {};
 
     if (optimization?.beforeAfter && Array.isArray(optimization.beforeAfter)) {
@@ -123,42 +155,40 @@ const generateResumePDFBuffer = async (resume, optimization) => {
       return isNaN(date) ? String(d) : date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
     };
 
-    // Build document with React.createElement (no JSX — this is a plain .js/CommonJS file)
+    // Build PDF Document with React.createElement (CommonJS compatible)
     const doc = h(
       Document,
       null,
       h(
         Page,
         { size: 'A4', style: styles.page },
-        // HEADER
+        // HEADER SECTION
         h(
           View,
           { style: styles.header },
           h(Text, { style: styles.name }, content.personalInfo?.name || 'Resume'),
           h(
             View,
-            { style: { flexDirection: 'row', justifyContent: 'space-between' } },
-            h(
-              View,
-              null,
-              content.personalInfo?.email ? h(Text, { style: styles.contact }, content.personalInfo.email) : null,
-              content.personalInfo?.phone ? h(Text, { style: styles.contact }, content.personalInfo.phone) : null
-            ),
-            content.personalInfo?.location ? h(Text, { style: styles.contact }, content.personalInfo.location) : null
+            { style: styles.contactContainer },
+            content.personalInfo?.email ? h(Text, { style: styles.contact }, content.personalInfo.email) : null,
+            content.personalInfo?.phone ? h(Text, { style: styles.contact }, `•  ${content.personalInfo.phone}`) : null,
+            content.personalInfo?.location ? h(Text, { style: styles.contact }, `•  ${content.personalInfo.location}`) : null,
+            content.personalInfo?.linkedin ? h(Text, { style: styles.contact }, `•  ${content.personalInfo.linkedin}`) : null,
+            content.personalInfo?.portfolio ? h(Text, { style: styles.contact }, `•  ${content.personalInfo.portfolio}`) : null
           )
         ),
 
-        // SUMMARY
+        // SUMMARY SECTION
         displaySummary
           ? h(
               View,
               null,
-              h(Text, { style: styles.sectionTitle }, 'Summary'),
+              h(Text, { style: styles.sectionTitle }, 'Professional Summary'),
               h(Text, { style: styles.summaryText }, displaySummary)
             )
           : null,
 
-        // EXPERIENCE
+        // EXPERIENCE SECTION
         content.experience && content.experience.length > 0
           ? h(
               View,
@@ -171,23 +201,23 @@ const generateResumePDFBuffer = async (resume, optimization) => {
                   h(
                     View,
                     { style: styles.entryHeader },
-                    h(Text, { style: styles.entryTitle }, job.role || 'Position'), // FIX: was job.position
+                    h(Text, { style: styles.entryTitle }, job.role || 'Role Title'),
                     h(
                       Text,
                       { style: styles.entryDate },
-                      `${formatDate(job.startDate)} - ${job.isCurrent ? 'Present' : formatDate(job.endDate)}` // FIX: was job.isCurrentlyWorking
+                      `${formatDate(job.startDate)} - ${job.isCurrent ? 'Present' : formatDate(job.endDate)}`
                     )
                   ),
-                  job.company ? h(Text, { style: styles.entrySubtitle }, job.company) : null, // FIX: was job.companyName
+                  job.company
+                    ? h(Text, { style: styles.entrySubtitle }, `${job.company}${job.location ? ` | ${job.location}` : ''}`)
+                    : null,
+                  // Bullet Points (with AI Optimization rewrites applied)
                   job.bulletPoints && job.bulletPoints.length > 0
                     ? h(
                         View,
                         null,
                         ...job.bulletPoints.map((bp, bidx) => {
                           if (!bp) return null;
-                          // FIX Bug #2: Apply AI optimization rewrites to bulletPoints
-                          // (beforeAfterMap was previously only checked on achievements,
-                          // but the parser puts all real content into bulletPoints).
                           const displayBp = beforeAfterMap[bp] || bp;
                           return h(
                             View,
@@ -197,31 +227,13 @@ const generateResumePDFBuffer = async (resume, optimization) => {
                           );
                         })
                       )
-                    : null,
-                  job.achievements && Array.isArray(job.achievements) && job.achievements.length > 0
-                    ? h(
-                        View,
-                        null,
-                        ...job.achievements.map((achievement, aidx) => {
-                          const text = achievement?.description || ''; // FIX: achievements are {description, metrics} objects, not plain strings
-                          const displayAchievement = beforeAfterMap[text] || text;
-                          return displayAchievement
-                            ? h(
-                                View,
-                                { key: aidx, style: styles.bulletPoint },
-                                h(Text, { style: styles.bullet }, '•'),
-                                h(Text, { style: styles.bulletText }, displayAchievement)
-                              )
-                            : null;
-                        })
-                      )
                     : null
                 )
               )
             )
           : null,
 
-        // EDUCATION
+        // EDUCATION SECTION
         content.education && content.education.length > 0
           ? h(
               View,
@@ -235,21 +247,62 @@ const generateResumePDFBuffer = async (resume, optimization) => {
                     View,
                     { style: styles.entryHeader },
                     h(Text, { style: styles.entryTitle }, edu.degree || 'Degree'),
-                    h(Text, { style: styles.entryDate }, edu.endYear || '') // FIX: was edu.graduationYear
+                    h(Text, { style: styles.entryDate }, edu.endYear ? `Graduated: ${edu.endYear}` : '')
                   ),
-                  edu.institution ? h(Text, { style: styles.entrySubtitle }, edu.institution) : null, // FIX: was edu.university
-                  edu.field ? h(Text, { style: styles.summaryText }, `Field: ${edu.field}`) : null
+                  edu.institution
+                    ? h(Text, { style: styles.entrySubtitle }, `${edu.institution}${edu.field ? ` — ${edu.field}` : ''}`)
+                    : null,
+                  edu.gpa ? h(Text, { style: styles.summaryText }, `GPA: ${edu.gpa}`) : null
                 )
               )
             )
           : null,
 
-        // SKILLS
+        // PROJECTS SECTION
+        content.projects && content.projects.length > 0
+          ? h(
+              View,
+              null,
+              h(Text, { style: styles.sectionTitle }, 'Key Projects'),
+              ...content.projects.map((proj, idx) =>
+                h(
+                  View,
+                  { key: idx, style: styles.entryContainer },
+                  h(
+                    View,
+                    { style: styles.entryHeader },
+                    h(Text, { style: styles.entryTitle }, proj.name || 'Project Name'),
+                    proj.link ? h(Text, { style: styles.entryDate }, proj.link) : null
+                  ),
+                  proj.technologies && proj.technologies.length > 0
+                    ? h(Text, { style: styles.entrySubtitle }, `Technologies: ${proj.technologies.join(', ')}`)
+                    : null,
+                  proj.description ? h(Text, { style: styles.summaryText }, proj.description) : null,
+                  proj.bulletPoints && proj.bulletPoints.length > 0
+                    ? h(
+                        View,
+                        null,
+                        ...proj.bulletPoints.map((bp, bidx) =>
+                          h(
+                            View,
+                            { key: bidx, style: styles.bulletPoint },
+                            h(Text, { style: styles.bullet }, '•'),
+                            h(Text, { style: styles.bulletText }, bp)
+                          )
+                        )
+                      )
+                    : null
+                )
+              )
+            )
+          : null,
+
+        // SKILLS SECTION
         content.skills && content.skills.length > 0
           ? h(
               View,
               null,
-              h(Text, { style: styles.sectionTitle }, 'Skills'),
+              h(Text, { style: styles.sectionTitle }, 'Technical Skills'),
               h(
                 View,
                 { style: styles.skillsContainer },
@@ -260,7 +313,7 @@ const generateResumePDFBuffer = async (resume, optimization) => {
             )
           : null,
 
-        // CERTIFICATIONS
+        // CERTIFICATIONS SECTION
         content.certifications && content.certifications.length > 0
           ? h(
               View,
@@ -271,28 +324,8 @@ const generateResumePDFBuffer = async (resume, optimization) => {
                   View,
                   { key: idx, style: styles.entryContainer },
                   h(Text, { style: styles.entryTitle }, cert.name || 'Certification'),
-                  cert.issuer ? h(Text, { style: styles.entrySubtitle }, `Issued by: ${cert.issuer}`) : null,
-                  cert.date ? h(Text, { style: styles.entryDate }, `Issued: ${formatDate(cert.date)}`) : null // FIX: was cert.issueDate
-                )
-              )
-            )
-          : null,
-
-        // PROJECTS
-        content.projects && content.projects.length > 0
-          ? h(
-              View,
-              null,
-              h(Text, { style: styles.sectionTitle }, 'Projects'),
-              ...content.projects.map((proj, idx) =>
-                h(
-                  View,
-                  { key: idx, style: styles.entryContainer },
-                  h(Text, { style: styles.entryTitle }, proj.name || 'Project'), // FIX: was proj.title
-                  proj.description ? h(Text, { style: styles.summaryText }, proj.description) : null,
-                  proj.technologies && proj.technologies.length > 0
-                    ? h(Text, { style: styles.entrySubtitle }, `Tech: ${proj.technologies.join(', ')}`)
-                    : null
+                  cert.issuer ? h(Text, { style: styles.entrySubtitle }, `Issuer: ${cert.issuer}`) : null,
+                  cert.date ? h(Text, { style: styles.entryDate }, `Date: ${formatDate(cert.date)}`) : null
                 )
               )
             )
@@ -300,9 +333,7 @@ const generateResumePDFBuffer = async (resume, optimization) => {
       )
     );
 
-    // FIX Bug #1: pdf(doc).toBuffer() resolves directly to a Buffer — it is
-    // NOT a readable stream. Calling .on('data') on a Buffer throws
-    // "TypeError: stream.on is not a function" and crashes every download.
+    // FIX Bug #1: Return Buffer directly (never stream)
     const buffer = await pdf(doc).toBuffer();
     return buffer;
   } catch (error) {

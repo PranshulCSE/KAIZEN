@@ -329,15 +329,15 @@ const downloadResume = async (req, res) => {
             });
         }
 
-        const { optimization } = req.body || {};
-        const pdfBuffer = await generateResumePDFBuffer(resume, optimization);
+        const { optimization, template = 'modern', accentColor = '#4F46E5' } = req.body || {};
+        const pdfBuffer = await generateResumePDFBuffer(resume, optimization, { template, accentColor });
 
         await AuditLog.create({
             userId: req.user._id,
             action: 'resume_download',
             resource: 'Resume',
             resourceId: resume._id,
-            details: { title: resume.title, optimized: Boolean(optimization) },
+            details: { title: resume.title, optimized: Boolean(optimization), template, accentColor },
             ipAddress: req.ip,
             userAgent: req.headers['user-agent'],
             status: 'success'

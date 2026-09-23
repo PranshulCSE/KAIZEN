@@ -474,7 +474,170 @@ ${OUTPUT_RULES}
 
     return this._generateJSON(prompt, 'Generate GitHub project bullets');
   }
+
+  // AI Inline Bullet Point Copilot
+  async improveBulletPoint(bulletText, action = 'stronger', options = {}) {
+    this._ensureConfigured();
+    if (!bulletText || typeof bulletText !== 'string' || bulletText.trim().length < 5) {
+      throw new Error('A bullet point text (at least 5 characters) is required.');
+    }
+
+    const { targetRole = 'Software Engineer', extraContext = '' } = options;
+
+    const actionDescriptions = {
+      stronger: 'Strengthen action verbs, elevate ownership, remove passive voice and filler words.',
+      metrics: 'Quantify impact, prompt for realistic latency/scale/efficiency metrics, highlight business and technical outcomes.',
+      shorten: 'Make concise, ultra-punchy, single-line ATS bullet without losing core achievement.',
+      leadership: 'Highlight mentorship, technical decision making, cross-functional collaboration, and architectural ownership.',
+      tailor: `Tailor specifically for the role of ${targetRole}, incorporating high-demand industry keywords.`
+    };
+
+    const prompt = `
+You are a principal technical recruiter and resume copilot. Rewrite the given bullet point with extreme precision and impact.
+
+${ATS_RESUME_STANDARD}
+${NO_FABRICATION_RULE}
+
+Transformation Goal: ${action.toUpperCase()} (${actionDescriptions[action] || actionDescriptions.stronger})
+Target Role Context: ${targetRole}
+Extra Instructions: ${extraContext || 'None'}
+
+Original Bullet Point:
+"""
+${bulletText}
+"""
+
+TASK: Provide 3 high-impact alternative variations of this bullet point, each optimizing for different nuances of the goal, along with an explanation of what makes each version superior.
+
+Return exactly this JSON structure:
+{
+  "original": "${bulletText.replace(/"/g, '\\"')}",
+  "action": "${action}",
+  "suggestions": [
+    {
+      "text": "Rewritten bullet point 1...",
+      "highlight": "Stronger verb + scale",
+      "impactScore": 95
+    },
+    {
+      "text": "Rewritten bullet point 2...",
+      "highlight": "Metric & efficiency focused",
+      "impactScore": 92
+    },
+    {
+      "text": "Rewritten bullet point 3...",
+      "highlight": "Architecture & ownership focused",
+      "impactScore": 90
+    }
+  ],
+  "atsTips": "Quick 1-sentence tip on how recruiters evaluate this type of bullet."
+}
+${OUTPUT_RULES}
+    `;
+
+    return this._generateJSON(prompt, 'Improve bullet point');
+  }
+
+  // Real-time AI Mock Interview Turn Evaluator
+  async evaluateInterviewTurn(history, currentAnswer, targetRole = 'Software Engineer', resumeSummary = {}) {
+    this._ensureConfigured();
+
+    const lastQuestion = history[history.length - 1]?.question || 'Tell me about yourself and your background.';
+
+    const prompt = `
+You are a Senior Principal Interviewer conducting an interactive, professional mock interview for a ${targetRole} position.
+
+Candidate Resume Context:
+"""
+${JSON.stringify(resumeSummary)}
+"""
+
+Interview History so far:
+"""
+${JSON.stringify(history)}
+"""
+
+Current Question:
+"${lastQuestion}"
+
+Candidate's Answer:
+"""
+${currentAnswer}
+"""
+
+TASK:
+1. Evaluate the candidate's answer using the STAR method (Situation, Task, Action, Result).
+2. Rate the answer on a scale of 1-10.
+3. Provide constructive, encouraging feedback highlighting strengths and missing elements.
+4. Provide a sample "Ideal Answer" showing how a top 1% candidate would phrase this.
+5. Formulate the NEXT logical question for the interview (vary between Technical Deep Dive, System Design/Architecture, Behavioral/Conflict, and Impact).
+
+Return exactly this JSON structure:
+{
+  "score": 8,
+  "starBreakdown": {
+    "situation": "Clear context established...",
+    "task": "Identified core challenge...",
+    "action": "Explained specific steps taken...",
+    "result": "Quantified outcome / impact..."
+  },
+  "feedback": "2-3 sentences of sharp, constructive feedback...",
+  "strengths": ["Clear technical explanation", "Good ownership"],
+  "improvementTips": ["Could quantify latency reduction or team size"],
+  "idealAnswer": "How an elite candidate would answer...",
+  "nextQuestion": "The next interview question to ask...",
+  "questionCategory": "Technical Deep Dive",
+  "isInterviewComplete": false
+}
+${OUTPUT_RULES}
+    `;
+
+    return this._generateJSON(prompt, 'Evaluate interview turn');
+  }
+
+  // Final Mock Interview Performance Summary
+  async generateInterviewSummary(fullTranscript, targetRole = 'Software Engineer') {
+    this._ensureConfigured();
+
+    const prompt = `
+You are the Interview Hiring Committee Lead evaluating a completed mock interview for a ${targetRole} candidate.
+
+Full Interview Transcript:
+"""
+${JSON.stringify(fullTranscript)}
+"""
+
+TASK: Generate a comprehensive post-interview assessment scorecard.
+
+Guidance:
+- overallScore: 0-100 composite score.
+- recommendation: One of "Strong Hire", "Hire", "Lean Hire", "Needs Work".
+- breakdown: Scores out of 100 for Technical Proficiency, Communication & Clarity, Problem Solving & Structure, Behavioral / STAR Alignment.
+- keyStrengths: 3-4 specific strengths observed during the session.
+- areasForGrowth: 3-4 actionable tips to improve interview performance.
+- summaryNotes: 2-3 paragraph executive summary of the candidate's performance.
+
+Return exactly this JSON structure:
+{
+  "overallScore": 88,
+  "recommendation": "Hire",
+  "breakdown": {
+    "technical": 85,
+    "communication": 90,
+    "problemSolving": 88,
+    "starMethod": 86
+  },
+  "keyStrengths": ["Strength 1", "Strength 2", "Strength 3"],
+  "areasForGrowth": ["Area 1", "Area 2", "Area 3"],
+  "summaryNotes": "Executive evaluation paragraph..."
+}
+${OUTPUT_RULES}
+    `;
+
+    return this._generateJSON(prompt, 'Generate interview summary');
+  }
 }
 
 const AI = new AIService();
-module.exports = AI;
+module.exports = AI;
+
