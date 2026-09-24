@@ -405,6 +405,8 @@ const scrapeJobUrl = async (req, res) => {
             error: error.message
         });
     }
+};
+
 // @desc    AI Inline Bullet Point Copilot
 // @route   POST /api/ai/improve-bullet
 const improveBullet = async (req, res) => {
