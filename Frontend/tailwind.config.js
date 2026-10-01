@@ -4,18 +4,18 @@ export default {
     theme: {
         extend: {
             colors: {
-                /* ── Original neobrutalist palette ── */
-                ink: '#14161A',
-                paper: '#FFFFFF',
-                surface: '#F6F7F2',
+                /* ── Theme-aware neobrutalist palette ── */
+                ink: 'var(--color-text-ink, #14161A)',
+                paper: 'var(--color-bg-paper, #FFFFFF)',
+                surface: 'var(--color-bg-surface, #F6F7F2)',
                 lime: {
                     DEFAULT: '#D7FA3B',
                     dim: '#EFFCB8',
                     bright: '#E8FC4B',
                 },
-                muted: '#63666C',
-                line: '#14161A',
-                hairline: '#E4E5DF',
+                muted: 'var(--color-text-muted, #63666C)',
+                line: 'var(--color-border-line, #14161A)',
+                hairline: 'var(--color-border-hairline, #E4E5DF)',
                 danger: {
                     DEFAULT: '#FF5A52',
                     light: '#FFE3E1',

@@ -220,18 +220,18 @@ export default function GitHubImport() {
 
       {/* Main Content Area */}
       {!profileData ? (
-        <div className="rounded-2xl border-2 border-dashed border-dark-200 bg-white p-12 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-dark-50 text-dark-800 flex items-center justify-center mx-auto mb-4 border border-dark-100">
+        <div className="rounded-2xl border-2 border-dashed border-dark-200 dark:border-dark-800 bg-white dark:bg-dark-900 p-12 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-dark-50 dark:bg-dark-950 text-dark-800 dark:text-dark-200 flex items-center justify-center mx-auto mb-4 border border-dark-100 dark:border-dark-800">
             <Github className="w-8 h-8" />
           </div>
-          <h3 className="text-base font-bold font-display text-dark-900 mb-1">
+          <h3 className="text-base font-bold font-display text-dark-900 dark:text-white mb-1">
             Connect Any Public GitHub Account
           </h3>
-          <p className="text-xs text-dark-500 max-w-md mx-auto leading-relaxed mb-6">
+          <p className="text-xs text-dark-500 dark:text-dark-400 max-w-md mx-auto leading-relaxed mb-6">
             Enter your GitHub username above to discover your top repositories, analyze dependencies, and generate high-impact resume project entries.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-dark-500">
+          <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-dark-500 dark:text-dark-400">
             <span>Popular examples:</span>
             {['shadcn', 'octocat', 'torvalds'].map((demo) => (
               <button
@@ -240,7 +240,7 @@ export default function GitHubImport() {
                 onClick={() => {
                   setUsername(demo);
                 }}
-                className="px-2.5 py-1 rounded-lg bg-dark-50 hover:bg-primary-50 hover:text-primary-600 border border-dark-100 font-mono transition-colors"
+                className="px-2.5 py-1 rounded-lg bg-dark-50 dark:bg-dark-800 hover:bg-primary-50 dark:hover:bg-primary-950 hover:text-primary-600 dark:hover:text-primary-400 border border-dark-100 dark:border-dark-700 font-mono transition-colors"
               >
                 @{demo}
               </button>
@@ -252,50 +252,50 @@ export default function GitHubImport() {
           {/* LEFT: User Profile & Repo Selection */}
           <div className="lg:col-span-6 space-y-6">
             {/* User Profile Card */}
-            <div className="p-5 rounded-2xl bg-white border border-dark-100 shadow-sm flex items-center justify-between gap-4">
+            <div className="p-5 rounded-2xl bg-white dark:bg-dark-900 border border-dark-100 dark:border-dark-800 shadow-sm flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <img
                   src={profileData.avatarUrl}
                   alt={profileData.username}
-                  className="w-14 h-14 rounded-2xl border border-dark-100 shadow-sm object-cover"
+                  className="w-14 h-14 rounded-2xl border border-dark-100 dark:border-dark-800 shadow-sm object-cover"
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-base font-bold text-dark-900">{profileData.name}</h3>
+                    <h3 className="text-base font-bold text-dark-900 dark:text-white">{profileData.name}</h3>
                     <a
                       href={profileData.githubUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-dark-400 hover:text-primary-600"
+                      className="text-dark-400 hover:text-primary-600 dark:hover:text-primary-400"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                   </div>
-                  <p className="text-xs font-mono text-dark-500">@{profileData.username}</p>
+                  <p className="text-xs font-mono text-dark-500 dark:text-dark-400">@{profileData.username}</p>
                   {profileData.bio && (
-                    <p className="text-xs text-dark-600 mt-1 line-clamp-1">{profileData.bio}</p>
+                    <p className="text-xs text-dark-600 dark:text-dark-300 mt-1 line-clamp-1">{profileData.bio}</p>
                   )}
                 </div>
               </div>
 
               <div className="text-right hidden sm:block">
-                <span className="text-xs font-mono font-bold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-full">
+                <span className="text-xs font-mono font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950 px-2.5 py-1 rounded-full">
                   {repositories.length} Repositories
                 </span>
               </div>
             </div>
 
             {/* Target Role & Selection Controls */}
-            <Card className="p-5 border-dark-100 space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-dark-100">
-                <h4 className="text-xs font-bold font-display uppercase tracking-wider text-dark-700">
+            <Card className="p-5 border-dark-100 dark:border-dark-800 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-dark-100 dark:border-dark-800">
+                <h4 className="text-xs font-bold font-display uppercase tracking-wider text-dark-700 dark:text-dark-300">
                   Select Repositories to Convert ({selectedRepoNames.size} selected)
                 </h4>
                 <span className="text-[11px] font-mono text-dark-400">Max 5 repos</span>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-dark-700 mb-1.5">
+                <label className="block text-xs font-semibold text-dark-700 dark:text-dark-300 mb-1.5">
                   Target Role Rubric
                 </label>
                 <input
@@ -303,7 +303,7 @@ export default function GitHubImport() {
                   value={targetRole}
                   onChange={(e) => setTargetRole(e.target.value)}
                   placeholder="e.g. Senior Backend Engineer"
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-dark-200 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
                 />
               </div>
 
@@ -317,8 +317,8 @@ export default function GitHubImport() {
                       onClick={() => toggleRepoSelection(repo.name)}
                       className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                         isChecked
-                          ? 'border-primary-500 bg-primary-50/50 shadow-2xs'
-                          : 'border-dark-100 bg-white hover:border-dark-200'
+                          ? 'border-primary-500 bg-primary-50/50 dark:bg-primary-950/40 shadow-2xs'
+                          : 'border-dark-100 dark:border-dark-800 bg-white dark:bg-dark-900 hover:border-dark-200'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -327,28 +327,28 @@ export default function GitHubImport() {
                             type="checkbox"
                             checked={isChecked}
                             onChange={() => {}} // handled by parent div
-                            className="mt-1 h-4 w-4 rounded border-dark-300 text-primary-600 focus:ring-primary-500"
+                            className="mt-1 h-4 w-4 rounded border-dark-300 dark:border-dark-700 text-primary-600 focus:ring-primary-500 bg-white dark:bg-dark-900"
                           />
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="text-xs font-bold text-dark-900 font-mono">
+                              <span className="text-xs font-bold text-dark-900 dark:text-white font-mono">
                                 {repo.name}
                               </span>
                               {repo.stars > 0 && (
-                                <span className="flex items-center gap-0.5 text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-md">
+                                <span className="flex items-center gap-0.5 text-[10px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-950 px-1.5 py-0.5 rounded-md">
                                   <Star className="w-2.5 h-2.5 fill-current" />
                                   {repo.stars}
                                 </span>
                               )}
                             </div>
-                            <p className="text-[11px] text-dark-500 line-clamp-2 mt-1">
+                            <p className="text-[11px] text-dark-500 dark:text-dark-400 line-clamp-2 mt-1">
                               {repo.description}
                             </p>
                           </div>
                         </div>
 
                         {repo.language && (
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-dark-100 text-dark-700 whitespace-nowrap">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-dark-100 dark:bg-dark-800 text-dark-700 dark:text-dark-300 whitespace-nowrap">
                             {repo.language}
                           </span>
                         )}
@@ -375,26 +375,26 @@ export default function GitHubImport() {
           {/* RIGHT: Generated Project Entries */}
           <div className="lg:col-span-6 space-y-6">
             {generatedProjects.length === 0 ? (
-              <div className="rounded-2xl border-2 border-dashed border-dark-200 bg-white p-12 text-center">
-                <div className="w-14 h-14 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center mx-auto mb-4">
+              <div className="rounded-2xl border-2 border-dashed border-dark-200 dark:border-dark-800 bg-white dark:bg-dark-900 p-12 text-center">
+                <div className="w-14 h-14 rounded-2xl bg-primary-50 dark:bg-primary-950 text-primary-600 dark:text-primary-400 flex items-center justify-center mx-auto mb-4">
                   <Code2 className="w-7 h-7" />
                 </div>
-                <h3 className="text-base font-bold font-display text-dark-900 mb-1">
+                <h3 className="text-base font-bold font-display text-dark-900 dark:text-white mb-1">
                   Ready to Generate
                 </h3>
-                <p className="text-xs text-dark-500 max-w-sm mx-auto leading-relaxed">
+                <p className="text-xs text-dark-500 dark:text-dark-400 max-w-sm mx-auto leading-relaxed">
                   Select repositories on the left and click Transform to generate quantified, ATS-optimized project bullets with tech stack tags.
                 </p>
               </div>
             ) : (
               <div className="space-y-5 animate-scale-in">
                 {/* Action Bar */}
-                <div className="p-4 rounded-2xl bg-white border border-dark-100 shadow-sm space-y-3">
+                <div className="p-4 rounded-2xl bg-white dark:bg-dark-900 border border-dark-100 dark:border-dark-800 shadow-sm space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold font-display uppercase tracking-wider text-dark-700">
+                    <span className="text-xs font-bold font-display uppercase tracking-wider text-dark-700 dark:text-dark-300">
                       Generated {generatedProjects.length} Projects
                     </span>
-                    <span className="text-xs font-mono text-emerald-600 font-bold flex items-center gap-1">
+                    <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       ATS Optimized
                     </span>
@@ -402,14 +402,14 @@ export default function GitHubImport() {
 
                   {/* Add directly to resume bar */}
                   {resumes.length > 0 && (
-                    <div className="pt-2 border-t border-dark-100 flex flex-wrap items-center gap-2">
+                    <div className="pt-2 border-t border-dark-100 dark:border-dark-800 flex flex-wrap items-center gap-2">
                       <select
                         value={selectedResumeId}
                         onChange={(e) => setSelectedResumeId(e.target.value)}
-                        className="flex-1 px-3 py-1.5 text-xs rounded-xl border border-dark-200 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
+                        className="flex-1 px-3 py-1.5 text-xs rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
                       >
                         {resumes.map((r) => (
-                          <option key={r._id} value={r._id}>
+                          <option key={r._id} value={r._id} className="text-dark-900 dark:text-white dark:bg-dark-900">
                             Add to: {r.title}
                           </option>
                         ))}
@@ -433,14 +433,14 @@ export default function GitHubImport() {
                 {generatedProjects.map((project, idx) => (
                   <div
                     key={idx}
-                    className="p-5 rounded-2xl bg-white border border-dark-100 shadow-sm space-y-3 hover:border-primary-200 transition-all"
+                    className="p-5 rounded-2xl bg-white dark:bg-dark-900 border border-dark-100 dark:border-dark-800 shadow-sm space-y-3 hover:border-primary-200 transition-all"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h4 className="text-sm font-bold text-dark-900 font-display">
+                        <h4 className="text-sm font-bold text-dark-900 dark:text-white font-display">
                           {project.name}
                         </h4>
-                        <p className="text-xs text-dark-500 mt-0.5">{project.description}</p>
+                        <p className="text-xs text-dark-500 dark:text-dark-400 mt-0.5">{project.description}</p>
                       </div>
 
                       <Button
@@ -469,7 +469,7 @@ export default function GitHubImport() {
                         {project.technologies.map((t, tidx) => (
                           <span
                             key={tidx}
-                            className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-dark-50 text-dark-700 border border-dark-100"
+                            className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-dark-50 dark:bg-dark-800 text-dark-700 dark:text-dark-300 border border-dark-100 dark:border-dark-700"
                           >
                             {t}
                           </span>
@@ -478,10 +478,10 @@ export default function GitHubImport() {
                     )}
 
                     {/* Bullet Points */}
-                    <div className="p-3.5 rounded-xl bg-dark-50/70 border border-dark-100 space-y-2">
+                    <div className="p-3.5 rounded-xl bg-dark-50/70 dark:bg-dark-950 border border-dark-100 dark:border-dark-800 space-y-2">
                       {project.bulletPoints?.map((bullet, bidx) => (
-                        <div key={bidx} className="flex items-start gap-2 text-xs text-dark-800 leading-relaxed">
-                          <span className="text-primary-600 font-bold">•</span>
+                        <div key={bidx} className="flex items-start gap-2 text-xs text-dark-800 dark:text-dark-200 leading-relaxed">
+                          <span className="text-primary-600 dark:text-primary-400 font-bold">•</span>
                           <span>{bullet}</span>
                         </div>
                       ))}

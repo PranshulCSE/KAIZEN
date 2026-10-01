@@ -22,7 +22,7 @@ export default function ScoreGauge({ score = 0, size = 88, label }) {
         style={{ width: size, height: size }}
       >
         <svg width={size} height={size} className="-rotate-90">
-          <circle cx={size / 2} cy={size / 2} r={radius} stroke="#DACD9F" strokeWidth="6" fill="none" />
+          <circle cx={size / 2} cy={size / 2} r={radius} className="stroke-dark-200 dark:stroke-dark-800" strokeWidth="6" fill="none" />
           <circle
             cx={size / 2}
             cy={size / 2}
@@ -36,11 +36,11 @@ export default function ScoreGauge({ score = 0, size = 88, label }) {
             style={{ transition: 'stroke-dashoffset 0.9s cubic-bezier(0.16, 1, 0.3, 1)' }}
           />
         </svg>
-        <div className="absolute inset-0 flex items-center justify-center font-mono text-lg font-medium text-ink">
+        <div className="absolute inset-0 flex items-center justify-center font-mono text-lg font-bold text-dark-900 dark:text-white">
           {Math.round(safeScore)}
         </div>
       </div>
-      {label && <span className="eyebrow">{label}</span>}
+      {label && <span className="eyebrow text-dark-500 dark:text-dark-400">{label}</span>}
     </div>
   );
 }

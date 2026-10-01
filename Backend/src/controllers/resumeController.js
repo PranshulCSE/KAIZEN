@@ -343,13 +343,16 @@ const downloadResume = async (req, res) => {
             status: 'success'
         });
 
-        const safeFilename = resume.title.replace(/[^\w\- ]+/g, '') || 'resume';
+        const safeFilename = (resume.title || 'resume').replace(/[^\w\- ]+/g, '').trim() || 'resume';
+        const bufferToSend = Buffer.isBuffer(pdfBuffer) ? pdfBuffer : Buffer.from(pdfBuffer);
+
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename="${safeFilename}.pdf"`);
-        res.send(pdfBuffer);
+        res.setHeader('Content-Length', bufferToSend.length);
+        return res.end(bufferToSend);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({
+        console.error('Download resume error:', error);
+        return res.status(500).json({
             success: false,
             message: 'Failed to generate resume PDF',
             error: error.message

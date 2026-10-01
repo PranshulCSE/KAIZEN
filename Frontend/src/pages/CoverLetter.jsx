@@ -234,9 +234,9 @@ export default function CoverLetter() {
       <div className="grid lg:grid-cols-12 gap-8 items-start">
         {/* LEFT COLUMN: Controls & Input Form */}
         <div className="lg:col-span-5 space-y-6">
-          <Card className="p-6 border-dark-100/90 shadow-sm space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-dark-100">
-              <h2 className="text-base font-bold font-display text-dark-900 flex items-center gap-2">
+          <Card className="p-6 border-dark-100 dark:border-dark-800 shadow-sm space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-dark-100 dark:border-dark-800">
+              <h2 className="text-base font-bold font-display text-dark-900 dark:text-white flex items-center gap-2">
                 <Sliders className="w-4 h-4 text-primary-600" />
                 <span>Configuration</span>
               </h2>
@@ -245,21 +245,21 @@ export default function CoverLetter() {
 
             {/* Resume Selection */}
             <div>
-              <label className="block text-xs font-bold text-dark-700 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-dark-700 dark:text-dark-300 uppercase tracking-wider mb-2">
                 1. Select Source Resume
               </label>
               {resumes.length === 0 ? (
-                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800">
+                <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 text-xs text-amber-800 dark:text-amber-300">
                   No resumes found. Please upload a resume first to use this generator.
                 </div>
               ) : (
                 <select
                   value={selectedResumeId}
                   onChange={(e) => setSelectedResumeId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-dark-200 bg-white text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent font-medium"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
                 >
                   {resumes.map((r) => (
-                    <option key={r._id} value={r._id}>
+                    <option key={r._id} value={r._id} className="text-dark-900 dark:text-white dark:bg-dark-900">
                       {r.title} ({r.optimization?.atsScore || 0}% ATS)
                     </option>
                   ))}
@@ -269,7 +269,7 @@ export default function CoverLetter() {
 
             {/* Target Job Selection / Input */}
             <div className="space-y-3">
-              <label className="block text-xs font-bold text-dark-700 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-dark-700 dark:text-dark-300 uppercase tracking-wider">
                 2. Target Job Description
               </label>
 
@@ -288,11 +288,11 @@ export default function CoverLetter() {
                         }
                       }
                     }}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-dark-200 bg-white text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium mb-2"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium mb-2"
                   >
-                    <option value="">-- Choose from analyzed jobs (or paste custom) --</option>
+                    <option value="" className="text-dark-900 dark:text-white dark:bg-dark-900">-- Choose from analyzed jobs (or paste custom) --</option>
                     {analyses.map((a) => (
-                      <option key={a._id} value={a._id}>
+                      <option key={a._id} value={a._id} className="text-dark-900 dark:text-white dark:bg-dark-900">
                         {a.jobTitle || 'Role'} at {a.company || 'Company'}
                       </option>
                     ))}
@@ -309,7 +309,7 @@ export default function CoverLetter() {
                       placeholder="Paste Job URL (LinkedIn, Indeed, etc.)"
                       value={jobUrl}
                       onChange={(e) => setJobUrl(e.target.value)}
-                      className="flex-1 px-3 py-2 text-xs rounded-lg border border-dark-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="flex-1 px-3 py-2 text-xs rounded-lg border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono"
                     />
                     <Button
                       type="button"
@@ -330,14 +330,14 @@ export default function CoverLetter() {
                       placeholder="Job Title (e.g. Senior Frontend Dev)"
                       value={customJobTitle}
                       onChange={(e) => setCustomJobTitle(e.target.value)}
-                      className="px-3 py-2 text-xs rounded-lg border border-dark-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="px-3 py-2 text-xs rounded-lg border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
                     />
                     <input
                       type="text"
                       placeholder="Company (e.g. Stripe)"
                       value={customCompany}
                       onChange={(e) => setCustomCompany(e.target.value)}
-                      className="px-3 py-2 text-xs rounded-lg border border-dark-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="px-3 py-2 text-xs rounded-lg border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
                     />
                   </div>
 
@@ -346,16 +346,16 @@ export default function CoverLetter() {
                     placeholder="Or paste full job description text here..."
                     value={customJobDesc}
                     onChange={(e) => setCustomJobDesc(e.target.value)}
-                    className="w-full p-3 text-xs rounded-xl border border-dark-200 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none font-mono"
+                    className="w-full p-3 text-xs rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none font-mono"
                   />
                 </div>
               )}
             </div>
 
             {/* Tone & Recipient Pickers */}
-            <div className="space-y-4 pt-2 border-t border-dark-100">
+            <div className="space-y-4 pt-2 border-t border-dark-100 dark:border-dark-800">
               <div>
-                <label className="block text-xs font-bold text-dark-700 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-dark-700 dark:text-dark-300 uppercase tracking-wider mb-2">
                   Tone Style
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -371,19 +371,19 @@ export default function CoverLetter() {
                       onClick={() => setTone(t.id)}
                       className={`p-2.5 rounded-xl border text-center transition-all ${
                         tone === t.id
-                          ? 'border-primary-600 bg-primary-50 text-primary-900 font-bold shadow-2xs'
-                          : 'border-dark-100 bg-dark-50/50 text-dark-600 hover:bg-dark-100/50'
+                          ? 'border-primary-600 bg-primary-50 dark:bg-primary-950/40 text-primary-900 dark:text-primary-200 font-bold shadow-2xs'
+                          : 'border-dark-100 dark:border-dark-800 bg-dark-50/50 dark:bg-dark-900 text-dark-600 dark:text-dark-400 hover:bg-dark-100/50 dark:hover:bg-dark-800'
                       }`}
                     >
                       <p className="text-xs font-semibold">{t.label}</p>
-                      <p className="text-[10px] text-dark-400 font-mono mt-0.5">{t.desc}</p>
+                      <p className="text-[10px] text-dark-400 dark:text-dark-500 font-mono mt-0.5">{t.desc}</p>
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-dark-700 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-dark-700 dark:text-dark-300 uppercase tracking-wider mb-2">
                   Target Recipient
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -399,8 +399,8 @@ export default function CoverLetter() {
                       onClick={() => setTarget(r.id)}
                       className={`px-3 py-2 rounded-xl border text-xs text-left transition-all ${
                         target === r.id
-                          ? 'border-primary-600 bg-primary-50 text-primary-900 font-bold'
-                          : 'border-dark-100 bg-dark-50/50 text-dark-600 hover:bg-dark-100/50'
+                          ? 'border-primary-600 bg-primary-50 dark:bg-primary-950/40 text-primary-900 dark:text-primary-200 font-bold'
+                          : 'border-dark-100 dark:border-dark-800 bg-dark-50/50 dark:bg-dark-900 text-dark-600 dark:text-dark-400 hover:bg-dark-100/50 dark:hover:bg-dark-800'
                       }`}
                     >
                       {r.label}
@@ -411,7 +411,7 @@ export default function CoverLetter() {
 
               {activeTab === 'cold-outreach' && (
                 <div>
-                  <label className="block text-xs font-bold text-dark-700 uppercase tracking-wider mb-2">
+                  <label className="block text-xs font-bold text-dark-700 dark:text-dark-300 uppercase tracking-wider mb-2">
                     Outreach Format
                   </label>
                   <div className="grid grid-cols-3 gap-2">
@@ -428,8 +428,8 @@ export default function CoverLetter() {
                           onClick={() => setPlatform(p.id)}
                           className={`p-2.5 rounded-xl border text-xs flex flex-col items-center gap-1.5 transition-all ${
                             platform === p.id
-                              ? 'border-accent-600 bg-accent-50 text-accent-950 font-bold'
-                              : 'border-dark-100 bg-dark-50/50 text-dark-600 hover:bg-dark-100/50'
+                              ? 'border-accent-600 bg-accent-50 dark:bg-accent-950/40 text-accent-950 dark:text-accent-200 font-bold'
+                              : 'border-dark-100 dark:border-dark-800 bg-dark-50/50 dark:bg-dark-900 text-dark-600 dark:text-dark-400 hover:bg-dark-100/50 dark:hover:bg-dark-800'
                           }`}
                         >
                           <Icon className="w-4 h-4" />
@@ -442,7 +442,7 @@ export default function CoverLetter() {
               )}
 
               <div>
-                <label className="block text-xs font-bold text-dark-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-dark-700 dark:text-dark-300 uppercase tracking-wider mb-1.5">
                   Custom Focus / Notes (Optional)
                 </label>
                 <input
@@ -450,7 +450,7 @@ export default function CoverLetter() {
                   placeholder="e.g. Highlight my 3 years of Kubernetes & Golang experience"
                   value={extraNotes}
                   onChange={(e) => setExtraNotes(e.target.value)}
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-dark-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
                 />
               </div>
             </div>
@@ -479,24 +479,24 @@ export default function CoverLetter() {
             /* COVER LETTER PREVIEW */
             <div className="space-y-6">
               {!coverLetterResult ? (
-                <div className="rounded-2xl border-2 border-dashed border-dark-200 bg-white p-12 text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center mx-auto mb-4">
+                <div className="rounded-2xl border-2 border-dashed border-dark-200 dark:border-dark-800 bg-white dark:bg-dark-900 p-12 text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-primary-50 dark:bg-primary-950 text-primary-600 dark:text-primary-400 flex items-center justify-center mx-auto mb-4">
                     <Mail className="w-7 h-7" />
                   </div>
-                  <h3 className="text-base font-bold font-display text-dark-900 mb-1">
+                  <h3 className="text-base font-bold font-display text-dark-900 dark:text-white mb-1">
                     No Cover Letter Generated Yet
                   </h3>
-                  <p className="text-xs text-dark-500 max-w-sm mx-auto leading-relaxed">
+                  <p className="text-xs text-dark-500 dark:text-dark-400 max-w-sm mx-auto leading-relaxed">
                     Select your resume, target job, and tone settings on the left, then click Generate to create a bespoke cover letter.
                   </p>
                 </div>
               ) : (
                 <div className="space-y-5 animate-scale-in">
                   {/* Result Actions Bar */}
-                  <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-white border border-dark-100 shadow-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-white dark:bg-dark-900 border border-dark-100 dark:border-dark-800 shadow-sm">
                     <div className="flex items-center gap-3">
-                      <div className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <div className="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-xs font-bold flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                         <span>Narrative Fit: {coverLetterResult.matchingScore || 92}%</span>
                       </div>
                       <span className="text-xs font-mono text-dark-400 hidden sm:inline">
@@ -538,14 +538,14 @@ export default function CoverLetter() {
 
                   {/* Key Highlights Card */}
                   {coverLetterResult.keyHighlights?.length > 0 && (
-                    <div className="p-4 rounded-2xl bg-primary-50/70 border border-primary-100">
-                      <p className="text-xs font-bold text-primary-900 mb-2 flex items-center gap-1.5">
+                    <div className="p-4 rounded-2xl bg-primary-50/70 dark:bg-primary-950/40 border border-primary-100 dark:border-primary-900">
+                      <p className="text-xs font-bold text-primary-900 dark:text-primary-200 mb-2 flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5 text-accent-500" />
                         <span>Key Alignment Points Included:</span>
                       </p>
                       <ul className="grid sm:grid-cols-3 gap-2">
                         {coverLetterResult.keyHighlights.map((hl, i) => (
-                          <li key={i} className="text-[11px] text-primary-800 bg-white/80 rounded-lg p-2 border border-primary-100/80">
+                          <li key={i} className="text-[11px] text-primary-800 dark:text-primary-300 bg-white/80 dark:bg-dark-900/80 rounded-lg p-2 border border-primary-100/80 dark:border-primary-900">
                             • {hl}
                           </li>
                         ))}
@@ -554,48 +554,48 @@ export default function CoverLetter() {
                   )}
 
                   {/* Letter Paper Render */}
-                  <div className="rounded-2xl bg-white border border-dark-200/90 shadow-lg p-8 sm:p-10 font-serif leading-relaxed text-dark-900 space-y-5">
+                  <div className="rounded-2xl bg-white dark:bg-dark-900 border border-dark-200/90 dark:border-dark-800 shadow-lg p-8 sm:p-10 font-serif leading-relaxed text-dark-900 dark:text-dark-100 space-y-5">
                     {/* Subject Line */}
                     {coverLetterResult.subject && (
-                      <div className="pb-4 border-b border-dark-100 font-sans">
+                      <div className="pb-4 border-b border-dark-100 dark:border-dark-800 font-sans">
                         <span className="text-xs font-mono font-bold text-dark-400 uppercase tracking-wider block mb-1">
                           Subject Line
                         </span>
-                        <p className="text-sm font-bold text-dark-800 font-sans">
+                        <p className="text-sm font-bold text-dark-800 dark:text-white font-sans">
                           {coverLetterResult.subject}
                         </p>
                       </div>
                     )}
 
                     {/* Salutation */}
-                    <p className="text-sm font-bold pt-2">
+                    <p className="text-sm font-bold pt-2 text-dark-900 dark:text-white">
                       {coverLetterResult.salutation}
                     </p>
 
                     {/* Opening */}
-                    <p className="text-sm text-dark-800">
+                    <p className="text-sm text-dark-800 dark:text-dark-200">
                       {coverLetterResult.openingParagraph}
                     </p>
 
                     {/* Body 1 */}
-                    <p className="text-sm text-dark-800">
+                    <p className="text-sm text-dark-800 dark:text-dark-200">
                       {coverLetterResult.bodyParagraph1}
                     </p>
 
                     {/* Body 2 */}
                     {coverLetterResult.bodyParagraph2 && (
-                      <p className="text-sm text-dark-800">
+                      <p className="text-sm text-dark-800 dark:text-dark-200">
                         {coverLetterResult.bodyParagraph2}
                       </p>
                     )}
 
                     {/* Closing */}
-                    <p className="text-sm text-dark-800">
+                    <p className="text-sm text-dark-800 dark:text-dark-200">
                       {coverLetterResult.closingParagraph}
                     </p>
 
                     {/* Signoff */}
-                    <div className="pt-4 whitespace-pre-line text-sm font-bold text-dark-900">
+                    <div className="pt-4 whitespace-pre-line text-sm font-bold text-dark-900 dark:text-white">
                       {coverLetterResult.signoff}
                     </div>
                   </div>
@@ -606,34 +606,34 @@ export default function CoverLetter() {
             /* COLD OUTREACH PREVIEW */
             <div className="space-y-6">
               {!outreachResult ? (
-                <div className="rounded-2xl border-2 border-dashed border-dark-200 bg-white p-12 text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-accent-50 text-accent-600 flex items-center justify-center mx-auto mb-4">
+                <div className="rounded-2xl border-2 border-dashed border-dark-200 dark:border-dark-800 bg-white dark:bg-dark-900 p-12 text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-accent-50 dark:bg-accent-950 text-accent-600 dark:text-accent-400 flex items-center justify-center mx-auto mb-4">
                     <Send className="w-7 h-7" />
                   </div>
-                  <h3 className="text-base font-bold font-display text-dark-900 mb-1">
+                  <h3 className="text-base font-bold font-display text-dark-900 dark:text-white mb-1">
                     No Outreach Kit Generated Yet
                   </h3>
-                  <p className="text-xs text-dark-500 max-w-sm mx-auto leading-relaxed">
+                  <p className="text-xs text-dark-500 dark:text-dark-400 max-w-sm mx-auto leading-relaxed">
                     Choose your target recipient and format on the left to generate personalized LinkedIn notes, InMails, and follow-up email templates.
                   </p>
                 </div>
               ) : (
                 <div className="space-y-5 animate-scale-in">
                   {/* LinkedIn Connection Note (<300 chars) */}
-                  <div className="rounded-2xl bg-white border border-dark-100 p-6 shadow-sm space-y-3">
+                  <div className="rounded-2xl bg-white dark:bg-dark-900 border border-dark-100 dark:border-dark-800 p-6 shadow-sm space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Linkedin className="w-4 h-4 text-[#0A66C2]" />
-                        <h3 className="text-sm font-bold text-dark-900">
+                        <h3 className="text-sm font-bold text-dark-900 dark:text-white">
                           LinkedIn Connection Request Note
                         </h3>
                       </div>
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-dark-100 text-dark-600">
+                      <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-dark-100 dark:bg-dark-800 text-dark-600 dark:text-dark-300">
                         {outreachResult.connectionNote?.length || 0} / 300 chars
                       </span>
                     </div>
 
-                    <div className="p-4 rounded-xl bg-dark-50 border border-dark-100 text-xs font-mono text-dark-800 leading-relaxed">
+                    <div className="p-4 rounded-xl bg-dark-50 dark:bg-dark-950 border border-dark-100 dark:border-dark-800 text-xs font-mono text-dark-800 dark:text-dark-200 leading-relaxed">
                       {outreachResult.connectionNote}
                     </div>
 
@@ -651,28 +651,28 @@ export default function CoverLetter() {
                   </div>
 
                   {/* Full InMail / Cold Email Message */}
-                  <div className="rounded-2xl bg-white border border-dark-100 p-6 shadow-sm space-y-3">
+                  <div className="rounded-2xl bg-white dark:bg-dark-900 border border-dark-100 dark:border-dark-800 p-6 shadow-sm space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Mail className="w-4 h-4 text-primary-600" />
-                        <h3 className="text-sm font-bold text-dark-900">
+                        <h3 className="text-sm font-bold text-dark-900 dark:text-white">
                           Main Outreach Message (InMail / Email)
                         </h3>
                       </div>
                     </div>
 
                     {outreachResult.subject && (
-                      <div className="p-3 rounded-xl bg-primary-50/50 border border-primary-100">
-                        <span className="text-[10px] font-mono font-bold text-primary-700 uppercase tracking-wider block">
+                      <div className="p-3 rounded-xl bg-primary-50/50 dark:bg-primary-950/40 border border-primary-100 dark:border-primary-900">
+                        <span className="text-[10px] font-mono font-bold text-primary-700 dark:text-primary-300 uppercase tracking-wider block">
                           Subject Line:
                         </span>
-                        <p className="text-xs font-bold text-dark-900 mt-0.5">
+                        <p className="text-xs font-bold text-dark-900 dark:text-white mt-0.5">
                           {outreachResult.subject}
                         </p>
                       </div>
                     )}
 
-                    <div className="p-4 rounded-xl bg-dark-50 border border-dark-100 text-xs text-dark-800 whitespace-pre-line leading-relaxed font-sans">
+                    <div className="p-4 rounded-xl bg-dark-50 dark:bg-dark-950 border border-dark-100 dark:border-dark-800 text-xs text-dark-800 dark:text-dark-200 whitespace-pre-line leading-relaxed font-sans">
                       {outreachResult.message}
                     </div>
 
@@ -691,17 +691,17 @@ export default function CoverLetter() {
 
                   {/* Follow-up Template */}
                   {outreachResult.followUpTemplate && (
-                    <div className="rounded-2xl bg-white border border-dark-100 p-6 shadow-sm space-y-3">
+                    <div className="rounded-2xl bg-white dark:bg-dark-900 border border-dark-100 dark:border-dark-800 p-6 shadow-sm space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <RefreshCw className="w-4 h-4 text-accent-600" />
-                          <h3 className="text-sm font-bold text-dark-900">
+                          <h3 className="text-sm font-bold text-dark-900 dark:text-white">
                             4-Day Follow-Up Message
                           </h3>
                         </div>
                       </div>
 
-                      <div className="p-4 rounded-xl bg-dark-50 border border-dark-100 text-xs text-dark-800 whitespace-pre-line leading-relaxed">
+                      <div className="p-4 rounded-xl bg-dark-50 dark:bg-dark-950 border border-dark-100 dark:border-dark-800 text-xs text-dark-800 dark:text-dark-200 whitespace-pre-line leading-relaxed">
                         {outreachResult.followUpTemplate}
                       </div>
 
@@ -721,14 +721,14 @@ export default function CoverLetter() {
 
                   {/* Strategy Tips */}
                   {outreachResult.strategyTips?.length > 0 && (
-                    <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200">
-                      <p className="text-xs font-bold text-amber-900 mb-2 flex items-center gap-1.5">
+                    <div className="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900">
+                      <p className="text-xs font-bold text-amber-900 dark:text-amber-200 mb-2 flex items-center gap-1.5">
                         <Info className="w-3.5 h-3.5 text-amber-600" />
                         <span>Networking Best Practices:</span>
                       </p>
                       <ul className="space-y-1">
                         {outreachResult.strategyTips.map((tip, i) => (
-                          <li key={i} className="text-xs text-amber-800">
+                          <li key={i} className="text-xs text-amber-800 dark:text-amber-300">
                             • {tip}
                           </li>
                         ))}

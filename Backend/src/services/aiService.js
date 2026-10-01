@@ -80,18 +80,60 @@ class AIService {
     }
   }
 
+  // Robust generator with exponential backoff, rate-limit retries, and multi-model fallback
   async _generateJSON(prompt, errorContext) {
-    try {
-      const result = await this.model.generateContent(prompt);
-      const text = result.response.text();
-      return this._parseJSONResponse(text);
-    } catch (error) {
-      console.error(`${errorContext} Error:`, error);
-      // FIXED: previously threw a generic message and discarded the real
-      // error entirely, making failures (bad API key, rate limit, malformed
-      // JSON, network error) indistinguishable from the server logs alone.
-      throw new Error(`Failed to ${errorContext.toLowerCase()}: ${error.message}`, { cause: error });
+    const candidateModels = [
+      process.env.GEMINI_MODEL || 'gemini-3.6-flash',
+      'gemini-3.5-flash',
+      'gemini-3.7-flash',
+      'gemini-3.8-flash'
+    ].filter((m, idx, arr) => m && arr.indexOf(m) === idx);
+
+    let lastError = null;
+
+    for (const modelName of candidateModels) {
+      const model = this.genAI.getGenerativeModel({
+        model: modelName,
+        generationConfig: {
+          responseMimeType: 'application/json',
+          temperature: 0.4,
+        },
+      });
+
+      const maxRetries = 3;
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          const result = await model.generateContent(prompt);
+          const text = result.response.text();
+          return this._parseJSONResponse(text);
+        } catch (err) {
+          lastError = err;
+          const msg = err.message || '';
+          const isRetryable =
+            msg.includes('503') ||
+            msg.includes('429') ||
+            msg.includes('high demand') ||
+            msg.includes('ResourceExhausted') ||
+            msg.includes('Service Unavailable') ||
+            msg.includes('ECONNRESET') ||
+            msg.includes('ETIMEDOUT') ||
+            msg.includes('fetch failed');
+
+          if (isRetryable && attempt < maxRetries) {
+            const delay = Math.min(1000 * Math.pow(2, attempt - 1) + Math.random() * 400, 4000);
+            logger.warn(`AI model ${modelName} encountered temporary spike on attempt ${attempt}/${maxRetries} (${msg}). Retrying in ${Math.round(delay)}ms...`);
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            continue;
+          }
+
+          // If not retryable or retries exhausted for this model, break inner loop to try fallback model
+          break;
+        }
+      }
     }
+
+    console.error(`${errorContext} Error:`, lastError);
+    throw new Error(`Failed to ${errorContext.toLowerCase()}: ${lastError?.message || 'AI service unavailable'}`, { cause: lastError });
   }
 
   // Analyze Job Description

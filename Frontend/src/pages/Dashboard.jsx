@@ -83,47 +83,47 @@ export default function Dashboard() {
 
             {/* Metric Highlights */}
             <div className="grid gap-5 md:grid-cols-3">
-                <div className="group rounded-2xl bg-white p-6 border border-dark-100 shadow-sm hover:shadow-md hover:border-primary-200 transition-all duration-300">
+                <div className="group rounded-2xl bg-white dark:bg-dark-900 p-6 border border-dark-100 dark:border-dark-800 shadow-sm hover:shadow-md hover:border-primary-200 dark:hover:border-primary-700 transition-all duration-300">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-mono font-semibold uppercase tracking-wider text-dark-400">Total Resumes</p>
-                            <h3 className="text-3xl font-black text-dark-900 mt-2 font-display">{resumes.length}</h3>
-                            <p className="text-xs text-dark-500 mt-1">Stored in your library</p>
+                            <p className="text-xs font-mono font-semibold uppercase tracking-wider text-dark-400 dark:text-dark-500">Total Resumes</p>
+                            <h3 className="text-3xl font-black text-dark-900 dark:text-white mt-2 font-display">{resumes.length}</h3>
+                            <p className="text-xs text-dark-500 dark:text-dark-400 mt-1">Stored in your library</p>
                         </div>
-                        <div className="w-12 h-12 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 rounded-xl bg-primary-50 dark:bg-primary-950/60 text-primary-600 dark:text-primary-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                             <BarChart3 className="w-6 h-6" />
                         </div>
                     </div>
                 </div>
 
-                <div className="group rounded-2xl bg-white p-6 border border-dark-100 shadow-sm hover:shadow-md hover:border-accent-200 transition-all duration-300">
+                <div className="group rounded-2xl bg-white dark:bg-dark-900 p-6 border border-dark-100 dark:border-dark-800 shadow-sm hover:shadow-md hover:border-accent-200 dark:hover:border-accent-700 transition-all duration-300">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-mono font-semibold uppercase tracking-wider text-dark-400">Average ATS Score</p>
+                            <p className="text-xs font-mono font-semibold uppercase tracking-wider text-dark-400 dark:text-dark-500">Average ATS Score</p>
                             <div className="flex items-baseline gap-1 mt-2">
-                                <h3 className="text-3xl font-black text-dark-900 font-display">{averageScore}</h3>
+                                <h3 className="text-3xl font-black text-dark-900 dark:text-white font-display">{averageScore}</h3>
                                 <span className="text-xs font-mono text-dark-400">/100</span>
                             </div>
-                            <p className="text-xs text-emerald-600 font-medium mt-1">
+                            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1">
                                 {averageScore >= 75 ? 'Optimal benchmark' : 'Room for improvement'}
                             </p>
                         </div>
-                        <div className="w-12 h-12 rounded-xl bg-accent-50 text-accent-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 rounded-xl bg-accent-50 dark:bg-accent-950/60 text-accent-600 dark:text-accent-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                             <TrendingUp className="w-6 h-6" />
                         </div>
                     </div>
                 </div>
 
-                <div className="group rounded-2xl bg-white p-6 border border-dark-100 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all duration-300">
+                <div className="group rounded-2xl bg-white dark:bg-dark-900 p-6 border border-dark-100 dark:border-dark-800 shadow-sm hover:shadow-md hover:border-emerald-200 dark:hover:border-emerald-700 transition-all duration-300">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-mono font-semibold uppercase tracking-wider text-dark-400">Target Readiness</p>
-                            <h3 className="text-3xl font-black text-dark-900 mt-2 font-display">
+                            <p className="text-xs font-mono font-semibold uppercase tracking-wider text-dark-400 dark:text-dark-500">Target Readiness</p>
+                            <h3 className="text-3xl font-black text-dark-900 dark:text-white mt-2 font-display">
                                 {resumes.filter((r) => (r.optimization?.atsScore || 0) >= 75).length}
                             </h3>
-                            <p className="text-xs text-dark-500 mt-1">Resumes scoring 75+ ready to apply</p>
+                            <p className="text-xs text-dark-500 dark:text-dark-400 mt-1">Resumes scoring 75+ ready to apply</p>
                         </div>
-                        <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                             <Clock className="w-6 h-6" />
                         </div>
                     </div>
@@ -134,115 +134,115 @@ export default function Dashboard() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 <Link
                     to={ROUTES.BUILDER}
-                    className="group rounded-2xl bg-gradient-to-br from-indigo-50/70 via-white to-white border border-indigo-100 p-5 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all flex flex-col justify-between"
+                    className="group rounded-2xl bg-gradient-to-br from-indigo-50/70 via-white to-white dark:from-indigo-950/40 dark:via-dark-900 dark:to-dark-900 border border-indigo-100 dark:border-indigo-900/50 p-5 shadow-sm hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700 transition-all flex flex-col justify-between"
                 >
                     <div>
                         <div className="flex items-start justify-between">
-                            <div className="p-2.5 rounded-xl bg-indigo-100 text-indigo-700 group-hover:scale-105 transition-transform">
+                            <div className="p-2.5 rounded-xl bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 group-hover:scale-105 transition-transform">
                                 <LayoutTemplate className="w-5 h-5" />
                             </div>
                             <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-indigo-600 text-white font-mono">
                                 4 TEMPLATES
                             </span>
                         </div>
-                        <h3 className="text-sm font-bold font-display text-dark-900 mt-3 group-hover:text-primary-600 transition-colors">
+                        <h3 className="text-sm font-bold font-display text-dark-900 dark:text-white mt-3 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                             Visual Resume Builder
                         </h3>
-                        <p className="text-[11px] text-dark-500 mt-1 leading-relaxed">
+                        <p className="text-[11px] text-dark-500 dark:text-dark-400 mt-1 leading-relaxed">
                             Live WYSIWYG editor with Harvard, Modern & Minimalist templates + AI bullet copilot.
                         </p>
                     </div>
-                    <div className="pt-3 flex items-center text-xs font-bold text-primary-600 group-hover:translate-x-1 transition-transform">
+                    <div className="pt-3 flex items-center text-xs font-bold text-primary-600 dark:text-primary-400 group-hover:translate-x-1 transition-transform">
                         <span>Open Builder &rarr;</span>
                     </div>
                 </Link>
 
                 <Link
                     to={ROUTES.MOCK_INTERVIEW}
-                    className="group rounded-2xl bg-gradient-to-br from-emerald-50/70 via-white to-white border border-emerald-100 p-5 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all flex flex-col justify-between"
+                    className="group rounded-2xl bg-gradient-to-br from-emerald-50/70 via-white to-white dark:from-emerald-950/40 dark:via-dark-900 dark:to-dark-900 border border-emerald-100 dark:border-emerald-900/50 p-5 shadow-sm hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-700 transition-all flex flex-col justify-between"
                 >
                     <div>
                         <div className="flex items-start justify-between">
-                            <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-700 group-hover:scale-105 transition-transform">
+                            <div className="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 group-hover:scale-105 transition-transform">
                                 <Bot className="w-5 h-5" />
                             </div>
                             <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white font-mono">
                                 REAL-TIME
                             </span>
                         </div>
-                        <h3 className="text-sm font-bold font-display text-dark-900 mt-3 group-hover:text-emerald-700 transition-colors">
+                        <h3 className="text-sm font-bold font-display text-dark-900 dark:text-white mt-3 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
                             AI Mock Interview
                         </h3>
-                        <p className="text-[11px] text-dark-500 mt-1 leading-relaxed">
+                        <p className="text-[11px] text-dark-500 dark:text-dark-400 mt-1 leading-relaxed">
                             Live voice/speech interactive simulator with instant STAR scoring & ideal answer coaching.
                         </p>
                     </div>
-                    <div className="pt-3 flex items-center text-xs font-bold text-emerald-600 group-hover:translate-x-1 transition-transform">
+                    <div className="pt-3 flex items-center text-xs font-bold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform">
                         <span>Start Session &rarr;</span>
                     </div>
                 </Link>
 
                 <Link
                     to={ROUTES.COVER_LETTER}
-                    className="group rounded-2xl bg-gradient-to-br from-primary-50/70 via-white to-white border border-primary-100 p-5 shadow-sm hover:shadow-md hover:border-primary-300 transition-all flex flex-col justify-between"
+                    className="group rounded-2xl bg-gradient-to-br from-primary-50/70 via-white to-white dark:from-primary-950/40 dark:via-dark-900 dark:to-dark-900 border border-primary-100 dark:border-primary-900/50 p-5 shadow-sm hover:shadow-md hover:border-primary-300 dark:hover:border-primary-700 transition-all flex flex-col justify-between"
                 >
                     <div>
                         <div className="flex items-start justify-between">
-                            <div className="p-2.5 rounded-xl bg-primary-100 text-primary-700 group-hover:scale-105 transition-transform">
+                            <div className="p-2.5 rounded-xl bg-primary-100 dark:bg-primary-900/60 text-primary-700 dark:text-primary-300 group-hover:scale-105 transition-transform">
                                 <Mail className="w-5 h-5" />
                             </div>
                             <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-primary-600 text-white font-mono">
                                 COLD OUTREACH
                             </span>
                         </div>
-                        <h3 className="text-sm font-bold font-display text-dark-900 mt-3 group-hover:text-primary-600 transition-colors">
+                        <h3 className="text-sm font-bold font-display text-dark-900 dark:text-white mt-3 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                             Cover Letter & LinkedIn Notes
                         </h3>
-                        <p className="text-[11px] text-dark-500 mt-1 leading-relaxed">
+                        <p className="text-[11px] text-dark-500 dark:text-dark-400 mt-1 leading-relaxed">
                             Bespoke cover letters and under-300-char LinkedIn networking messages.
                         </p>
                     </div>
-                    <div className="pt-3 flex items-center text-xs font-bold text-primary-600 group-hover:translate-x-1 transition-transform">
+                    <div className="pt-3 flex items-center text-xs font-bold text-primary-600 dark:text-primary-400 group-hover:translate-x-1 transition-transform">
                         <span>Generate &rarr;</span>
                     </div>
                 </Link>
 
                 <Link
                     to={ROUTES.GITHUB_IMPORT}
-                    className="group rounded-2xl bg-gradient-to-br from-dark-50/70 via-white to-white border border-dark-100 p-5 shadow-sm hover:shadow-md hover:border-dark-300 transition-all flex flex-col justify-between"
+                    className="group rounded-2xl bg-gradient-to-br from-dark-50/70 via-white to-white dark:from-dark-950/40 dark:via-dark-900 dark:to-dark-900 border border-dark-100 dark:border-dark-800 p-5 shadow-sm hover:shadow-md hover:border-dark-300 dark:hover:border-dark-700 transition-all flex flex-col justify-between"
                 >
                     <div>
                         <div className="flex items-start justify-between">
-                            <div className="p-2.5 rounded-xl bg-dark-100 text-dark-900 group-hover:scale-105 transition-transform">
+                            <div className="p-2.5 rounded-xl bg-dark-100 dark:bg-dark-800 text-dark-900 dark:text-white group-hover:scale-105 transition-transform">
                                 <Github className="w-5 h-5" />
                             </div>
-                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-dark-900 text-white font-mono">
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-dark-900 dark:bg-dark-700 text-white font-mono">
                                 PORTFOLIO
                             </span>
                         </div>
-                        <h3 className="text-sm font-display font-bold text-dark-900 mt-3 group-hover:text-primary-600 transition-colors">
+                        <h3 className="text-sm font-display font-bold text-dark-900 dark:text-white mt-3 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                             GitHub Portfolio Importer
                         </h3>
-                        <p className="text-[11px] text-dark-500 mt-1 leading-relaxed">
+                        <p className="text-[11px] text-dark-500 dark:text-dark-400 mt-1 leading-relaxed">
                             Auto-sync public GitHub repos into quantified, ATS-compliant project bullets.
                         </p>
                     </div>
-                    <div className="pt-3 flex items-center text-xs font-bold text-dark-700 group-hover:translate-x-1 transition-transform">
+                    <div className="pt-3 flex items-center text-xs font-bold text-dark-700 dark:text-dark-300 group-hover:translate-x-1 transition-transform">
                         <span>Import Repos &rarr;</span>
                     </div>
                 </Link>
             </div>
 
             {/* Recent Resumes Table / Grid */}
-            <div className="rounded-2xl bg-white border border-dark-100/90 shadow-sm p-6">
-                <div className="flex items-center justify-between pb-4 border-b border-dark-100 mb-4">
+            <div className="rounded-2xl bg-white dark:bg-dark-900 border border-dark-100/90 dark:border-dark-800 shadow-sm p-6">
+                <div className="flex items-center justify-between pb-4 border-b border-dark-100 dark:border-dark-800 mb-4">
                     <div>
-                        <h2 className="text-xl font-bold font-display text-dark-900">Recent Resumes</h2>
-                        <p className="text-xs text-dark-500 mt-0.5">Quickly preview, optimize, or export your documents</p>
+                        <h2 className="text-xl font-bold font-display text-dark-900 dark:text-white">Recent Resumes</h2>
+                        <p className="text-xs text-dark-500 dark:text-dark-400 mt-0.5">Quickly preview, optimize, or export your documents</p>
                     </div>
                     <Link
                         to={ROUTES.RESUMES}
-                        className="text-xs font-bold text-primary-600 hover:text-primary-700 flex items-center gap-1 group"
+                        className="text-xs font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 flex items-center gap-1 group"
                     >
                         <span>View all ({resumes.length})</span>
                         <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -251,15 +251,15 @@ export default function Dashboard() {
 
                 {resumes.length === 0 ? (
                     <div className="py-12 text-center">
-                        <FileText className="w-10 h-10 text-dark-300 mx-auto mb-3" />
-                        <p className="text-sm font-semibold text-dark-800">No resumes yet</p>
-                        <p className="text-xs text-dark-500 mt-1">Upload a PDF or DOCX file to see it here.</p>
+                        <FileText className="w-10 h-10 text-dark-300 dark:text-dark-600 mx-auto mb-3" />
+                        <p className="text-sm font-semibold text-dark-800 dark:text-dark-200">No resumes yet</p>
+                        <p className="text-xs text-dark-500 dark:text-dark-400 mt-1">Upload a PDF or DOCX file to see it here.</p>
                         <Button as={Link} to={ROUTES.RESUMES} variant="primary" size="sm" className="mt-4">
                             Upload resume
                         </Button>
                     </div>
                 ) : (
-                    <div className="divide-y divide-dark-100">
+                    <div className="divide-y divide-dark-100 dark:divide-dark-800">
                         {resumes.slice(0, 5).map((resume) => {
                             const score = resume.optimization?.atsScore || 0;
                             const isGood = score >= 75;
@@ -267,17 +267,17 @@ export default function Dashboard() {
                                 <div
                                     key={resume._id}
                                     onClick={() => navigate(resumeDetailPath(resume._id))}
-                                    className="py-4 flex flex-wrap items-center justify-between gap-4 group hover:bg-dark-50/70 px-3 rounded-xl transition-all cursor-pointer"
+                                    className="py-4 flex flex-wrap items-center justify-between gap-4 group hover:bg-dark-50/70 dark:hover:bg-dark-800/60 px-3 rounded-xl transition-all cursor-pointer"
                                 >
                                     <div className="flex items-center gap-3.5 min-w-[240px]">
-                                        <div className="p-2.5 rounded-lg bg-primary-50 text-primary-600 group-hover:scale-105 transition-transform">
+                                        <div className="p-2.5 rounded-lg bg-primary-50 dark:bg-primary-950/60 text-primary-600 dark:text-primary-400 group-hover:scale-105 transition-transform">
                                             <FileText className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <h3 className="text-sm font-bold text-dark-900 group-hover:text-primary-600 transition-colors">
+                                            <h3 className="text-sm font-bold text-dark-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                                                 {resume.title}
                                             </h3>
-                                            <p className="text-xs text-dark-400 font-mono">
+                                            <p className="text-xs text-dark-400 dark:text-dark-500 font-mono">
                                                 Updated {formatDate(resume.updatedAt)}
                                             </p>
                                         </div>

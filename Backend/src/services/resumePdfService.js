@@ -1,5 +1,5 @@
 const React = require('react');
-const { Document, Page, Text, View, StyleSheet, pdf } = require('@react-pdf/renderer');
+const { Document, Page, Text, View, StyleSheet, renderToBuffer } = require('@react-pdf/renderer');
 
 // Helper to construct rock-solid ATS stylesheet based on selected template
 const createResumeStyles = (template = 'modern', accentColor = '#2563EB') => {
@@ -363,7 +363,7 @@ const generateResumePDFBuffer = async (resume, optimization, options = {}) => {
       )
     );
 
-    const buffer = await pdf(doc).toBuffer();
+    const buffer = await renderToBuffer(doc);
     return buffer;
   } catch (error) {
     console.error('PDF Generation Error:', error);

@@ -4,7 +4,7 @@ const Input = forwardRef(({ label, error, icon: Icon, className = '', ...props }
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-sm font-semibold text-dark-700 mb-2">
+        <label className="block text-sm font-semibold text-dark-700 dark:text-dark-300 mb-2">
           {label}
         </label>
       )}

@@ -45,44 +45,44 @@ export default function ResumeDetail() {
     return (
         <div className="flex flex-col gap-8 pb-12 animate-fade-in">
             {/* Top Action Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-dark-100">
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-dark-100 dark:border-dark-800">
                 <div className="flex items-center gap-4">
                     <Link
                         to={ROUTES.RESUMES}
-                        className="p-2 rounded-xl bg-white border border-dark-200 text-dark-600 hover:text-dark-900 hover:bg-dark-50 shadow-sm transition-all"
+                        className="p-2 rounded-xl bg-white dark:bg-dark-900 border border-dark-200 dark:border-dark-700 text-dark-600 dark:text-dark-300 hover:text-dark-900 dark:hover:text-white hover:bg-dark-50 dark:hover:bg-dark-800 shadow-sm transition-all"
                         title="Back to resumes"
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
                     <div>
                         <div className="flex items-center gap-2">
-                            <span className="text-xs font-mono font-semibold uppercase tracking-wider text-primary-600 bg-primary-50 px-2 py-0.5 rounded-md">
+                            <span className="text-xs font-mono font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/60 px-2 py-0.5 rounded-md">
                                 Resume Preview
                             </span>
                             {optimization && (
-                                <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md flex items-center gap-1">
                                     <Sparkles className="w-3 h-3 text-emerald-500" /> Optimized
                                 </span>
                             )}
                         </div>
-                        <h1 className="mt-1 font-display text-2xl sm:text-3xl text-dark-900 font-bold tracking-tight">
+                        <h1 className="mt-1 font-display text-2xl sm:text-3xl text-dark-900 dark:text-white font-bold tracking-tight">
                             {resume.title}
                         </h1>
-                        <p className="text-xs text-dark-500 mt-0.5">
+                        <p className="text-xs text-dark-500 dark:text-dark-400 mt-0.5">
                             Last updated {formatDate(resume.updatedAt)}
                         </p>
                     </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex items-center bg-dark-100/80 p-1 rounded-xl border border-dark-200/80 text-xs">
+                    <div className="flex items-center bg-dark-100/80 dark:bg-dark-800 p-1 rounded-xl border border-dark-200/80 dark:border-dark-700 text-xs">
                         <button
                             type="button"
                             onClick={() => setSelectedTemplate('modern')}
                             className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
                                 selectedTemplate === 'modern'
-                                    ? 'bg-white text-primary-700 shadow-xs'
-                                    : 'text-dark-600 hover:text-dark-900'
+                                    ? 'bg-white dark:bg-dark-900 text-primary-700 dark:text-primary-400 shadow-xs'
+                                    : 'text-dark-600 dark:text-dark-400 hover:text-dark-900 dark:hover:text-white'
                             }`}
                         >
                             Modern Tech ATS
@@ -92,8 +92,8 @@ export default function ResumeDetail() {
                             onClick={() => setSelectedTemplate('classic')}
                             className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
                                 selectedTemplate === 'classic'
-                                    ? 'bg-white text-primary-700 shadow-xs'
-                                    : 'text-dark-600 hover:text-dark-900'
+                                    ? 'bg-white dark:bg-dark-900 text-primary-700 dark:text-primary-400 shadow-xs'
+                                    : 'text-dark-600 dark:text-dark-400 hover:text-dark-900 dark:hover:text-white'
                             }`}
                         >
                             Harvard Classic ATS
@@ -106,7 +106,7 @@ export default function ResumeDetail() {
                         isLoading={isDownloading}
                         className="shadow-sm hover:shadow-md"
                     >
-                        <Download className="w-4 h-4 text-dark-700" />
+                        <Download className="w-4 h-4" />
                         <span>Download ATS PDF</span>
                     </Button>
                     <Button
@@ -123,28 +123,28 @@ export default function ResumeDetail() {
             {/* Score & Profile Header Card */}
             <div className="grid gap-6 lg:grid-cols-3">
                 {/* Personal Information */}
-                <Card className="p-6 lg:col-span-2 relative overflow-hidden bg-gradient-to-br from-white to-dark-50/50">
-                    <div className="flex items-center justify-between pb-4 border-b border-dark-100 mb-5">
+                <Card className="p-6 lg:col-span-2 relative overflow-hidden bg-gradient-to-br from-white to-dark-50/50 dark:from-dark-900 dark:to-dark-950 border-dark-100 dark:border-dark-800">
+                    <div className="flex items-center justify-between pb-4 border-b border-dark-100 dark:border-dark-800 mb-5">
                         <div className="flex items-center gap-2.5">
-                            <div className="w-9 h-9 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center">
+                            <div className="w-9 h-9 rounded-lg bg-primary-50 dark:bg-primary-950/60 text-primary-600 dark:text-primary-400 flex items-center justify-center">
                                 <User className="w-5 h-5" />
                             </div>
-                            <h2 className="font-display text-lg font-bold text-dark-900">Personal Details</h2>
+                            <h2 className="font-display text-lg font-bold text-dark-900 dark:text-white">Personal Details</h2>
                         </div>
-                        <span className="text-xs font-mono text-dark-400">Parsed by Kaizen</span>
+                        <span className="text-xs font-mono text-dark-400 dark:text-dark-500">Parsed by Kaizen</span>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <InfoItem icon={User} label="Full Name" value={[personal.name, personal.fullName].find(v => v && v !== 'Unknown') || user?.name || 'Candidate'} />
+                        <InfoItem icon={User} label="Full Name" value={[personal.name, personal.fullName].find(v => v && v !== 'Unknown') || user?.name || 'Candidate'} />
                         <InfoItem icon={Mail} label="Email Address" value={personal.email} isLink={personal.email ? `mailto:${personal.email}` : null} />
                         <InfoItem icon={Phone} label="Phone Number" value={personal.phone} />
                         <InfoItem icon={MapPin} label="Location" value={personal.location} />
                     </div>
 
                     {personal.summary && (
-                        <div className="mt-5 pt-4 border-t border-dark-100">
-                            <span className="text-xs font-semibold uppercase tracking-wider text-dark-500 block mb-2">Professional Summary</span>
-                            <p className="text-sm leading-relaxed text-dark-700 bg-white/80 p-4 rounded-xl border border-dark-100 shadow-sm">
+                        <div className="mt-5 pt-4 border-t border-dark-100 dark:border-dark-800">
+                            <span className="text-xs font-semibold uppercase tracking-wider text-dark-500 dark:text-dark-400 block mb-2">Professional Summary</span>
+                            <p className="text-sm leading-relaxed text-dark-700 dark:text-dark-300 bg-white/80 dark:bg-dark-950 p-4 rounded-xl border border-dark-100 dark:border-dark-800 shadow-sm">
                                 {personal.summary}
                             </p>
                         </div>
@@ -152,15 +152,15 @@ export default function ResumeDetail() {
                 </Card>
 
                 {/* ATS Gauge Card */}
-                <Card className="p-6 flex flex-col items-center justify-center text-center relative overflow-hidden bg-gradient-to-b from-white to-primary-50/20">
-                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary-200/30 rounded-full blur-2xl pointer-events-none" />
+                <Card className="p-6 flex flex-col items-center justify-center text-center relative overflow-hidden bg-gradient-to-b from-white to-primary-50/20 dark:from-dark-900 dark:to-primary-950/20 border-dark-100 dark:border-dark-800">
+                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary-200/30 dark:bg-primary-900/30 rounded-full blur-2xl pointer-events-none" />
                     <ScoreGauge score={atsScore} size={110} label="ATS Match Score" />
 
                     <div className="mt-4">
-                        <p className="text-xs font-semibold text-dark-800">
+                        <p className="text-xs font-semibold text-dark-800 dark:text-dark-200">
                             {atsScore >= 75 ? '🌟 Excellent ATS Ready' : atsScore >= 50 ? '⚡ Good potential, needs refinement' : '⚠️ Needs optimization'}
                         </p>
-                        <p className="text-[11px] text-dark-500 mt-1 max-w-[200px] mx-auto">
+                        <p className="text-[11px] text-dark-500 dark:text-dark-400 mt-1 max-w-[200px] mx-auto">
                             {optimization?.lastOptimized
                                 ? `Optimized ${formatDate(optimization.lastOptimized)}`
                                 : 'Run AI optimization to boost your score to 90+'}
@@ -171,7 +171,7 @@ export default function ResumeDetail() {
                         onClick={() => navigate(`${ROUTES.OPTIMIZE}?resumeId=${resume._id}`)}
                         variant="ghost"
                         size="sm"
-                        className="mt-4 text-xs font-semibold text-primary-600 hover:text-primary-700 hover:bg-primary-50"
+                        className="mt-4 text-xs font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 hover:bg-primary-50 dark:hover:bg-primary-950/40"
                     >
                         <Sparkles className="w-3.5 h-3.5" /> Boost this score
                     </Button>
@@ -180,29 +180,29 @@ export default function ResumeDetail() {
 
             {/* AI Optimization Suggestions (if available) */}
             {optimization?.suggestions?.length > 0 ? (
-                <Card className="p-6 border-l-4 border-l-accent-500 bg-gradient-to-r from-accent-50/30 via-white to-white">
+                <Card className="p-6 border-l-4 border-l-accent-500 bg-gradient-to-r from-accent-50/30 via-white to-white dark:from-accent-950/30 dark:via-dark-900 dark:to-dark-900 border-dark-100 dark:border-dark-800">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
-                            <Sparkles className="w-5 h-5 text-accent-600" />
-                            <h2 className="font-display text-lg font-bold text-dark-900">AI Recommendations</h2>
+                            <Sparkles className="w-5 h-5 text-accent-600 dark:text-accent-400" />
+                            <h2 className="font-display text-lg font-bold text-dark-900 dark:text-white">AI Recommendations</h2>
                         </div>
                         <Badge tone="accent">Actionable Advice</Badge>
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
-                                                               {optimization.suggestions.map((s, i) => {
+                        {optimization.suggestions.map((s, i) => {
                             const isObj = s && typeof s === 'object';
                             const priority = isObj ? s.priority : null;
                             const category = isObj ? s.category : null;
                             const text = isObj ? (s.reason || s.suggestion || s.text) : s;
                             return (
-                                <div key={i} className="p-4 rounded-xl border border-dark-100 bg-white shadow-sm flex flex-col justify-between gap-2 hover:border-accent-200 transition-all">
+                                <div key={i} className="p-4 rounded-xl border border-dark-100 dark:border-dark-800 bg-white dark:bg-dark-900 shadow-sm flex flex-col justify-between gap-2 hover:border-accent-200 dark:hover:border-accent-700 transition-all">
                                     <div className="flex items-center justify-between gap-2">
                                         <Badge tone={priority === 'high' ? 'high' : priority === 'medium' ? 'medium' : 'low'}>
                                             {priority ? `${priority.toUpperCase()} PRIORITY` : `SUGGESTION ${i + 1}`}
                                         </Badge>
-                                        {category && <span className="text-xs font-mono font-medium text-dark-500">{category}</span>}
+                                        {category && <span className="text-xs font-mono font-medium text-dark-500 dark:text-dark-400">{category}</span>}
                                     </div>
-                                    <p className="text-sm text-dark-700 leading-relaxed">{text}</p>
+                                    <p className="text-sm text-dark-700 dark:text-dark-300 leading-relaxed">{text}</p>
                                 </div>
                             );
                         })}
@@ -212,21 +212,21 @@ export default function ResumeDetail() {
 
             {/* Skills Showcase */}
             {content.skills?.length > 0 && (
-                <Card className="p-6">
-                    <div className="flex items-center gap-2.5 pb-4 border-b border-dark-100 mb-4">
-                        <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <Card className="p-6 border-dark-100 dark:border-dark-800">
+                    <div className="flex items-center gap-2.5 pb-4 border-b border-dark-100 dark:border-dark-800 mb-4">
+                        <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                             <Award className="w-5 h-5" />
                         </div>
                         <div>
-                            <h2 className="font-display text-lg font-bold text-dark-900">Extracted Skills</h2>
-                            <p className="text-xs text-dark-500">{content.skills.length} skills identified in resume</p>
+                            <h2 className="font-display text-lg font-bold text-dark-900 dark:text-white">Extracted Skills</h2>
+                            <p className="text-xs text-dark-500 dark:text-dark-400">{content.skills.length} skills identified in resume</p>
                         </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
                         {content.skills.map((skill, index) => (
                             <span
                                 key={index}
-                                className="px-3 py-1.5 rounded-lg text-xs font-medium bg-dark-50 text-dark-800 border border-dark-200/80 hover:bg-primary-50 hover:text-primary-700 hover:border-primary-200 transition-all cursor-default shadow-xs"
+                                className="px-3 py-1.5 rounded-lg text-xs font-medium bg-dark-50 dark:bg-dark-800 text-dark-800 dark:text-dark-200 border border-dark-200/80 dark:border-dark-700 hover:bg-primary-50 dark:hover:bg-primary-950/50 hover:text-primary-700 dark:hover:text-primary-300 hover:border-primary-200 transition-all cursor-default shadow-xs"
                             >
                                 {skill}
                             </span>
@@ -237,31 +237,31 @@ export default function ResumeDetail() {
 
             {/* Experience Section */}
             {content.experience?.length > 0 && (
-                <Card className="p-6">
-                    <div className="flex items-center gap-2.5 pb-4 border-b border-dark-100 mb-5">
-                        <div className="w-9 h-9 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center">
+                <Card className="p-6 border-dark-100 dark:border-dark-800">
+                    <div className="flex items-center gap-2.5 pb-4 border-b border-dark-100 dark:border-dark-800 mb-5">
+                        <div className="w-9 h-9 rounded-lg bg-primary-50 dark:bg-primary-950/60 text-primary-600 dark:text-primary-400 flex items-center justify-center">
                             <Briefcase className="w-5 h-5" />
                         </div>
                         <div>
-                            <h2 className="font-display text-lg font-bold text-dark-900">Work Experience</h2>
-                            <p className="text-xs text-dark-500">Chronological history</p>
+                            <h2 className="font-display text-lg font-bold text-dark-900 dark:text-white">Work Experience</h2>
+                            <p className="text-xs text-dark-500 dark:text-dark-400">Chronological history</p>
                         </div>
                     </div>
 
-                    <div className="divide-y divide-dark-100">
+                    <div className="divide-y divide-dark-100 dark:divide-dark-800">
                         {content.experience.map((exp, i) => (
                             <div key={i} className="py-5 first:pt-0 last:pb-0">
                                 <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
                                     <div>
-                                        <h3 className="text-base font-bold text-dark-900">{exp.role || 'Role'}</h3>
-                                        <p className="text-sm font-medium text-primary-600">{exp.company || 'Company'}</p>
+                                        <h3 className="text-base font-bold text-dark-900 dark:text-white">{exp.role || 'Role'}</h3>
+                                        <p className="text-sm font-medium text-primary-600 dark:text-primary-400">{exp.company || 'Company'}</p>
                                     </div>
-                                    <span className="text-xs font-mono font-medium px-2.5 py-1 rounded-md bg-dark-100 text-dark-600">
+                                    <span className="text-xs font-mono font-medium px-2.5 py-1 rounded-md bg-dark-100 dark:bg-dark-800 text-dark-600 dark:text-dark-300">
                                         {exp.startDate ? formatDate(exp.startDate) : ''} — {exp.isCurrent ? 'Present' : exp.endDate ? formatDate(exp.endDate) : ''}
                                     </span>
                                 </div>
                                 {exp.bulletPoints?.length > 0 && (
-                                    <ul className="mt-3 space-y-2 pl-2 text-sm text-dark-700">
+                                    <ul className="mt-3 space-y-2 pl-2 text-sm text-dark-700 dark:text-dark-300">
                                         {exp.bulletPoints.map((bp, j) => (
                                             <li key={j} className="flex items-start gap-2.5">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 shrink-0" />
@@ -278,23 +278,23 @@ export default function ResumeDetail() {
 
             {/* Education Section */}
             {content.education?.length > 0 && (
-                <Card className="p-6">
-                    <div className="flex items-center gap-2.5 pb-4 border-b border-dark-100 mb-5">
-                        <div className="w-9 h-9 rounded-lg bg-accent-50 text-accent-600 flex items-center justify-center">
+                <Card className="p-6 border-dark-100 dark:border-dark-800">
+                    <div className="flex items-center gap-2.5 pb-4 border-b border-dark-100 dark:border-dark-800 mb-5">
+                        <div className="w-9 h-9 rounded-lg bg-accent-50 dark:bg-accent-950/60 text-accent-600 dark:text-accent-400 flex items-center justify-center">
                             <GraduationCap className="w-5 h-5" />
                         </div>
                         <div>
-                            <h2 className="font-display text-lg font-bold text-dark-900">Education & Qualifications</h2>
-                            <p className="text-xs text-dark-500">Academic background</p>
+                            <h2 className="font-display text-lg font-bold text-dark-900 dark:text-white">Education & Qualifications</h2>
+                            <p className="text-xs text-dark-500 dark:text-dark-400">Academic background</p>
                         </div>
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2">
                         {content.education.map((edu, i) => (
-                            <div key={i} className="p-4 rounded-xl border border-dark-100 bg-dark-50/50">
-                                <p className="font-bold text-dark-900 text-sm">{edu.degree} {edu.field && `· ${edu.field}`}</p>
-                                <p className="text-xs text-primary-700 font-medium mt-1">{edu.institution}</p>
-                                {edu.endYear && <p className="text-xs font-mono text-dark-400 mt-2">Graduated: {edu.endYear}</p>}
+                            <div key={i} className="p-4 rounded-xl border border-dark-100 dark:border-dark-800 bg-dark-50/50 dark:bg-dark-950">
+                                <p className="font-bold text-dark-900 dark:text-white text-sm">{edu.degree} {edu.field && `· ${edu.field}`}</p>
+                                <p className="text-xs text-primary-700 dark:text-primary-300 font-medium mt-1">{edu.institution}</p>
+                                {edu.endYear && <p className="text-xs font-mono text-dark-400 dark:text-dark-500 mt-2">Graduated: {edu.endYear}</p>}
                             </div>
                         ))}
                     </div>
@@ -306,18 +306,18 @@ export default function ResumeDetail() {
 
 function InfoItem({ icon: Icon, label, value, isLink }) {
     return (
-        <div className="flex items-start gap-3 p-3 rounded-xl bg-white border border-dark-100/80 shadow-2xs">
-            <div className="p-2 rounded-lg bg-dark-50 text-dark-500 shrink-0">
+        <div className="flex items-start gap-3 p-3 rounded-xl bg-white dark:bg-dark-900 border border-dark-100/80 dark:border-dark-800 shadow-2xs">
+            <div className="p-2 rounded-lg bg-dark-50 dark:bg-dark-800 text-dark-500 dark:text-dark-400 shrink-0">
                 <Icon className="w-4 h-4" />
             </div>
             <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-mono text-dark-400 uppercase tracking-wider">{label}</p>
+                <p className="text-[11px] font-mono text-dark-400 dark:text-dark-500 uppercase tracking-wider">{label}</p>
                 {isLink && value ? (
-                    <a href={isLink} className="text-sm font-semibold text-primary-600 hover:underline truncate block">
+                    <a href={isLink} className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:underline truncate block">
                         {value}
                     </a>
                 ) : (
-                    <p className="text-sm font-semibold text-dark-800 truncate">{value || '—'}</p>
+                    <p className="text-sm font-semibold text-dark-800 dark:text-dark-200 truncate">{value || '—'}</p>
                 )}
             </div>
         </div>

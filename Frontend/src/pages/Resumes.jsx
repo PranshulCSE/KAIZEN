@@ -65,20 +65,20 @@ export default function Resumes() {
             <input ref={inputRef} type="file" accept=".pdf,.doc,.docx" onChange={handleUpload} className="hidden" />
 
             {/* Header */}
-            <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-dark-100">
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-dark-100 dark:border-dark-800">
                 <div>
                     <div className="flex items-center gap-2">
-                        <span className="text-xs font-mono font-semibold uppercase tracking-wider text-primary-600 bg-primary-50 px-2 py-0.5 rounded-md">
+                        <span className="text-xs font-mono font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/60 px-2 py-0.5 rounded-md">
                             Document Library
                         </span>
-                        <span className="text-xs font-medium text-dark-500">
+                        <span className="text-xs font-medium text-dark-500 dark:text-dark-400">
                             {resumes.length} {resumes.length === 1 ? 'version' : 'versions'} saved
                         </span>
                     </div>
-                    <h1 className="mt-1 font-display text-3xl font-bold text-dark-900 tracking-tight">
+                    <h1 className="mt-1 font-display text-3xl font-bold text-dark-900 dark:text-white tracking-tight">
                         My Resumes
                     </h1>
-                    <p className="mt-1 text-sm text-dark-500">
+                    <p className="mt-1 text-sm text-dark-500 dark:text-dark-400">
                         Upload, manage, and download tailored versions of your resume with AI optimization.
                     </p>
                 </div>
@@ -97,18 +97,18 @@ export default function Resumes() {
             </div>
 
             {error && (
-                <div className="rounded-xl border border-danger-200 bg-danger-50 p-4 text-sm text-danger-700 flex items-center gap-2">
+                <div className="rounded-xl border border-danger-200 dark:border-danger-800 bg-danger-50 dark:bg-danger-950/40 p-4 text-sm text-danger-700 dark:text-danger-300 flex items-center gap-2">
                     <span>{error}</span>
                 </div>
             )}
 
             {!error && resumes.length === 0 ? (
-                <div className="p-12 text-center bg-white rounded-2xl border-2 border-dashed border-dark-200 shadow-sm flex flex-col items-center justify-center">
-                    <div className="w-16 h-16 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center mb-4">
+                <div className="p-12 text-center bg-white dark:bg-dark-900 rounded-2xl border-2 border-dashed border-dark-200 dark:border-dark-800 shadow-sm flex flex-col items-center justify-center">
+                    <div className="w-16 h-16 rounded-2xl bg-primary-50 dark:bg-primary-950/60 text-primary-600 dark:text-primary-400 flex items-center justify-center mb-4">
                         <FileText className="w-8 h-8" />
                     </div>
-                    <h3 className="font-display text-xl font-bold text-dark-900 mb-2">No resumes uploaded yet</h3>
-                    <p className="text-dark-500 text-sm max-w-md mb-6">
+                    <h3 className="font-display text-xl font-bold text-dark-900 dark:text-white mb-2">No resumes uploaded yet</h3>
+                    <p className="text-dark-500 dark:text-dark-400 text-sm max-w-md mb-6">
                         Upload your existing PDF or Word resume. Our AI parser will read your experience, skills, and structure.
                     </p>
                     <Button onClick={() => inputRef.current?.click()} variant="primary">
@@ -124,35 +124,35 @@ export default function Resumes() {
                             <Card
                                 key={resume._id}
                                 hover
-                                className="flex flex-col justify-between gap-5 p-5 relative group border-dark-200/80 hover:border-primary-300 transition-all duration-300"
+                                className="flex flex-col justify-between gap-5 p-5 relative group border-dark-200/80 dark:border-dark-800 hover:border-primary-300 dark:hover:border-primary-600 transition-all duration-300"
                             >
                                 <div>
                                     {/* Card Header */}
                                     <div className="flex items-start gap-3.5">
-                                        <div className="p-3 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100 text-primary-600 shrink-0 group-hover:scale-105 transition-transform">
+                                        <div className="p-3 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-950/60 dark:to-primary-900/60 text-primary-600 dark:text-primary-400 shrink-0 group-hover:scale-105 transition-transform">
                                             <FileText className="h-5 w-5" />
                                         </div>
                                         <div className="min-w-0 flex-1">
-                                            <h2 className="truncate text-base font-bold text-dark-900 group-hover:text-primary-600 transition-colors" title={resume.title}>
+                                            <h2 className="truncate text-base font-bold text-dark-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" title={resume.title}>
                                                 {resume.title}
                                             </h2>
-                                            <p className="text-xs text-dark-400 mt-0.5 font-mono">
+                                            <p className="text-xs text-dark-400 dark:text-dark-500 mt-0.5 font-mono">
                                                 Updated {formatDate(resume.updatedAt)}
                                             </p>
                                         </div>
                                     </div>
 
                                     {/* ATS Score Progress */}
-                                    <div className="mt-5 p-3 rounded-xl bg-dark-50/70 border border-dark-100/80">
+                                    <div className="mt-5 p-3 rounded-xl bg-dark-50/70 dark:bg-dark-800/60 border border-dark-100/80 dark:border-dark-700/80">
                                         <div className="mb-2 flex items-center justify-between text-xs">
-                                            <span className="font-medium text-dark-600 flex items-center gap-1">
+                                            <span className="font-medium text-dark-600 dark:text-dark-300 flex items-center gap-1">
                                                 <TrendingUp className="w-3.5 h-3.5 text-primary-500" /> ATS Match
                                             </span>
-                                            <span className={`font-mono font-bold text-sm ${isScoreGood ? 'text-emerald-600' : 'text-dark-900'}`}>
-                                                {score}<span className="text-xs text-dark-400 font-normal">/100</span>
+                                            <span className={`font-mono font-bold text-sm ${isScoreGood ? 'text-emerald-600 dark:text-emerald-400' : 'text-dark-900 dark:text-white'}`}>
+                                                {score}<span className="text-xs text-dark-400 dark:text-dark-500 font-normal">/100</span>
                                             </span>
                                         </div>
-                                        <div className="h-2 w-full overflow-hidden rounded-full bg-dark-200">
+                                        <div className="h-2 w-full overflow-hidden rounded-full bg-dark-200 dark:bg-dark-700">
                                             <div
                                                 className={`h-full rounded-full transition-all duration-700 ${
                                                     isScoreGood
@@ -166,7 +166,7 @@ export default function Resumes() {
                                 </div>
 
                                 {/* Action Buttons */}
-                                <div className="mt-2 pt-3 border-t border-dark-100 flex items-center gap-2">
+                                <div className="mt-2 pt-3 border-t border-dark-100 dark:border-dark-800 flex items-center gap-2">
                                     <Button
                                         onClick={() => handleDownload(resume)}
                                         isLoading={downloadingId === resume._id}

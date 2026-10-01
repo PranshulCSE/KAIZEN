@@ -8,6 +8,7 @@ import Button from '../components/ui/Button.jsx';
 import Card from '../components/ui/Card.jsx';
 import { useResumes } from '../hooks/useResumes.js';
 import { useAI } from '../hooks/useAI.js';
+import { aiApi } from '../api/ai.api.js';
 import { jobAnalysisDetailPath } from '../constants/routes.js';
 
 export default function AnalyzeJob() {
@@ -16,6 +17,7 @@ export default function AnalyzeJob() {
     const { analyzeJob, status } = useAI();
     const [jobUrl, setJobUrl] = useState('');
     const [isScraping, setIsScraping] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const {
         register,
         handleSubmit,
@@ -69,8 +71,8 @@ export default function AnalyzeJob() {
 
             <Card className="p-6 space-y-4">
                 {/* 1-Click URL Importer */}
-                <div className="p-3.5 rounded-xl bg-primary-50/60 border border-primary-100 space-y-2">
-                    <label className="text-xs font-bold text-primary-900 block">
+                <div className="p-3.5 rounded-xl bg-primary-50/60 dark:bg-primary-950/40 border border-primary-100 dark:border-primary-900 space-y-2">
+                    <label className="text-xs font-bold text-primary-900 dark:text-primary-200 block">
                         ✦ 1-Click Auto-Fetch from URL (LinkedIn, Indeed, Lever, etc.)
                     </label>
                     <div className="flex gap-2">
@@ -79,7 +81,7 @@ export default function AnalyzeJob() {
                             placeholder="https://www.linkedin.com/jobs/view/..."
                             value={jobUrl}
                             onChange={(e) => setJobUrl(e.target.value)}
-                            className="flex-1 px-3 py-2 text-xs rounded-lg border border-primary-200 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono"
+                            className="flex-1 px-3 py-2 text-xs rounded-lg border border-primary-200 dark:border-primary-800 bg-white dark:bg-dark-900 text-dark-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono"
                         />
                         <Button
                             type="button"
@@ -105,7 +107,7 @@ export default function AnalyzeJob() {
                             <label className="text-sm font-medium text-ink">Link to a resume (optional)</label>
                             <select
                                 {...register('resumeId')}
-                                className="rounded border border-line bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-improve focus:outline-none"
+                                className="rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-improve focus:outline-none"
                             >
                                 <option value="">None</option>
                                 {resumes.map((r) => (
