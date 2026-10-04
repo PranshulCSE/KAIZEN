@@ -5,6 +5,8 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
+// Adding Logs Utility Function
+
 const logger = require('./utils/logger.js');
 
 // Routes
