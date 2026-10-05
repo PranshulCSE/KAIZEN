@@ -8,23 +8,17 @@ import {
   Trash2,
   ZoomIn,
   ZoomOut,
-  Maximize2,
-  Minimize2,
-  Sliders,
-  Palette,
   Layout,
   FileText,
   Briefcase,
   GraduationCap,
   Wrench,
   FolderGit2,
-  Award,
   ChevronDown,
   ChevronUp,
-  Check,
-  RotateCcw,
-  Zap,
-  ArrowRight
+  Target,
+  ArrowRight,
+  Layers
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Button from '../components/ui/Button.jsx';
@@ -66,7 +60,7 @@ export default function ResumeBuilder() {
 
   // AI Bullet Copilot Modal state
   const [copilotModalOpen, setCopilotModalOpen] = useState(false);
-  const [activeBulletTarget, setActiveBulletTarget] = useState(null); // { section: 'experience'|'projects', itemIdx, bulletIdx, text }
+  const [activeBulletTarget, setActiveBulletTarget] = useState(null);
 
   // New Skill input tag
   const [skillInput, setSkillInput] = useState('');
@@ -106,14 +100,16 @@ export default function ResumeBuilder() {
         const { data } = await resumesApi.getById(selectedResumeId);
         const res = data.data;
         setResumeTitle(res.title || 'My Resume');
-        setResumeContent(res.content || {
-          personalInfo: {},
-          experience: [],
-          education: [],
-          skills: [],
-          projects: [],
-          certifications: []
-        });
+        setResumeContent(
+          res.content || {
+            personalInfo: {},
+            experience: [],
+            education: [],
+            skills: [],
+            projects: [],
+            certifications: []
+          }
+        );
       } catch (err) {
         toast.error('Failed to load resume details.');
       } finally {
@@ -124,7 +120,7 @@ export default function ResumeBuilder() {
     loadResume();
   }, [selectedResumeId]);
 
-  // Form Change Handlers
+  // Form Handlers
   const handlePersonalInfoChange = (field, value) => {
     setResumeContent((prev) => ({
       ...prev,
@@ -132,7 +128,6 @@ export default function ResumeBuilder() {
     }));
   };
 
-  // Experience Handlers
   const handleAddExperience = () => {
     setResumeContent((prev) => ({
       ...prev,
@@ -144,7 +139,7 @@ export default function ResumeBuilder() {
           startDate: new Date().toISOString().split('T')[0],
           endDate: '',
           isCurrent: true,
-          bulletPoints: ['Architected core backend services using Node.js, improving throughput by 30%.']
+          bulletPoints: ['Architected core backend services, improving throughput by 30%.']
         },
         ...(prev.experience || [])
       ]
@@ -204,9 +199,9 @@ export default function ResumeBuilder() {
       ...prev,
       projects: [
         {
-          name: 'AI Analytics Platform',
+          name: 'Distributed Platform',
           technologies: ['React', 'Node.js', 'MongoDB'],
-          description: 'Full-stack application delivering real-time metric visualizations.',
+          description: 'Full-stack application delivering real-time metrics.',
           link: 'https://github.com/example/project',
           bulletPoints: ['Engineered responsive React interface handling 500+ daily mock requests.']
         },
@@ -289,7 +284,6 @@ export default function ResumeBuilder() {
     setCopilotModalOpen(true);
   };
 
-  // Apply AI Copilot Rewrite
   const handleApplyCopilotBullet = (newText) => {
     if (!activeBulletTarget) return;
     const { section, itemIdx, bulletIdx } = activeBulletTarget;
@@ -356,16 +350,16 @@ export default function ResumeBuilder() {
   };
 
   if (resumesLoading) {
-    return <PageLoader label="Loading resume builder" />;
+    return <PageLoader label="Loading visual resume builder..." />;
   }
 
   return (
     <div className="flex flex-col gap-6 pb-12 animate-fade-in">
       {/* Top Toolbar */}
-      <div className="sticky top-0 z-30 flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-white/90 dark:bg-dark-900/90 backdrop-blur-md border border-dark-100 dark:border-dark-800 shadow-sm">
+      <div className="sticky top-0 z-30 flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-white/90 dark:bg-dark-900/90 backdrop-blur-xl border border-dark-200/80 dark:border-dark-800 shadow-sm">
         {/* Left: Resume Title & Selector */}
         <div className="flex items-center gap-3 min-w-[280px]">
-          <div className="p-2 rounded-xl bg-primary-50 dark:bg-primary-950 text-primary-600 dark:text-primary-400">
+          <div className="p-2 rounded-xl bg-primary-50 dark:bg-primary-950/70 text-primary-600 dark:text-primary-400 border border-primary-100 dark:border-primary-800">
             <FileText className="w-5 h-5" />
           </div>
           <div>
@@ -395,7 +389,7 @@ export default function ResumeBuilder() {
         {/* Center: Template & Accent Color Controls */}
         <div className="flex items-center gap-3">
           {/* Template Dropdown */}
-          <div className="flex items-center gap-1.5 p-1 bg-dark-50 dark:bg-dark-800 rounded-xl border border-dark-100 dark:border-dark-700">
+          <div className="flex items-center gap-1.5 p-1 bg-dark-50 dark:bg-dark-800 rounded-xl border border-dark-200/80 dark:border-dark-700">
             <Layout className="w-3.5 h-3.5 text-dark-400 ml-2" />
             <select
               value={template}
@@ -411,7 +405,7 @@ export default function ResumeBuilder() {
           </div>
 
           {/* Color Picker Swatches */}
-          <div className="hidden sm:flex items-center gap-1.5 p-1 bg-dark-50 dark:bg-dark-800 rounded-xl border border-dark-100 dark:border-dark-700">
+          <div className="hidden sm:flex items-center gap-1.5 p-1 bg-dark-50 dark:bg-dark-800 rounded-xl border border-dark-200/80 dark:border-dark-700">
             {accentColors.map((color) => (
               <button
                 key={color.id}
@@ -427,18 +421,18 @@ export default function ResumeBuilder() {
           </div>
 
           {/* Zoom controls */}
-          <div className="hidden md:flex items-center gap-1 p-1 bg-dark-50 dark:bg-dark-800 rounded-xl border border-dark-100 dark:border-dark-700 text-dark-600 dark:text-dark-400">
+          <div className="hidden md:flex items-center gap-1 p-1 bg-dark-50 dark:bg-dark-800 rounded-xl border border-dark-200/80 dark:border-dark-700 text-dark-600 dark:text-dark-400">
             <button
               onClick={() => setZoomScale((s) => Math.max(0.5, s - 0.1))}
-              className="p-1.5 hover:text-dark-900 dark:hover:text-white rounded"
+              className="p-1.5 hover:text-dark-900 dark:hover:text-white rounded-lg"
               title="Zoom Out"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
-            <span className="text-[11px] font-mono px-1 font-semibold">{Math.round(zoomScale * 100)}%</span>
+            <span className="text-[11px] font-mono px-1 font-bold">{Math.round(zoomScale * 100)}%</span>
             <button
               onClick={() => setZoomScale((s) => Math.min(1.3, s + 0.1))}
-              className="p-1.5 hover:text-dark-900 dark:hover:text-white rounded"
+              className="p-1.5 hover:text-dark-900 dark:hover:text-white rounded-lg"
               title="Zoom In"
             >
               <ZoomIn className="w-3.5 h-3.5" />
@@ -453,7 +447,6 @@ export default function ResumeBuilder() {
             size="sm"
             onClick={handleSaveResume}
             isLoading={isSaving}
-            className="text-xs font-bold"
           >
             <Save className="w-3.5 h-3.5" />
             <span>Save</span>
@@ -464,9 +457,8 @@ export default function ResumeBuilder() {
             size="sm"
             onClick={handleDownloadPdf}
             isLoading={isDownloading}
-            className="text-xs font-bold shadow-md"
           >
-            <Download className="w-3.5 h-3.5 text-ink" />
+            <Download className="w-3.5 h-3.5" />
             <span>Export PDF</span>
           </Button>
         </div>
@@ -477,15 +469,15 @@ export default function ResumeBuilder() {
         {/* ================= LEFT PANE: ACCORDION FORM EDITOR ================= */}
         <div className="lg:col-span-6 space-y-4">
           {/* Section 1: Personal Info */}
-          <Card className="overflow-hidden border-dark-100 dark:border-dark-800">
+          <Card className="overflow-hidden border-dark-200/80 dark:border-dark-800 p-0">
             <button
               type="button"
               onClick={() => setActiveSection(activeSection === 'personalInfo' ? '' : 'personalInfo')}
-              className="w-full flex items-center justify-between p-4 bg-dark-50/50 dark:bg-dark-900/50 text-left hover:bg-dark-50 dark:hover:bg-dark-900 transition-colors"
+              className="w-full flex items-center justify-between p-4 bg-dark-50/50 dark:bg-dark-900/50 text-left hover:bg-dark-50 dark:hover:bg-dark-800/60 transition-colors"
             >
               <div className="flex items-center gap-2.5 font-bold text-sm text-dark-900 dark:text-white">
-                <FileText className="w-4 h-4 text-primary-600" />
-                <span>Personal & Contact Info</span>
+                <FileText className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                <span>Personal & Contact Details</span>
               </div>
               {activeSection === 'personalInfo' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
@@ -494,81 +486,95 @@ export default function ResumeBuilder() {
               <div className="p-5 space-y-4 border-t border-dark-100 dark:border-dark-800 animate-fade-in">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1">Full Name</label>
+                    <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1 font-mono">
+                      Full Name
+                    </label>
                     <input
                       type="text"
                       value={resumeContent.personalInfo?.name || ''}
                       onChange={(e) => handlePersonalInfoChange('name', e.target.value)}
                       placeholder="Alex Doe"
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:ring-2 focus:ring-primary-500 font-medium"
+                      className="input-field text-xs py-2"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1">Email</label>
+                    <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1 font-mono">
+                      Email
+                    </label>
                     <input
                       type="email"
                       value={resumeContent.personalInfo?.email || ''}
                       onChange={(e) => handlePersonalInfoChange('email', e.target.value)}
                       placeholder="alex@example.com"
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:ring-2 focus:ring-primary-500 font-medium"
+                      className="input-field text-xs py-2"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1">Phone</label>
+                    <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1 font-mono">
+                      Phone
+                    </label>
                     <input
                       type="text"
                       value={resumeContent.personalInfo?.phone || ''}
                       onChange={(e) => handlePersonalInfoChange('phone', e.target.value)}
                       placeholder="+1 (555) 000-0000"
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:ring-2 focus:ring-primary-500 font-medium"
+                      className="input-field text-xs py-2"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1">Location</label>
+                    <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1 font-mono">
+                      Location
+                    </label>
                     <input
                       type="text"
                       value={resumeContent.personalInfo?.location || ''}
                       onChange={(e) => handlePersonalInfoChange('location', e.target.value)}
                       placeholder="San Francisco, CA"
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:ring-2 focus:ring-primary-500 font-medium"
+                      className="input-field text-xs py-2"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1">LinkedIn URL</label>
+                    <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1 font-mono">
+                      LinkedIn URL
+                    </label>
                     <input
                       type="text"
                       value={resumeContent.personalInfo?.linkedin || ''}
                       onChange={(e) => handlePersonalInfoChange('linkedin', e.target.value)}
                       placeholder="linkedin.com/in/alex"
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:ring-2 focus:ring-primary-500 font-medium"
+                      className="input-field text-xs py-2"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1">Portfolio / Website</label>
+                    <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1 font-mono">
+                      Portfolio / Website
+                    </label>
                     <input
                       type="text"
                       value={resumeContent.personalInfo?.portfolio || ''}
                       onChange={(e) => handlePersonalInfoChange('portfolio', e.target.value)}
                       placeholder="alexdoe.dev"
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:ring-2 focus:ring-primary-500 font-medium"
+                      className="input-field text-xs py-2"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1">Professional Summary</label>
+                  <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1 font-mono">
+                    Professional Summary
+                  </label>
                   <textarea
                     rows={3}
                     value={resumeContent.personalInfo?.summary || ''}
                     onChange={(e) => handlePersonalInfoChange('summary', e.target.value)}
-                    placeholder="2-4 lines summarizing role, top skills, and standout quantified achievement..."
-                    className="w-full p-3 text-xs rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:ring-2 focus:ring-primary-500 font-sans resize-none"
+                    placeholder="2-4 lines summarizing role, competencies, and quantified achievements..."
+                    className="input-field text-xs py-2 resize-none"
                   />
                 </div>
               </div>
@@ -576,30 +582,30 @@ export default function ResumeBuilder() {
           </Card>
 
           {/* Section 2: Work Experience */}
-          <Card className="overflow-hidden border-dark-100 dark:border-dark-800">
+          <Card className="overflow-hidden border-dark-200/80 dark:border-dark-800 p-0">
             <button
               type="button"
               onClick={() => setActiveSection(activeSection === 'experience' ? '' : 'experience')}
-              className="w-full flex items-center justify-between p-4 bg-dark-50/50 dark:bg-dark-900/50 text-left hover:bg-dark-50 dark:hover:bg-dark-900 transition-colors"
+              className="w-full flex items-center justify-between p-4 bg-dark-50/50 dark:bg-dark-900/50 text-left hover:bg-dark-50 dark:hover:bg-dark-800/60 transition-colors"
             >
               <div className="flex items-center gap-2.5 font-bold text-sm text-dark-900 dark:text-white">
-                <Briefcase className="w-4 h-4 text-emerald-600" />
+                <Briefcase className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 <span>Work Experience ({resumeContent.experience?.length || 0})</span>
               </div>
               {activeSection === 'experience' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
 
             {activeSection === 'experience' && (
-              <div className="p-5 space-y-6 border-t border-dark-100 dark:border-dark-800 animate-fade-in">
+              <div className="p-5 space-y-5 border-t border-dark-100 dark:border-dark-800 animate-fade-in">
                 {resumeContent.experience?.map((job, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-xl bg-dark-50/50 dark:bg-dark-950 border border-dark-100 dark:border-dark-800 space-y-3 relative group"
+                    className="p-4 rounded-xl bg-dark-50/60 dark:bg-dark-950 border border-dark-200/70 dark:border-dark-800 space-y-3 relative group"
                   >
                     <button
                       type="button"
                       onClick={() => handleRemoveExperience(idx)}
-                      className="absolute top-3 right-3 p-1 rounded-lg text-danger-500 hover:bg-danger-50 transition-colors"
+                      className="absolute top-3 right-3 p-1 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
                       title="Remove Role"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -607,21 +613,21 @@ export default function ResumeBuilder() {
 
                     <div className="grid grid-cols-2 gap-3 pr-8">
                       <div>
-                        <label className="block text-[10px] font-mono font-bold uppercase text-dark-500">Job Title / Role</label>
+                        <label className="block text-[10px] font-mono font-bold uppercase text-dark-500">Job Title</label>
                         <input
                           type="text"
                           value={job.role || ''}
                           onChange={(e) => handleUpdateExperience(idx, 'role', e.target.value)}
-                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-900 text-dark-900 dark:text-white"
+                          className="input-field text-xs py-1.5"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-mono font-bold uppercase text-dark-500">Company Name</label>
+                        <label className="block text-[10px] font-mono font-bold uppercase text-dark-500">Company</label>
                         <input
                           type="text"
                           value={job.company || ''}
                           onChange={(e) => handleUpdateExperience(idx, 'company', e.target.value)}
-                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-900 text-dark-900 dark:text-white"
+                          className="input-field text-xs py-1.5"
                         />
                       </div>
                     </div>
@@ -638,22 +644,22 @@ export default function ResumeBuilder() {
                             rows={2}
                             value={bullet}
                             onChange={(e) => handleUpdateExperienceBullet(idx, bidx, e.target.value)}
-                            className="flex-1 p-2 text-xs rounded-lg border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-900 text-dark-900 dark:text-white resize-none"
+                            className="flex-1 input-field text-xs py-1.5 resize-none"
                           />
                           <div className="flex flex-col gap-1">
                             <button
                               type="button"
                               onClick={() => openBulletCopilot('experience', idx, bidx, bullet)}
-                              className="px-2 py-1 rounded-md bg-primary-50 dark:bg-primary-950 text-primary-600 dark:text-primary-300 hover:bg-primary-100 text-[10px] font-bold flex items-center gap-1 shadow-2xs whitespace-nowrap"
+                              className="px-2 py-1 rounded-lg bg-primary-50 dark:bg-primary-950 text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-900 text-[10px] font-bold flex items-center gap-1 border border-primary-200/60 dark:border-primary-800 whitespace-nowrap"
                               title="Improve with AI"
                             >
-                              <Sparkles className="w-3 h-3 text-accent-500" />
+                              <Target className="w-3 h-3 text-primary-600 dark:text-primary-400" />
                               <span>AI Copilot</span>
                             </button>
                             <button
                               type="button"
                               onClick={() => handleRemoveExperienceBullet(idx, bidx)}
-                              className="p-1 rounded text-dark-400 hover:text-danger-500 hover:bg-danger-50 text-center"
+                              className="p-1 rounded text-dark-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-center"
                               title="Delete Bullet"
                             >
                               <Trash2 className="w-3.5 h-3.5 mx-auto" />
@@ -665,7 +671,7 @@ export default function ResumeBuilder() {
                       <button
                         type="button"
                         onClick={() => handleAddExperienceBullet(idx)}
-                        className="text-xs font-bold text-primary-600 hover:text-primary-700 flex items-center gap-1 pt-1"
+                        className="text-xs font-bold text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-1 pt-1"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Add Bullet Point</span>
@@ -678,7 +684,7 @@ export default function ResumeBuilder() {
                   variant="secondary"
                   size="sm"
                   onClick={handleAddExperience}
-                  className="w-full justify-center text-xs font-bold"
+                  className="w-full justify-center text-xs"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Work Experience</span>
@@ -688,30 +694,30 @@ export default function ResumeBuilder() {
           </Card>
 
           {/* Section 3: Projects */}
-          <Card className="overflow-hidden border-dark-100 dark:border-dark-800">
+          <Card className="overflow-hidden border-dark-200/80 dark:border-dark-800 p-0">
             <button
               type="button"
               onClick={() => setActiveSection(activeSection === 'projects' ? '' : 'projects')}
-              className="w-full flex items-center justify-between p-4 bg-dark-50/50 dark:bg-dark-900/50 text-left hover:bg-dark-50 dark:hover:bg-dark-900 transition-colors"
+              className="w-full flex items-center justify-between p-4 bg-dark-50/50 dark:bg-dark-900/50 text-left hover:bg-dark-50 dark:hover:bg-dark-800/60 transition-colors"
             >
               <div className="flex items-center gap-2.5 font-bold text-sm text-dark-900 dark:text-white">
-                <FolderGit2 className="w-4 h-4 text-accent-600" />
+                <FolderGit2 className="w-4 h-4 text-accent-600 dark:text-accent-400" />
                 <span>Projects ({resumeContent.projects?.length || 0})</span>
               </div>
               {activeSection === 'projects' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
 
             {activeSection === 'projects' && (
-              <div className="p-5 space-y-6 border-t border-dark-100 dark:border-dark-800 animate-fade-in">
+              <div className="p-5 space-y-5 border-t border-dark-100 dark:border-dark-800 animate-fade-in">
                 {resumeContent.projects?.map((proj, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-xl bg-dark-50/50 dark:bg-dark-950 border border-dark-100 dark:border-dark-800 space-y-3 relative"
+                    className="p-4 rounded-xl bg-dark-50/60 dark:bg-dark-950 border border-dark-200/70 dark:border-dark-800 space-y-3 relative"
                   >
                     <button
                       type="button"
                       onClick={() => handleRemoveProject(idx)}
-                      className="absolute top-3 right-3 p-1 rounded-lg text-danger-500 hover:bg-danger-50 transition-colors"
+                      className="absolute top-3 right-3 p-1 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -723,23 +729,23 @@ export default function ResumeBuilder() {
                           type="text"
                           value={proj.name || ''}
                           onChange={(e) => handleUpdateProject(idx, 'name', e.target.value)}
-                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-900 text-dark-900 dark:text-white"
+                          className="input-field text-xs py-1.5"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-mono font-bold uppercase text-dark-500">Project URL / Link</label>
+                        <label className="block text-[10px] font-mono font-bold uppercase text-dark-500">Project URL</label>
                         <input
                           type="text"
                           value={proj.link || ''}
                           onChange={(e) => handleUpdateProject(idx, 'link', e.target.value)}
                           placeholder="https://..."
-                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-900 text-dark-900 dark:text-white"
+                          className="input-field text-xs py-1.5"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-mono font-bold uppercase text-dark-500">Technologies (comma separated)</label>
+                      <label className="block text-[10px] font-mono font-bold uppercase text-dark-500">Technologies</label>
                       <input
                         type="text"
                         value={proj.technologies?.join(', ') || ''}
@@ -751,7 +757,7 @@ export default function ResumeBuilder() {
                           )
                         }
                         placeholder="React, Node.js, Redis, Tailwind"
-                        className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-900 text-dark-900 dark:text-white"
+                        className="input-field text-xs py-1.5"
                       />
                     </div>
                   </div>
@@ -761,7 +767,7 @@ export default function ResumeBuilder() {
                   variant="secondary"
                   size="sm"
                   onClick={handleAddProject}
-                  className="w-full justify-center text-xs font-bold"
+                  className="w-full justify-center text-xs"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add New Project</span>
@@ -771,14 +777,14 @@ export default function ResumeBuilder() {
           </Card>
 
           {/* Section 4: Skills */}
-          <Card className="overflow-hidden border-dark-100 dark:border-dark-800">
+          <Card className="overflow-hidden border-dark-200/80 dark:border-dark-800 p-0">
             <button
               type="button"
               onClick={() => setActiveSection(activeSection === 'skills' ? '' : 'skills')}
-              className="w-full flex items-center justify-between p-4 bg-dark-50/50 dark:bg-dark-900/50 text-left hover:bg-dark-50 dark:hover:bg-dark-900 transition-colors"
+              className="w-full flex items-center justify-between p-4 bg-dark-50/50 dark:bg-dark-900/50 text-left hover:bg-dark-50 dark:hover:bg-dark-800/60 transition-colors"
             >
               <div className="flex items-center gap-2.5 font-bold text-sm text-dark-900 dark:text-white">
-                <Wrench className="w-4 h-4 text-sky-600" />
+                <Wrench className="w-4 h-4 text-sky-600 dark:text-sky-400" />
                 <span>Technical Skills ({resumeContent.skills?.length || 0})</span>
               </div>
               {activeSection === 'skills' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -787,7 +793,7 @@ export default function ResumeBuilder() {
             {activeSection === 'skills' && (
               <div className="p-5 space-y-4 border-t border-dark-100 dark:border-dark-800 animate-fade-in">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1.5">
+                  <label className="block text-xs font-bold uppercase text-dark-600 dark:text-dark-400 mb-1.5 font-mono">
                     Type a skill and press Enter
                   </label>
                   <input
@@ -796,7 +802,7 @@ export default function ResumeBuilder() {
                     onChange={(e) => setSkillInput(e.target.value)}
                     onKeyDown={handleAddSkill}
                     placeholder="e.g. TypeScript, GraphQL, Docker, Next.js"
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:ring-2 focus:ring-primary-500 font-medium"
+                    className="input-field text-xs py-2 font-medium"
                   />
                 </div>
 
@@ -810,7 +816,7 @@ export default function ResumeBuilder() {
                       <button
                         type="button"
                         onClick={() => handleRemoveSkill(skill)}
-                        className="text-dark-400 hover:text-danger-500"
+                        className="text-dark-400 hover:text-rose-500 font-bold"
                       >
                         ×
                       </button>
@@ -822,30 +828,30 @@ export default function ResumeBuilder() {
           </Card>
 
           {/* Section 5: Education */}
-          <Card className="overflow-hidden border-dark-100 dark:border-dark-800">
+          <Card className="overflow-hidden border-dark-200/80 dark:border-dark-800 p-0">
             <button
               type="button"
               onClick={() => setActiveSection(activeSection === 'education' ? '' : 'education')}
-              className="w-full flex items-center justify-between p-4 bg-dark-50/50 dark:bg-dark-900/50 text-left hover:bg-dark-50 dark:hover:bg-dark-900 transition-colors"
+              className="w-full flex items-center justify-between p-4 bg-dark-50/50 dark:bg-dark-900/50 text-left hover:bg-dark-50 dark:hover:bg-dark-800/60 transition-colors"
             >
               <div className="flex items-center gap-2.5 font-bold text-sm text-dark-900 dark:text-white">
-                <GraduationCap className="w-4 h-4 text-violet-600" />
+                <GraduationCap className="w-4 h-4 text-violet-600 dark:text-violet-400" />
                 <span>Education ({resumeContent.education?.length || 0})</span>
               </div>
               {activeSection === 'education' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
 
             {activeSection === 'education' && (
-              <div className="p-5 space-y-6 border-t border-dark-100 dark:border-dark-800 animate-fade-in">
+              <div className="p-5 space-y-5 border-t border-dark-100 dark:border-dark-800 animate-fade-in">
                 {resumeContent.education?.map((edu, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-xl bg-dark-50/50 dark:bg-dark-950 border border-dark-100 dark:border-dark-800 space-y-3 relative"
+                    className="p-4 rounded-xl bg-dark-50/60 dark:bg-dark-950 border border-dark-200/70 dark:border-dark-800 space-y-3 relative"
                   >
                     <button
                       type="button"
                       onClick={() => handleRemoveEducation(idx)}
-                      className="absolute top-3 right-3 p-1 rounded-lg text-danger-500 hover:bg-danger-50 transition-colors"
+                      className="absolute top-3 right-3 p-1 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -857,7 +863,7 @@ export default function ResumeBuilder() {
                           type="text"
                           value={edu.degree || ''}
                           onChange={(e) => handleUpdateEducation(idx, 'degree', e.target.value)}
-                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-900 text-dark-900 dark:text-white"
+                          className="input-field text-xs py-1.5"
                         />
                       </div>
                       <div>
@@ -866,7 +872,7 @@ export default function ResumeBuilder() {
                           type="text"
                           value={edu.institution || ''}
                           onChange={(e) => handleUpdateEducation(idx, 'institution', e.target.value)}
-                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-900 text-dark-900 dark:text-white"
+                          className="input-field text-xs py-1.5"
                         />
                       </div>
                     </div>
@@ -878,7 +884,7 @@ export default function ResumeBuilder() {
                           type="text"
                           value={edu.field || ''}
                           onChange={(e) => handleUpdateEducation(idx, 'field', e.target.value)}
-                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-900 text-dark-900 dark:text-white"
+                          className="input-field text-xs py-1.5"
                         />
                       </div>
                       <div>
@@ -887,7 +893,7 @@ export default function ResumeBuilder() {
                           type="text"
                           value={edu.endYear || ''}
                           onChange={(e) => handleUpdateEducation(idx, 'endYear', e.target.value)}
-                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-900 text-dark-900 dark:text-white"
+                          className="input-field text-xs py-1.5"
                         />
                       </div>
                     </div>
@@ -898,7 +904,7 @@ export default function ResumeBuilder() {
                   variant="secondary"
                   size="sm"
                   onClick={handleAddEducation}
-                  className="w-full justify-center text-xs font-bold"
+                  className="w-full justify-center text-xs"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Education Degree</span>
@@ -911,7 +917,7 @@ export default function ResumeBuilder() {
         {/* ================= RIGHT PANE: LIVE REAL-TIME WYSIWYG PREVIEW ================= */}
         <div className="lg:col-span-6 sticky top-24">
           <div className="p-4 rounded-2xl bg-dark-100 dark:bg-dark-950 border border-dark-200 dark:border-dark-800 shadow-inner overflow-hidden flex flex-col items-center justify-start min-h-[750px]">
-            <div className="w-full flex items-center justify-between pb-3 mb-3 border-b border-dark-200 dark:border-dark-800 text-xs text-dark-500">
+            <div className="w-full flex items-center justify-between pb-3 mb-3 border-b border-dark-200 dark:border-dark-800 text-xs text-dark-500 dark:text-dark-400">
               <span className="font-mono uppercase font-bold tracking-wider">Live Document Canvas</span>
               <span className="font-mono">Template: {template} | {accentColor}</span>
             </div>

@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { Mail, Lock, Eye, EyeOff, Sparkles, ArrowRight, Sun, Moon } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Sun, Moon } from 'lucide-react';
 import Button from '../components/ui/Button.jsx';
 import Card from '../components/ui/Card.jsx';
 import Input from '../components/ui/Input.jsx';
-import Logo from '../assets/Logo_Wide.jsx';
+import Logo from '../assets/Logo.jsx';
 import { useAuth } from '../hooks/useAuth.js';
 import { useTheme } from '../context/ThemeContext.jsx';
 import { apiErrorMessage } from '../api/axiosClient.js';
@@ -34,7 +34,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F7F2] dark:bg-[#0B0D10] text-dark-900 dark:text-dark-100 flex flex-col justify-center items-center p-4 selection:bg-primary-100 selection:text-primary-700 relative transition-colors duration-200">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0F19] text-dark-900 dark:text-dark-100 flex flex-col justify-center items-center p-4 selection:bg-primary-500 selection:text-white relative transition-colors duration-200">
       {/* Top right theme toggle */}
       <div className="absolute top-4 right-4">
         <button
@@ -50,13 +50,13 @@ export default function Login() {
       <div className="w-full max-w-md animate-fade-in">
         <div className="text-center mb-8">
           <div className="inline-block mb-3">
-            <Logo showBadge />
+            <Logo to={ROUTES.HOME} showBadge />
           </div>
           <h1 className="text-2xl font-black font-display text-dark-900 dark:text-white tracking-tight">
             Welcome Back
           </h1>
           <p className="text-xs text-dark-500 dark:text-dark-400 mt-1">
-            Sign in to access your resumes and ATS optimization tools.
+            Sign in to access your resumes, job targets, and ATS tools.
           </p>
         </div>
 
@@ -104,7 +104,7 @@ export default function Login() {
               type="submit"
               variant="primary"
               isLoading={isSubmitting}
-              className="w-full shadow-md shadow-primary-500/20 mt-2"
+              className="w-full mt-2"
             >
               <span>Sign In</span>
               <ArrowRight className="w-4 h-4" />

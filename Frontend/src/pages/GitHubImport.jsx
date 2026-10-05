@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Github,
   Search,
-  Sparkles,
   Star,
   GitFork,
   CheckCircle2,
@@ -13,7 +12,9 @@ import {
   Check,
   Layers,
   ArrowRight,
-  Info
+  Info,
+  GitMerge,
+  Cpu
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Button from '../components/ui/Button.jsx';
@@ -176,7 +177,7 @@ export default function GitHubImport() {
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-semibold tracking-wide text-primary-200 mb-3">
-              <Github className="w-3.5 h-3.5 text-white" />
+              <GitMerge className="w-3.5 h-3.5 text-accent-400" />
               <span>GitHub to Resume Synchronizer</span>
             </div>
             <h1 className="font-display text-3xl sm:text-4xl font-black tracking-tight text-white">
@@ -279,14 +280,14 @@ export default function GitHubImport() {
               </div>
 
               <div className="text-right hidden sm:block">
-                <span className="text-xs font-mono font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950 px-2.5 py-1 rounded-full">
+                <span className="text-xs font-mono font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950 px-2.5 py-1 rounded-full border border-primary-100 dark:border-primary-900">
                   {repositories.length} Repositories
                 </span>
               </div>
             </div>
 
             {/* Target Role & Selection Controls */}
-            <Card className="p-5 border-dark-100 dark:border-dark-800 space-y-4">
+            <Card className="p-5 border-dark-100 dark:border-dark-800 space-y-4 bg-white dark:bg-dark-900">
               <div className="flex items-center justify-between pb-3 border-b border-dark-100 dark:border-dark-800">
                 <h4 className="text-xs font-bold font-display uppercase tracking-wider text-dark-700 dark:text-dark-300">
                   Select Repositories to Convert ({selectedRepoNames.size} selected)
@@ -318,7 +319,7 @@ export default function GitHubImport() {
                       className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                         isChecked
                           ? 'border-primary-500 bg-primary-50/50 dark:bg-primary-950/40 shadow-2xs'
-                          : 'border-dark-100 dark:border-dark-800 bg-white dark:bg-dark-900 hover:border-dark-200'
+                          : 'border-dark-100 dark:border-dark-800 bg-white dark:bg-dark-900 hover:border-dark-200 dark:hover:border-dark-700'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -335,7 +336,7 @@ export default function GitHubImport() {
                                 {repo.name}
                               </span>
                               {repo.stars > 0 && (
-                                <span className="flex items-center gap-0.5 text-[10px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-950 px-1.5 py-0.5 rounded-md">
+                                <span className="flex items-center gap-0.5 text-[10px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-950 px-1.5 py-0.5 rounded-md border border-amber-200 dark:border-amber-900">
                                   <Star className="w-2.5 h-2.5 fill-current" />
                                   {repo.stars}
                                 </span>
@@ -366,7 +367,7 @@ export default function GitHubImport() {
                 isLoading={isGeneratingBullets}
                 className="w-full justify-center font-bold text-sm shadow-md"
               >
-                <Sparkles className="w-4 h-4" />
+                <Cpu className="w-4 h-4" />
                 <span>Transform {selectedRepoNames.size} Repos into Resume Bullets</span>
               </Button>
             </Card>
@@ -376,7 +377,7 @@ export default function GitHubImport() {
           <div className="lg:col-span-6 space-y-6">
             {generatedProjects.length === 0 ? (
               <div className="rounded-2xl border-2 border-dashed border-dark-200 dark:border-dark-800 bg-white dark:bg-dark-900 p-12 text-center">
-                <div className="w-14 h-14 rounded-2xl bg-primary-50 dark:bg-primary-950 text-primary-600 dark:text-primary-400 flex items-center justify-center mx-auto mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-primary-50 dark:bg-primary-950 text-primary-600 dark:text-primary-400 flex items-center justify-center mx-auto mb-4 border border-primary-100 dark:border-primary-900">
                   <Code2 className="w-7 h-7" />
                 </div>
                 <h3 className="text-base font-bold font-display text-dark-900 dark:text-white mb-1">
@@ -433,7 +434,7 @@ export default function GitHubImport() {
                 {generatedProjects.map((project, idx) => (
                   <div
                     key={idx}
-                    className="p-5 rounded-2xl bg-white dark:bg-dark-900 border border-dark-100 dark:border-dark-800 shadow-sm space-y-3 hover:border-primary-200 transition-all"
+                    className="p-5 rounded-2xl bg-white dark:bg-dark-900 border border-dark-100 dark:border-dark-800 shadow-sm space-y-3 hover:border-primary-200 dark:hover:border-primary-800 transition-all"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>

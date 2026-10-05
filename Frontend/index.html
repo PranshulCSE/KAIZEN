@@ -3,19 +3,32 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" href="/Logo_Black.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kaizen — Resume, revised.</title>
+  <title>Kaizen — Next-Gen ATS Resume & Career Optimizer</title>
   <meta name="description"
-    content="Upload your resume, match it against a real job description, and see exactly what to change — line by line." />
+    content="Upload your resume, match it against real job descriptions, and get high-scoring ATS bullet points, live mock interviews, and tailored cover letters." />
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('kaizen_theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (saved === 'dark' || (!saved && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
     rel="stylesheet" />
 </head>
 
-<body>
+<body class="bg-[#F8FAFC] dark:bg-[#0B0F19] text-dark-900 dark:text-dark-50 antialiased selection:bg-primary-500 selection:text-white">
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>

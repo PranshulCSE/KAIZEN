@@ -5,7 +5,6 @@ import {
   Mic,
   MicOff,
   Send,
-  Sparkles,
   Bot,
   User,
   CheckCircle2,
@@ -20,7 +19,11 @@ import {
   MessageSquare,
   ShieldCheck,
   ChevronRight,
-  Download
+  Download,
+  Activity,
+  Cpu,
+  Radio,
+  FileText
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Button from '../components/ui/Button.jsx';
@@ -58,7 +61,6 @@ export default function MockInterview() {
 
   // Socket connection ref
   const socketRef = useRef(null);
-  const chatBottomRef = useRef(null);
 
   // Pre-select first resume
   useEffect(() => {
@@ -144,7 +146,6 @@ export default function MockInterview() {
     socketRef.current = socket;
 
     socket.on('connect', () => {
-      console.log('Connected to AI Mock Interview server');
       socket.emit('start_interview', {
         targetRole,
         resumeSummary,
@@ -264,7 +265,7 @@ export default function MockInterview() {
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-semibold tracking-wide text-primary-200 mb-3">
-              <Sparkles className="w-3.5 h-3.5 text-accent-400" />
+              <Radio className="w-3.5 h-3.5 text-accent-400 animate-pulse" />
               <span>Real-Time Socket.io AI Simulator</span>
             </div>
             <h1 className="font-display text-3xl sm:text-4xl font-black tracking-tight text-white">
@@ -285,7 +286,7 @@ export default function MockInterview() {
                 variant="secondary"
                 size="sm"
                 onClick={handleEndInterviewEarly}
-                className="text-xs bg-white/10 text-white border-white/20"
+                className="text-xs bg-white/10 text-white border-white/20 hover:bg-white/20"
               >
                 End Session
               </Button>
@@ -300,10 +301,10 @@ export default function MockInterview() {
       {!isInterviewActive && !finalSummary ? (
         /* SETUP SCREEN */
         <div className="max-w-3xl mx-auto w-full">
-          <Card className="p-8 border-dark-100 dark:border-dark-800 space-y-6 shadow-lg">
+          <Card className="p-8 border-dark-100 dark:border-dark-800 space-y-6 shadow-lg bg-white dark:bg-dark-900">
             <div className="flex items-center justify-between pb-4 border-b border-dark-100 dark:border-dark-800">
               <h2 className="text-base font-bold font-display text-dark-900 dark:text-white flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-primary-600" />
+                <ShieldCheck className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 <span>Configure Your Interview Session</span>
               </h2>
               <span className="text-xs font-mono text-dark-400">5-Question Deep Dive</span>
@@ -315,7 +316,7 @@ export default function MockInterview() {
                 1. Select Resume Context
               </label>
               {resumes.length === 0 ? (
-                <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800">
+                <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 text-xs text-amber-800 dark:text-amber-300">
                   Please upload a resume first so the interviewer can ask questions based on your verified experience.
                 </div>
               ) : (
@@ -325,7 +326,7 @@ export default function MockInterview() {
                   className="w-full px-4 py-2.5 rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white text-sm font-medium focus:ring-2 focus:ring-primary-500"
                 >
                   {resumes.map((r) => (
-                    <option key={r._id} value={r._id}>
+                    <option key={r._id} value={r._id} className="text-dark-900 dark:text-white dark:bg-dark-900">
                       {r.title} ({r.optimization?.atsScore || 0}% ATS)
                     </option>
                   ))}
@@ -354,7 +355,7 @@ export default function MockInterview() {
                     className={`p-3 rounded-xl border text-xs text-left font-medium transition-all ${
                       targetRole === role
                         ? 'border-primary-600 bg-primary-50 dark:bg-primary-950/40 text-primary-900 dark:text-primary-200 font-bold shadow-2xs'
-                        : 'border-dark-100 dark:border-dark-800 bg-white dark:bg-dark-900 text-dark-600 dark:text-dark-400 hover:border-dark-200'
+                        : 'border-dark-100 dark:border-dark-800 bg-white dark:bg-dark-900 text-dark-600 dark:text-dark-400 hover:border-dark-200 dark:hover:border-dark-700'
                     }`}
                   >
                     {role}
@@ -381,7 +382,7 @@ export default function MockInterview() {
                     className={`p-3 rounded-xl border text-left transition-all ${
                       interviewMode === m.id
                         ? 'border-accent-600 bg-accent-50 dark:bg-accent-950/40 text-accent-950 dark:text-accent-200 font-bold shadow-2xs'
-                        : 'border-dark-100 dark:border-dark-800 bg-white dark:bg-dark-900 text-dark-600 dark:text-dark-400 hover:border-dark-200'
+                        : 'border-dark-100 dark:border-dark-800 bg-white dark:bg-dark-900 text-dark-600 dark:text-dark-400 hover:border-dark-200 dark:hover:border-dark-700'
                     }`}
                   >
                     <p className="text-xs font-bold">{m.label}</p>
@@ -445,7 +446,7 @@ export default function MockInterview() {
                     className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all ${
                       isListening
                         ? 'bg-danger-500 text-white animate-pulse shadow-md'
-                        : 'bg-dark-100 dark:bg-dark-800 text-dark-700 dark:text-dark-300 hover:bg-dark-200'
+                        : 'bg-dark-100 dark:bg-dark-800 text-dark-700 dark:text-dark-300 hover:bg-dark-200 dark:hover:bg-dark-700'
                     }`}
                   >
                     {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
@@ -489,7 +490,7 @@ export default function MockInterview() {
             </h3>
 
             {transcript.length === 0 ? (
-              <div className="p-6 rounded-2xl border border-dashed border-dark-200 dark:border-dark-800 text-center text-xs text-dark-400">
+              <div className="p-6 rounded-2xl border border-dashed border-dark-200 dark:border-dark-800 text-center text-xs text-dark-400 bg-white dark:bg-dark-900">
                 Submit your first answer to view instant AI scoring & STAR rubric feedback.
               </div>
             ) : (
@@ -512,7 +513,7 @@ export default function MockInterview() {
                       "{item.answer}"
                     </p>
 
-                    <div className="p-3 rounded-lg bg-dark-50 dark:bg-dark-950 text-xs space-y-1.5">
+                    <div className="p-3 rounded-lg bg-dark-50 dark:bg-dark-950 text-xs space-y-1.5 border border-dark-100 dark:border-dark-800">
                       <p className="text-dark-800 dark:text-dark-200 font-medium">
                         {item.evaluation.feedback}
                       </p>
@@ -630,7 +631,7 @@ export default function MockInterview() {
 
               {/* Executive Summary Notes */}
               {finalSummary.summaryNotes && (
-                <Card className="p-6 border-dark-100 dark:border-dark-800 space-y-3">
+                <Card className="p-6 border-dark-100 dark:border-dark-800 space-y-3 bg-white dark:bg-dark-900">
                   <h3 className="text-sm font-bold text-dark-900 dark:text-white">
                     Hiring Committee Assessment
                   </h3>

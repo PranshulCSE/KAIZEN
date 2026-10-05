@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router';
 import {
   Mail,
-  Sparkles,
   Copy,
   Check,
   Download,
@@ -18,7 +17,9 @@ import {
   RefreshCw,
   Sliders,
   CheckCircle2,
-  ExternalLink
+  ExternalLink,
+  PenTool,
+  Wand2
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Button from '../components/ui/Button.jsx';
@@ -188,11 +189,11 @@ export default function CoverLetter() {
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-semibold tracking-wide text-primary-200 mb-3">
-              <Sparkles className="w-3.5 h-3.5 text-accent-400" />
-              <span>AI Application Suite</span>
+              <PenTool className="w-3.5 h-3.5 text-accent-400" />
+              <span>Application Writing Suite</span>
             </div>
             <h1 className="font-display text-3xl sm:text-4xl font-black tracking-tight text-white">
-              Cover Letter & Outreach Generator
+              Cover Letter & Outreach Studio
             </h1>
             <p className="mt-2 text-sm sm:text-base text-primary-200/90 leading-relaxed">
               Craft persuasive, recruiter-tailored cover letters and high-converting LinkedIn networking messages grounded in your verified experience.
@@ -234,10 +235,10 @@ export default function CoverLetter() {
       <div className="grid lg:grid-cols-12 gap-8 items-start">
         {/* LEFT COLUMN: Controls & Input Form */}
         <div className="lg:col-span-5 space-y-6">
-          <Card className="p-6 border-dark-100 dark:border-dark-800 shadow-sm space-y-5">
+          <Card className="p-6 border-dark-100 dark:border-dark-800 shadow-sm space-y-5 bg-white dark:bg-dark-900">
             <div className="flex items-center justify-between pb-3 border-b border-dark-100 dark:border-dark-800">
               <h2 className="text-base font-bold font-display text-dark-900 dark:text-white flex items-center gap-2">
-                <Sliders className="w-4 h-4 text-primary-600" />
+                <Sliders className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                 <span>Configuration</span>
               </h2>
               <span className="text-xs font-mono text-dark-400">Step 1 of 2</span>
@@ -464,7 +465,7 @@ export default function CoverLetter() {
                 onClick={activeTab === 'cover-letter' ? handleGenerateCoverLetter : handleGenerateColdOutreach}
                 isLoading={isGenerating}
               >
-                <Sparkles className="w-4 h-4" />
+                <Wand2 className="w-4 h-4" />
                 <span>
                   {activeTab === 'cover-letter' ? 'Generate Tailored Cover Letter' : 'Generate Outreach Messages'}
                 </span>
@@ -480,7 +481,7 @@ export default function CoverLetter() {
             <div className="space-y-6">
               {!coverLetterResult ? (
                 <div className="rounded-2xl border-2 border-dashed border-dark-200 dark:border-dark-800 bg-white dark:bg-dark-900 p-12 text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-primary-50 dark:bg-primary-950 text-primary-600 dark:text-primary-400 flex items-center justify-center mx-auto mb-4">
+                  <div className="w-14 h-14 rounded-2xl bg-primary-50 dark:bg-primary-950 text-primary-600 dark:text-primary-400 flex items-center justify-center mx-auto mb-4 border border-primary-100 dark:border-primary-900">
                     <Mail className="w-7 h-7" />
                   </div>
                   <h3 className="text-base font-bold font-display text-dark-900 dark:text-white mb-1">
@@ -540,7 +541,7 @@ export default function CoverLetter() {
                   {coverLetterResult.keyHighlights?.length > 0 && (
                     <div className="p-4 rounded-2xl bg-primary-50/70 dark:bg-primary-950/40 border border-primary-100 dark:border-primary-900">
                       <p className="text-xs font-bold text-primary-900 dark:text-primary-200 mb-2 flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5 text-accent-500" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                         <span>Key Alignment Points Included:</span>
                       </p>
                       <ul className="grid sm:grid-cols-3 gap-2">
@@ -568,7 +569,7 @@ export default function CoverLetter() {
                     )}
 
                     {/* Salutation */}
-                    <p className="text-sm font-bold pt-2 text-dark-900 dark:text-white">
+                    <p className="text-sm font-bold pt-2 text-dark-900 dark:text-white font-sans">
                       {coverLetterResult.salutation}
                     </p>
 
@@ -595,7 +596,7 @@ export default function CoverLetter() {
                     </p>
 
                     {/* Signoff */}
-                    <div className="pt-4 whitespace-pre-line text-sm font-bold text-dark-900 dark:text-white">
+                    <div className="pt-4 whitespace-pre-line text-sm font-bold text-dark-900 dark:text-white font-sans">
                       {coverLetterResult.signoff}
                     </div>
                   </div>
@@ -607,7 +608,7 @@ export default function CoverLetter() {
             <div className="space-y-6">
               {!outreachResult ? (
                 <div className="rounded-2xl border-2 border-dashed border-dark-200 dark:border-dark-800 bg-white dark:bg-dark-900 p-12 text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-accent-50 dark:bg-accent-950 text-accent-600 dark:text-accent-400 flex items-center justify-center mx-auto mb-4">
+                  <div className="w-14 h-14 rounded-2xl bg-accent-50 dark:bg-accent-950 text-accent-600 dark:text-accent-400 flex items-center justify-center mx-auto mb-4 border border-accent-100 dark:border-accent-900">
                     <Send className="w-7 h-7" />
                   </div>
                   <h3 className="text-base font-bold font-display text-dark-900 dark:text-white mb-1">
@@ -654,7 +655,7 @@ export default function CoverLetter() {
                   <div className="rounded-2xl bg-white dark:bg-dark-900 border border-dark-100 dark:border-dark-800 p-6 shadow-sm space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-primary-600" />
+                        <Mail className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                         <h3 className="text-sm font-bold text-dark-900 dark:text-white">
                           Main Outreach Message (InMail / Email)
                         </h3>
@@ -694,7 +695,7 @@ export default function CoverLetter() {
                     <div className="rounded-2xl bg-white dark:bg-dark-900 border border-dark-100 dark:border-dark-800 p-6 shadow-sm space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <RefreshCw className="w-4 h-4 text-accent-600" />
+                          <RefreshCw className="w-4 h-4 text-accent-600 dark:text-accent-400" />
                           <h3 className="text-sm font-bold text-dark-900 dark:text-white">
                             4-Day Follow-Up Message
                           </h3>
@@ -723,7 +724,7 @@ export default function CoverLetter() {
                   {outreachResult.strategyTips?.length > 0 && (
                     <div className="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900">
                       <p className="text-xs font-bold text-amber-900 dark:text-amber-200 mb-2 flex items-center gap-1.5">
-                        <Info className="w-3.5 h-3.5 text-amber-600" />
+                        <Info className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                         <span>Networking Best Practices:</span>
                       </p>
                       <ul className="space-y-1">

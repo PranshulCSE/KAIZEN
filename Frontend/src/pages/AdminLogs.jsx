@@ -1,229 +1,250 @@
-import { useState, useEffect } from "react";
-import Card from "../components/ui/Card.jsx";
-import Button from "../components/ui/Button.jsx";
-import Badge from "../components/ui/Badge.jsx";
-import Input from "../components/ui/Input.jsx";
-import { adminApi } from "../api/admin.api.js";
-import { RefreshCw, Search, Filter } from "lucide-react";
-import { useToast } from "../hooks/useToast.js";
-import { apiErrorMessage } from "../api/axiosClient.js";
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router';
+import { RefreshCw, Search, Filter, ShieldCheck, ArrowLeft, Terminal, Activity } from 'lucide-react';
+import Card from '../components/ui/Card.jsx';
+import Button from '../components/ui/Button.jsx';
+import Badge from '../components/ui/Badge.jsx';
+import Input from '../components/ui/Input.jsx';
+import { adminApi } from '../api/admin.api.js';
+import { apiErrorMessage } from '../api/axiosClient.js';
+import { ROUTES } from '../constants/routes.js';
+import toast from 'react-hot-toast';
 
-const AdminLogs = () => {
+export default function AdminLogs() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtering, setFiltering] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(false);
-  const [levelFilter, setLevelFilter] = useState("ALL");
-  const [searchQuery, setSearchQuery] = useState("");
-  const { showToast, toasts } = useToast(); // FIXED: real toast state instead of console.log
+  const [levelFilter, setLevelFilter] = useState('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const logLevels = ["ALL", "INFO", "WARN", "ERROR"];
-  const logColors = { info: "secondary", warn: "warning", error: "danger" };
-  const statusColors = {
-    200: "secondary",
-    201: "secondary",
-    400: "warning",
-    401: "danger",
-    403: "danger",
-    404: "warning",
-    500: "danger",
-  };
-  // (delete the old `const showToast = (message, type = 'info') => { console.log(...) }` block)
+  const logLevels = ['ALL', 'INFO', 'WARN', 'ERROR'];
 
-  // Fetch logs
-  // lines 43-57 — fetchLogs:
   const fetchLogs = async () => {
     try {
       setFiltering(true);
-      // FIXED: client.get() returns the raw Axios response — the JSON body is
-      // at response.data, not the response itself. This was always reading
-      // response.logs (undefined) and silently falling back to [], which is
-      // why the page showed "No logs found" even with real audit logs in Mongo.
       const { data } = await adminApi.getLogs({
-        level: levelFilter !== "ALL" ? levelFilter.toLowerCase() : undefined,
-        search: searchQuery || undefined,
+        level: levelFilter !== 'ALL' ? levelFilter.toLowerCase() : undefined,
+        search: searchQuery || undefined
       });
       setLogs(data.logs || []);
     } catch (error) {
-      console.error("Failed to fetch logs:", error);
-      showToast(apiErrorMessage(error, "Failed to fetch logs"), "error");
+      console.error('Failed to fetch logs:', error);
+      toast.error(apiErrorMessage(error, 'Failed to fetch logs'));
     } finally {
       setFiltering(false);
     }
   };
 
-  // Initial load
   useEffect(() => {
-    fetchLogs();
-    setLoading(false);
-  }, []);
+    fetchLogs().then(() => setLoading(false));
+  }, [levelFilter]);
 
-  // Auto-refresh
   useEffect(() => {
     if (!autoRefresh) return;
-
     const interval = setInterval(() => {
       fetchLogs();
-    }, 10000);
-
+    }, 8000);
     return () => clearInterval(interval);
   }, [autoRefresh, levelFilter, searchQuery]);
 
-  // Handle filter change
   const handleFilterChange = (level) => {
     setLevelFilter(level);
   };
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
+  const handleSearchSubmit = (e) => {
+    e?.preventDefault();
+    fetchLogs();
   };
 
-  // Format timestamp
   const formatTime = (timestamp) => {
-    if (!timestamp) return "N/A";
+    if (!timestamp) return 'N/A';
     const date = new Date(timestamp);
-    return date.toLocaleString("en-IN", {
-      dateStyle: "short",
-      timeStyle: "medium",
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
     });
   };
 
-  // Get status badge
   const getStatusBadge = (status) => {
-    if (!status) return null;
-    const color = statusColors[status] || "secondary";
+    if (!status) return <span className="text-dark-400 font-mono text-xs">-</span>;
+    const s = Number(status);
+    let colorClass = 'bg-dark-100 text-dark-800 dark:bg-dark-800 dark:text-dark-200';
+    if (s >= 200 && s < 300) {
+      colorClass = 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300';
+    } else if (s >= 400 && s < 500) {
+      colorClass = 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300';
+    } else if (s >= 500) {
+      colorClass = 'bg-danger-50 dark:bg-danger-950/60 text-danger-700 dark:text-danger-300';
+    }
+
     return (
-      <Badge variant={color} size="sm">
+      <span className={`px-2 py-0.5 rounded font-mono text-xs font-bold ${colorClass}`}>
         {status}
-      </Badge>
+      </span>
     );
   };
 
-  if (loading) {
+  const getLevelBadge = (level) => {
+    const l = (level || 'info').toUpperCase();
+    if (l === 'ERROR') {
+      return (
+        <span className="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-danger-50 dark:bg-danger-950/60 text-danger-700 dark:text-danger-300">
+          ERROR
+        </span>
+      );
+    }
+    if (l === 'WARN' || l === 'WARNING') {
+      return (
+        <span className="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300">
+          WARN
+        </span>
+      );
+    }
     return (
-      <div className="max-w-6xl mx-auto p-lg flex items-center justify-center h-96">
-        <p className="text-muted">Loading logs...</p>
-      </div>
+      <span className="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300">
+        INFO
+      </span>
     );
-  }
+  };
 
   return (
-    <div className="max-w-6xl mx-auto p-lg">
-      <div className="flex justify-between items-center mb-xl">
-        <h1 className="text-3xl font-bold font-display">System Logs</h1>
-        <div className="flex gap-sm">
-          <Button
-            variant={autoRefresh ? "lime" : "secondary"}
-            size="sm"
-            onClick={() => setAutoRefresh(!autoRefresh)}
-            className="flex items-center gap-xs"
+    <div className="flex flex-col gap-8 pb-12 animate-fade-in">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <Link
+            to={ROUTES.ADMIN_DASHBOARD}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-dark-500 dark:text-dark-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mb-1"
           >
-            <RefreshCw
-              className={`h-4 w-4 ${autoRefresh ? "animate-spin" : ""}`}
-            />
-            {autoRefresh ? "Live" : "Off"}
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back to Dashboard</span>
+          </Link>
+          <h1 className="font-display text-3xl font-black text-dark-900 dark:text-white">
+            System Audit Logs
+          </h1>
+          <p className="mt-1 text-sm text-dark-500 dark:text-dark-400">
+            Real-time API invocation logs, authentication attempts, and background exceptions.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant={autoRefresh ? 'lime' : 'secondary'}
+            size="sm"
+            onClick={() => {
+              setAutoRefresh(!autoRefresh);
+              toast(autoRefresh ? 'Live refresh stopped' : 'Live refresh active (8s)');
+            }}
+            className="text-xs font-bold"
+          >
+            <Activity className={`h-3.5 w-3.5 ${autoRefresh ? 'animate-pulse' : ''}`} />
+            <span>{autoRefresh ? 'Live Polling: ON' : 'Live Polling: OFF'}</span>
           </Button>
+
           <Button
             variant="secondary"
             size="sm"
             isLoading={filtering}
             onClick={fetchLogs}
-            className="flex items-center gap-xs"
+            className="text-xs"
           >
-            <RefreshCw className="h-4 w-4" />
-            Refresh
+            <RefreshCw className="h-3.5 w-3.5" />
+            <span>Refresh</span>
           </Button>
         </div>
       </div>
 
-      {/* FILTERS */}
-      <Card className="mb-xl">
-        <div className="space-y-md">
+      {/* Controls Card */}
+      <Card className="p-5 border-dark-100 dark:border-dark-800 bg-white dark:bg-dark-900 shadow-sm space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Level Filter Tabs */}
-          <div>
-            <p className="eyebrow mb-sm">Log Level</p>
-            <div className="flex flex-wrap gap-sm">
-              {logLevels.map((level) => (
-                <Button
-                  key={level}
-                  variant={levelFilter === level ? "lime" : "secondary"}
-                  size="sm"
-                  onClick={() => handleFilterChange(level)}
-                >
-                  {level}
-                </Button>
-              ))}
-            </div>
+          <div className="flex items-center gap-1.5 p-1 bg-dark-50 dark:bg-dark-950 rounded-xl border border-dark-100 dark:border-dark-800">
+            {logLevels.map((lvl) => (
+              <button
+                key={lvl}
+                type="button"
+                onClick={() => handleFilterChange(lvl)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  levelFilter === lvl
+                    ? 'bg-primary-600 text-white shadow-2xs'
+                    : 'text-dark-600 dark:text-dark-400 hover:text-dark-900 dark:hover:text-white'
+                }`}
+              >
+                {lvl}
+              </button>
+            ))}
           </div>
 
-          {/* Search Input */}
-          <div>
-            <p className="eyebrow mb-sm">Search</p>
-            <Input
-              icon={Search}
-              placeholder="Search by endpoint, error, IP, action..."
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-            />
-          </div>
+          {/* Search Query */}
+          <form onSubmit={handleSearchSubmit} className="flex gap-2 flex-1 max-w-md">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-400" />
+              <input
+                type="text"
+                placeholder="Search by endpoint, status, user ID, or error..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-950 text-dark-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium"
+              />
+            </div>
+            <Button type="submit" variant="secondary" size="sm" className="text-xs">
+              Search
+            </Button>
+          </form>
         </div>
       </Card>
 
-      {/* LOGS TABLE */}
-      <Card>
-        {logs.length === 0 ? (
-          <div className="text-center py-xl">
-            <Filter className="h-8 w-8 text-muted mx-auto mb-sm opacity-50" />
-            <p className="text-muted">No logs found</p>
+      {/* Logs Table */}
+      <Card className="overflow-hidden border-dark-100 dark:border-dark-800 bg-white dark:bg-dark-900 shadow-sm">
+        {loading ? (
+          <div className="py-12 text-center text-xs text-dark-400 font-mono">
+            Loading system log stream...
+          </div>
+        ) : logs.length === 0 ? (
+          <div className="py-12 text-center text-xs text-dark-400">
+            <Terminal className="w-8 h-8 text-dark-300 dark:text-dark-700 mx-auto mb-2" />
+            <p className="font-semibold text-dark-600 dark:text-dark-300">No logs matching criteria</p>
+            <p className="text-[11px] text-dark-400 mt-0.5">Try clearing filters or making an API request.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="border-b-2 border-ink">
+            <table className="w-full text-left text-xs">
+              <thead className="border-b border-dark-100 dark:border-dark-800 bg-dark-50/50 dark:bg-dark-950 uppercase tracking-wider text-dark-400 font-bold">
                 <tr>
-                  <th className="text-left py-md px-sm font-bold">Timestamp</th>
-                  <th className="text-left py-md px-sm font-bold">Level</th>
-                  <th className="text-left py-md px-sm font-bold">Service</th>
-                  <th className="text-left py-md px-sm font-bold">Message</th>
-                  <th className="text-left py-md px-sm font-bold">Status</th>
-                  <th className="text-left py-md px-sm font-bold">Details</th>
+                  <th className="px-5 py-3">Timestamp</th>
+                  <th className="px-5 py-3">Level</th>
+                  <th className="px-5 py-3">Route / Service</th>
+                  <th className="px-5 py-3">Message / Payload</th>
+                  <th className="px-5 py-3">Status</th>
+                  <th className="px-5 py-3">Client Context</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-hairline">
+              <tbody className="divide-y divide-dark-100 dark:divide-dark-800 font-mono">
                 {logs.map((log, idx) => {
-                  const level = log.level || log.type || "info";
-                  const levelColor =
-                    logColors[level.toLowerCase()] || "secondary";
-
+                  const level = log.level || log.type || 'info';
                   return (
                     <tr
                       key={idx}
-                      className="hover:bg-surface transition-colors"
+                      className="hover:bg-dark-50/50 dark:hover:bg-dark-800/30 transition-colors"
                     >
-                      <td className="py-md px-sm text-xs text-muted whitespace-nowrap">
+                      <td className="px-5 py-3 text-[11px] text-dark-400 whitespace-nowrap">
                         {formatTime(log.timestamp)}
                       </td>
-                      <td className="py-md px-sm">
-                        <Badge variant={levelColor} size="sm">
-                          {level.toUpperCase()}
-                        </Badge>
+                      <td className="px-5 py-3">{getLevelBadge(level)}</td>
+                      <td className="px-5 py-3 text-dark-900 dark:text-dark-100 font-bold">
+                        {log.service || log.action || 'api'}
                       </td>
-                      <td className="py-md px-sm font-mono text-xs">
-                        {log.service || log.action || "System"}
+                      <td className="px-5 py-3 max-w-sm truncate text-dark-700 dark:text-dark-300">
+                        {typeof log.message === 'string' ? log.message : JSON.stringify(log.message || log.action || {})}
                       </td>
-                      <td className="py-md px-sm max-w-xs truncate">
-                        {typeof log.message === "string"
-                          ? log.message
-                          : log.action || "N/A"}
-                      </td>
-                      <td className="py-md px-sm">
-                        {getStatusBadge(log.statusCode)}
-                      </td>
-                      <td className="py-md px-sm text-xs text-muted">
+                      <td className="px-5 py-3">{getStatusBadge(log.statusCode)}</td>
+                      <td className="px-5 py-3 text-[11px] text-dark-400">
                         {log.ipAddress && <span>{log.ipAddress}</span>}
-                        {log.userId && (
-                          <span className="ml-sm">({log.userId})</span>
-                        )}
+                        {log.userId && <span className="ml-1 text-primary-600 dark:text-primary-400 font-sans">({log.userId})</span>}
                       </td>
                     </tr>
                   );
@@ -234,25 +255,9 @@ const AdminLogs = () => {
         )}
       </Card>
 
-      {/* FOOTER */}
-      <div className="mt-md text-xs text-muted text-center">
-        <p>Showing {logs.length} log entries</p>
-        {autoRefresh && <p>Auto-refreshing every 10 seconds</p>}
+      <div className="text-center text-xs text-dark-400 font-mono">
+        Showing {logs.length} stream entries {autoRefresh ? '· auto-refreshing every 8s' : ''}
       </div>
-      {toasts.length > 0 && (
-        <div className="fixed bottom-md right-md z-50 space-y-xs">
-          {toasts.map((t) => (
-            <div
-              key={t.id}
-              className={`px-md py-sm rounded shadow-lg text-sm text-white ${t.type === "error" ? "bg-red-600" : "bg-ink"}`}
-            >
-              {t.message}
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
-};
-
-export default AdminLogs;
+}
