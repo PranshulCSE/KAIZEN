@@ -38,102 +38,139 @@ OUTPUT FORMAT RULES:
 class AIService {
   constructor() {
     if (!process.env.GEMINI_API_KEY) {
-      // Don't crash the whole server just because AI isn't configured yet —
-      // log a clear warning instead, and fail loudly only when an AI method is actually called.
       logger.warn('GEMINI_API_KEY is not set — AI features will not work until it is configured.');
     }
-    this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-    this.model = this.genAI.getGenerativeModel({
-      // NOTE: gemini-3.6-flash is a real, current GA model (verified against
-      // Google's Gemini API release notes) — left as-is, not a bug.
-      model: process.env.GEMINI_MODEL || 'gemini-3.6-flash',
-      // NEW: ask the API to return raw JSON directly instead of relying
-      // solely on regex-scraping markdown-wrapped text out of a free-form
-      // response — much more reliable for structured output.
-      generationConfig: {
-        responseMimeType: 'application/json',
-        temperature: 0.4,
-      },
-    });
+  }
+
+  _getGenAI() {
+    const key = process.env.GEMINI_API_KEY;
+    if (!key) {
+      throw new Error('AI features are not available: GEMINI_API_KEY is not configured on the server. Please add your key to Backend/.env.');
+    }
+    if (!this.genAI || this._cachedKey !== key) {
+      this.genAI = new GoogleGenerativeAI(key);
+      this._cachedKey = key;
+    }
+    return this.genAI;
   }
 
   _ensureConfigured() {
     if (!process.env.GEMINI_API_KEY) {
-      throw new Error('AI features are not available: GEMINI_API_KEY is not configured on the server.');
+      throw new Error('AI features are not available: GEMINI_API_KEY is not configured on the server. Please add GEMINI_API_KEY in Backend/.env.');
     }
   }
 
-  // NEW: shared, single source of truth for turning a model response into
-  // parsed JSON. FIXED: this logic used to be copy-pasted 4 times (once per
-  // method below), each with the same brittle "find the first {...}" regex
-  // and no fallback if the model wrapped the JSON in markdown fences.
+  // Shared single source of truth for turning a model response into parsed JSON.
   _parseJSONResponse(text) {
-    const cleaned = text.replace(/```json\s*|```/g, '').trim();
+    if (!text || typeof text !== 'string') {
+      throw new Error('Empty response received from AI model.');
+    }
+
+    // 1. Strip markdown fences ```json ... ``` or ``` ... ```
+    let cleaned = text.replace(/```(?:json)?\s*([\s\S]*?)\s*```/g, '$1').trim();
+
     try {
       return JSON.parse(cleaned);
     } catch {
-      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
+      // 2. Try extracting the outer JSON object { ... }
+      const firstBrace = cleaned.indexOf('{');
+      const lastBrace = cleaned.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace > firstBrace) {
+        try {
+          return JSON.parse(cleaned.substring(firstBrace, lastBrace + 1));
+        } catch (innerErr) {
+          // fall through
+        }
       }
+
+      // 3. Try extracting outer JSON array [ ... ]
+      const firstBracket = cleaned.indexOf('[');
+      const lastBracket = cleaned.lastIndexOf(']');
+      if (firstBracket !== -1 && lastBracket > firstBracket) {
+        try {
+          return JSON.parse(cleaned.substring(firstBracket, lastBracket + 1));
+        } catch (arrErr) {
+          // fall through
+        }
+      }
+
       throw new Error('AI response was not valid JSON.');
     }
   }
 
-  // Robust generator with exponential backoff, rate-limit retries, and multi-model fallback
+  // Robust generator with exponential backoff, rate-limit retries, and multi-model fallback.
+  // Uses real production Google Gemini models: gemini-1.5-flash, gemini-2.0-flash, gemini-1.5-pro
   async _generateJSON(prompt, errorContext) {
+    this._ensureConfigured();
+    const genAI = this._getGenAI();
+
+    // Prioritize standard production models: 1.5-flash, 2.0-flash, 1.5-pro, 2.5-flash
     const candidateModels = [
-      process.env.GEMINI_MODEL || 'gemini-3.6-flash',
-      'gemini-3.5-flash',
-      'gemini-3.7-flash',
-      'gemini-3.8-flash'
+      process.env.GEMINI_MODEL,
+      'gemini-1.5-flash',
+      'gemini-2.0-flash',
+      'gemini-1.5-pro',
+      'gemini-2.5-flash'
     ].filter((m, idx, arr) => m && arr.indexOf(m) === idx);
 
     let lastError = null;
 
     for (const modelName of candidateModels) {
-      const model = this.genAI.getGenerativeModel({
-        model: modelName,
-        generationConfig: {
-          responseMimeType: 'application/json',
-          temperature: 0.4,
-        },
-      });
+      try {
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          generationConfig: {
+            responseMimeType: 'application/json',
+            temperature: 0.4,
+          },
+        });
 
-      const maxRetries = 3;
-      for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-          const result = await model.generateContent(prompt);
-          const text = result.response.text();
-          return this._parseJSONResponse(text);
-        } catch (err) {
-          lastError = err;
-          const msg = err.message || '';
-          const isRetryable =
-            msg.includes('503') ||
-            msg.includes('429') ||
-            msg.includes('high demand') ||
-            msg.includes('ResourceExhausted') ||
-            msg.includes('Service Unavailable') ||
-            msg.includes('ECONNRESET') ||
-            msg.includes('ETIMEDOUT') ||
-            msg.includes('fetch failed');
+        const maxRetries = 3;
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+          try {
+            const result = await model.generateContent(prompt);
+            const text = result.response.text();
+            return this._parseJSONResponse(text);
+          } catch (err) {
+            lastError = err;
+            const msg = err.message || '';
+            const isRetryable =
+              msg.includes('503') ||
+              msg.includes('429') ||
+              msg.includes('high demand') ||
+              msg.includes('ResourceExhausted') ||
+              msg.includes('Service Unavailable') ||
+              msg.includes('ECONNRESET') ||
+              msg.includes('ETIMEDOUT') ||
+              msg.includes('fetch failed');
 
-          if (isRetryable && attempt < maxRetries) {
-            const delay = Math.min(1000 * Math.pow(2, attempt - 1) + Math.random() * 400, 4000);
-            logger.warn(`AI model ${modelName} encountered temporary spike on attempt ${attempt}/${maxRetries} (${msg}). Retrying in ${Math.round(delay)}ms...`);
-            await new Promise((resolve) => setTimeout(resolve, delay));
-            continue;
+            if (isRetryable && attempt < maxRetries) {
+              const delay = Math.min(1000 * Math.pow(2, attempt - 1) + Math.random() * 400, 4000);
+              logger.warn(`AI model ${modelName} encountered temporary spike on attempt ${attempt}/${maxRetries} (${msg}). Retrying in ${Math.round(delay)}ms...`);
+              await new Promise((resolve) => setTimeout(resolve, delay));
+              continue;
+            }
+
+            // If not retryable or retries exhausted for this model, break inner loop to try fallback model
+            break;
           }
-
-          // If not retryable or retries exhausted for this model, break inner loop to try fallback model
-          break;
         }
+      } catch (modelInitErr) {
+        lastError = modelInitErr;
+        logger.warn(`Model ${modelName} initialization/execution failed: ${modelInitErr.message}`);
       }
     }
 
     console.error(`${errorContext} Error:`, lastError);
-    throw new Error(`Failed to ${errorContext.toLowerCase()}: ${lastError?.message || 'AI service unavailable'}`, { cause: lastError });
+
+    let friendlyMessage = lastError?.message || 'AI service unavailable';
+    if (friendlyMessage.includes('API_KEY_INVALID') || friendlyMessage.includes('400')) {
+      friendlyMessage = 'Invalid Gemini API key. Please check your GEMINI_API_KEY in Backend/.env or obtain a free key from Google AI Studio (aistudio.google.com).';
+    } else if (friendlyMessage.includes('503') || friendlyMessage.includes('high demand')) {
+      friendlyMessage = 'The Google Gemini AI service is currently experiencing high demand. Please try again in a few moments.';
+    }
+
+    throw new Error(`Failed to ${errorContext.toLowerCase()}: ${friendlyMessage}`, { cause: lastError });
   }
 
   // Analyze Job Description
@@ -797,4 +834,4 @@ ${OUTPUT_RULES}
 
 const AI = new AIService();
 module.exports = AI;
-
+

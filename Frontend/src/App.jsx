@@ -28,8 +28,14 @@ import AdminDashboard from './pages/AdminDashboard.jsx';
 import AdminUsers from './pages/AdminUsers.jsx';
 import AdminLogs from './pages/AdminLogs.jsx';
 import NotFound from './pages/NotFound.jsx';
+import { pingBackendWarmup } from './api/axiosClient.js';
 
 export default function App() {
+    React.useEffect(() => {
+        // Trigger non-blocking backend warmup on page load to prevent cloud sleep delays
+        pingBackendWarmup();
+    }, []);
+
     return (
         <ThemeProvider>
             <AuthProvider>

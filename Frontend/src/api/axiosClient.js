@@ -72,5 +72,22 @@ client.interceptors.response.use(
 );
 
 // Small helper so callers get a plain, readable message either way
-export const apiErrorMessage = (error, fallback = 'Something went wrong. Please try again.') =>
-  error?.response?.data?.message || fallback;
+export const apiErrorMessage = (error, fallback = 'Something went wrong. Please try again.') => {
+  if (error?.response?.status === 502 || error?.response?.status === 503 || error?.response?.status === 504) {
+    return 'The backend server is currently waking up or experiencing high load. Please retry in a few seconds.';
+  }
+  if (error?.response?.status === 429) {
+    return error?.response?.data?.message || 'Too many requests. Please wait a moment before trying again.';
+  }
+  return error?.response?.data?.message || error?.message || fallback;
+};
+
+// Lightweight background warmup ping to wake up free-tier cloud instances (e.g. Render)
+export const pingBackendWarmup = async () => {
+  try {
+    const healthUrl = API_BASE_URL.replace(/\/api\/?$/, '') + '/health';
+    await fetch(healthUrl, { method: 'GET', signal: AbortSignal.timeout(6000) });
+  } catch (err) {
+    // Non-blocking warmup ping
+  }
+};

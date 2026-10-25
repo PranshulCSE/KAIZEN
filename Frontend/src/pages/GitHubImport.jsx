@@ -40,6 +40,7 @@ export default function GitHubImport() {
   const [generatedProjects, setGeneratedProjects] = useState([]);
   const [copiedIdx, setCopiedIdx] = useState(null);
   const [isAppending, setIsAppending] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
 
   // Set default resume
   React.useEffect(() => {
@@ -56,6 +57,7 @@ export default function GitHubImport() {
     }
 
     setIsFetchingRepos(true);
+    setFetchError(null);
     setProfileData(null);
     setRepositories([]);
     setSelectedRepoNames(new Set());
@@ -70,7 +72,9 @@ export default function GitHubImport() {
       setSelectedRepoNames(top3);
       toast.success(`Found ${data.data.repositories?.length || 0} repositories!`);
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message || 'Failed to fetch GitHub profile');
+      const msg = err.response?.data?.message || err.message || 'Failed to fetch GitHub profile';
+      setFetchError(msg);
+      toast.error(msg);
     } finally {
       setIsFetchingRepos(false);
     }
@@ -221,7 +225,19 @@ export default function GitHubImport() {
 
       {/* Main Content Area */}
       {!profileData ? (
-        <div className="rounded-2xl border-2 border-dashed border-dark-200 dark:border-dark-800 bg-white dark:bg-dark-900 p-12 text-center">
+        <div className="space-y-4">
+          {fetchError && (
+            <div className="p-4 rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 text-xs sm:text-sm">
+              <div className="font-bold mb-1 flex items-center gap-1.5">
+                <Info className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                <span>GitHub API Status Notice</span>
+              </div>
+              <p className="leading-relaxed text-amber-800 dark:text-amber-300">
+                {fetchError}
+              </p>
+            </div>
+          )}
+          <div className="rounded-2xl border-2 border-dashed border-dark-200 dark:border-dark-800 bg-white dark:bg-dark-900 p-12 text-center">
           <div className="w-16 h-16 rounded-2xl bg-dark-50 dark:bg-dark-950 text-dark-800 dark:text-dark-200 flex items-center justify-center mx-auto mb-4 border border-dark-100 dark:border-dark-800">
             <Github className="w-8 h-8" />
           </div>
@@ -247,6 +263,7 @@ export default function GitHubImport() {
               </button>
             ))}
           </div>
+        </div>
         </div>
       ) : (
         <div className="grid lg:grid-cols-12 gap-8 items-start">
