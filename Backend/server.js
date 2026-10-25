@@ -4,6 +4,7 @@ const app = require('./src/app.js');
 const connectDB = require('./src/config/database.js');
 const { connectRedis } = require('./src/config/redis.js');
 const { setupInterviewSocket } = require('./src/services/interviewSocket.js');
+const { startKeepAlive } = require('./src/services/keepAlive.js');
 
 const PORT = process.env.PORT || 5000;
 
@@ -13,8 +14,7 @@ const startServer = async () => {
     await connectDB();
     console.log('✓ MongoDB connected');
 
-    // FIX Bug #6: Redis has zero consumers in the codebase. If it's
-    // unreachable, warn and continue — don't crash the whole API server.
+    // Redis: If unreachable, warn and continue without crashing
     try {
       await connectRedis();
       console.log('✓ Redis connected');
@@ -30,6 +30,8 @@ const startServer = async () => {
     // Start server
     server.listen(PORT, () => {
       console.log(`✓ Server running on port ${PORT}`);
+      // Initialize Keep-Alive service to prevent free cloud instances from sleeping
+      startKeepAlive();
     });
   } catch (error) {
     console.error('Failed to start server:', error);

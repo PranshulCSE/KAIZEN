@@ -99,7 +99,7 @@ flowchart TD
     end
 
     subgraph CoreServices["Business Logic & AI Layer"]
-        AIService[Gemini 3.6 Flash Engine]
+        AIService[Gemini 1.5 Flash Engine]
         Parser[PDF & DOCX Resume Parser]
         PDFGen[@react-pdf Generator]
         Scraper[Cheerio Web Scraper]
@@ -386,7 +386,7 @@ JWT_REFRESH_EXPIRES_IN=30d
 
 # Google Gemini AI
 GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-3.6-flash
+GEMINI_MODEL=gemini-1.5-flash
 
 # Cloudinary Storage
 CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
@@ -402,10 +402,13 @@ EMAIL_FROM="Kaizen AI <no-reply@kaizen.ai>"
 
 # Rate Limiting
 RATE_LIMIT_WINDOW=15
-RATE_LIMIT_MAX=100
+RATE_LIMIT_MAX=300
 
-# GitHub Integration (Optional - increases rate limits)
+# GitHub Integration (Unlocks 5,000 req/hr instead of 60 req/hr on shared host IP)
 GITHUB_TOKEN=your_personal_access_token_here
+
+# Keep-Alive Self-Ping (Prevents free cloud tiers like Render from sleeping)
+KEEP_ALIVE_URL=https://your-backend.onrender.com
 ```
 
 ---
